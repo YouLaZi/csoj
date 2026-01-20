@@ -8,6 +8,7 @@ import java.util.Date;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,7 +110,7 @@ public class QuestionServiceUnitTest {
   @DisplayName("题目校验 - 标题过长")
   void testValidQuestion_TitleTooLong() {
     Question invalidQuestion = new Question();
-    invalidQuestion.setTitle("a".repeat(100)); // 超过80字符
+    invalidQuestion.setTitle(StringUtils.repeat("a", 100)); // 超过80字符
     invalidQuestion.setContent("内容");
     invalidQuestion.setTags("[\"标签\"]");
 
@@ -124,7 +125,7 @@ public class QuestionServiceUnitTest {
   void testValidQuestion_ContentTooLong() {
     Question invalidQuestion = new Question();
     invalidQuestion.setTitle("标题");
-    invalidQuestion.setContent("a".repeat(10000)); // 超过8192字符
+    invalidQuestion.setContent(StringUtils.repeat("a", 10000)); // 超过8192字符
     invalidQuestion.setTags("[\"标签\"]");
 
     BusinessException exception =
@@ -140,7 +141,7 @@ public class QuestionServiceUnitTest {
     invalidQuestion.setTitle("标题");
     invalidQuestion.setContent("内容");
     invalidQuestion.setTags("[\"标签\"]");
-    invalidQuestion.setAnswer("a".repeat(10000)); // 超过8192字符
+    invalidQuestion.setAnswer(StringUtils.repeat("a", 10000)); // 超过8192字符
 
     BusinessException exception =
         assertThrows(
@@ -155,7 +156,7 @@ public class QuestionServiceUnitTest {
     invalidQuestion.setTitle("标题");
     invalidQuestion.setContent("内容");
     invalidQuestion.setTags("[\"标签\"]");
-    invalidQuestion.setJudgeCase("a".repeat(10000)); // 超过8192字符
+    invalidQuestion.setJudgeCase(StringUtils.repeat("a", 10000)); // 超过8192字符
 
     BusinessException exception =
         assertThrows(
@@ -170,7 +171,7 @@ public class QuestionServiceUnitTest {
     invalidQuestion.setTitle("标题");
     invalidQuestion.setContent("内容");
     invalidQuestion.setTags("[\"标签\"]");
-    invalidQuestion.setJudgeConfig("a".repeat(10000)); // 超过8192字符
+    invalidQuestion.setJudgeConfig(StringUtils.repeat("a", 10000)); // 超过8192字符
 
     BusinessException exception =
         assertThrows(
@@ -429,7 +430,7 @@ public class QuestionServiceUnitTest {
   @DisplayName("题目验证 - 标题长度边界")
   void testQuestionValidation_TitleBoundary() {
     Question validQuestion = new Question();
-    validQuestion.setTitle("a".repeat(80)); // 恰好80字符
+    validQuestion.setTitle(StringUtils.repeat("a", 80)); // 恰好80字符
     validQuestion.setContent("内容");
     validQuestion.setTags("[\"标签\"]");
 
@@ -441,7 +442,7 @@ public class QuestionServiceUnitTest {
   void testQuestionValidation_ContentBoundary() {
     Question validQuestion = new Question();
     validQuestion.setTitle("标题");
-    validQuestion.setContent("a".repeat(8192)); // 恰好8192字符
+    validQuestion.setContent(StringUtils.repeat("a", 8192)); // 恰好8192字符
     validQuestion.setTags("[\"标签\"]");
 
     assertDoesNotThrow(() -> questionService.validQuestion(validQuestion, true));

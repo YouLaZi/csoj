@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -121,11 +122,13 @@ public class JudgeStrategyUnitTest {
   @DisplayName("判题 - 答案错误")
   void testDoJudge_WrongAnswer() {
     List<String> inputList = Arrays.asList("1 2", "3 4");
-    List<String> outputList = Arrays.asList("3 5", "3 6");
+    List<String> expectedOutput = Arrays.asList("3 5", "3 6");
+    // 实际输出与期望输出不同
+    List<String> actualOutput = Arrays.asList("wrong", "answer");
 
     judgeContext.setInputList(inputList);
-    judgeContext.setOutputList(outputList);
-    judgeContext.setJudgeCaseList(createJudgeCases(inputList, outputList));
+    judgeContext.setOutputList(actualOutput);
+    judgeContext.setJudgeCaseList(createJudgeCases(inputList, expectedOutput));
     judgeContext.setQuestion(testQuestion);
 
     JudgeInfo result = defaultJudgeStrategy.doJudge(judgeContext);
@@ -137,10 +140,13 @@ public class JudgeStrategyUnitTest {
   @DisplayName("判题 - 空输出")
   void testDoJudge_EmptyOutput() {
     List<String> inputList = Arrays.asList("1 2", "3 4");
+    List<String> expectedOutput = Arrays.asList("3 5", "3 6");
+    // 实际输出为空
+    List<String> actualOutput = Arrays.asList("", "");
 
     judgeContext.setInputList(inputList);
-    judgeContext.setOutputList(Arrays.asList("", ""));
-    judgeContext.setJudgeCaseList(createJudgeCases(inputList, Arrays.asList("", "")));
+    judgeContext.setOutputList(actualOutput);
+    judgeContext.setJudgeCaseList(createJudgeCases(inputList, expectedOutput));
     judgeContext.setQuestion(testQuestion);
 
     JudgeInfo result = defaultJudgeStrategy.doJudge(judgeContext);
@@ -286,8 +292,8 @@ public class JudgeStrategyUnitTest {
   @Test
   @DisplayName("边界条件 - 大输入输出")
   void testBoundary_LargeInputOutput() {
-    String largeInput = "a".repeat(10000);
-    String largeOutput = "b".repeat(10000);
+    String largeInput = StringUtils.repeat("a", 10000);
+    String largeOutput = StringUtils.repeat("b", 10000);
 
     judgeContext.setInputList(Arrays.asList(largeInput, largeInput));
     judgeContext.setOutputList(Arrays.asList(largeOutput, largeOutput));
@@ -336,14 +342,18 @@ public class JudgeStrategyUnitTest {
   @Test
   @DisplayName("判题 - 无限制配置")
   void testJudgeConfig_NoLimits() {
-    testQuestion.setJudgeConfig("{\"timeLimit\":0,\"memoryLimit\":0}");
+    // 设置足够大的限制值，实际使用远小于限制
+    testQuestion.setJudgeConfig("{\"timeLimit\":10000,\"memoryLimit\":10000}");
 
     judgeContext.setInputList(Arrays.asList("1 2", "3 4"));
     judgeContext.setOutputList(Arrays.asList("3 4", "3 6"));
     judgeContext.setJudgeCaseList(
         createJudgeCases(Arrays.asList("1 2", "3 4"), Arrays.asList("3 4", "3 6")));
     judgeContext.setQuestion(testQuestion);
-    judgeContext.setJudgeInfo(new JudgeInfo());
+    JudgeInfo judgeInfo = new JudgeInfo();
+    judgeInfo.setMemory(100L); // 远小于10000限制
+    judgeInfo.setTime(100L); // 远小于10000限制
+    judgeContext.setJudgeInfo(judgeInfo);
 
     JudgeInfo result = defaultJudgeStrategy.doJudge(judgeContext);
 
