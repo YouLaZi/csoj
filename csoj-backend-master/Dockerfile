@@ -1,5 +1,5 @@
 # 多阶段构建 - 构建阶段
-FROM maven:3.8.6-eclipse-temurin-17-alpine AS builder
+FROM maven:3.8.6-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
@@ -12,13 +12,12 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # 运行阶段
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 # 安装必要的工具
-RUN apk add --no-cache curl tzdata && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone && \
-    apk del tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
