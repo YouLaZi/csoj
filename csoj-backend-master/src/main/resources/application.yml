@@ -1,0 +1,209 @@
+# 公共配置文件
+spring:
+  application:
+    name: csoj-backend
+  # 默认 dev 环境
+  profiles:
+    active: dev
+  # 支持 swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # session 配置
+  session:
+    # todo 取消注释开启分布式 session（须先配置 Redis）
+    store-type: redis
+    # 30 天过期
+    timeout: 2592000
+  # 数据库配置
+  # todo 需替换配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oj_db
+    username: root
+    password:
+  # Redis 配置
+  # todo 需替换配置，然后取消注释
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+    timeout: 5000
+#    password: 123456
+  # Elasticsearch 配置
+  # todo 需替换配置，然后取消注释
+#  elasticsearch:
+#    uris: http://localhost:9200
+#    username: root
+#    password: 123456
+  # 文件上传
+  servlet:
+    multipart:
+      # 大小限制
+      max-file-size: 10MB
+server:
+  address: 0.0.0.0
+  port: 8121
+  # Tomcat 线程池配置（支持更多并发请求）
+  tomcat:
+    threads:
+      # 最大工作线程数
+      max: ${TOMCAT_MAX_THREADS:200}
+      # 最小空闲线程数
+      min-spare: ${TOMCAT_MIN_SPARE_THREADS:10}
+    # 最大连接数
+    max-connections: ${TOMCAT_MAX_CONNECTIONS:10000}
+    # 接受队列大小
+    accept-count: ${TOMCAT_ACCEPT_COUNT:100}
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    # 日志输出由 logback-spring.xml 统一管理
+  global-config:
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+# 微信相关
+wx:
+  # 微信公众平台
+  # todo 需替换配置
+  mp:
+    token: xxx
+    aesKey: xxx
+    appId: xxx
+    secret: xxx
+    config-storage:
+      http-client-type: HttpClient
+      key-prefix: wx
+      redis:
+        host: 127.0.0.1
+        port: 6379
+      type: Memory
+  # 微信开放平台
+  # todo 需替换配置
+  open:
+    appId: xxx
+    appSecret: xxx
+# 对象存储（本地文件存储 - 适用于校内机房部署）
+file:
+  upload:
+    # 文件存储根目录（支持绝对路径和相对路径）
+    base-path: ${FILE_UPLOAD_PATH:./uploads}
+    # 文件访问URL前缀
+    url-prefix: ${FILE_URL_PREFIX:/api/files}
+# 对象存储（腾讯云COS - 已弃用，改用本地存储）
+# todo 需替换配置
+#cos:
+#  client:
+#    accessKey: xxx
+#    secretKey: xxx
+#    region: xxx
+#    bucket: xxx
+# 代码沙箱配置
+codesandbox:
+  type: remote
+  # 远程沙箱服务地址
+  remote:
+    url: http://localhost:8090/executeCodeSync
+    # 鉴权请求头名称
+    auth-header: auth
+    # 鉴权密钥（生产环境应使用环境变量或配置中心）
+    auth-secret: ${CODE_SANDBOX_SECRET:your-secret-key-here}
+    # 请求超时时间（毫秒）
+    timeout: 60000
+
+# 异步任务配置
+async:
+  judge:
+    # 核心线程数（始终保持活跃的线程数）
+    core-pool-size: ${ASYNC_JUDGE_CORE_POOL_SIZE:10}
+    # 最大线程数
+    max-pool-size: ${ASYNC_JUDGE_MAX_POOL_SIZE:20}
+    # 队列容量（等待执行的任务队列大小）
+    queue-capacity: ${ASYNC_JUDGE_QUEUE_CAPACITY:200}
+    # 线程名称前缀
+    thread-name-prefix: judge-
+
+# Spring Boot Actuator 配置（Prometheus 监控）
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露所有 actuator 端点
+        include: health,info,metrics,prometheus
+      # 自定义 base path
+      base-path: /actuator
+  # Prometheus 指标导出配置
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    # 启用 JVM 指标
+    enable:
+      jvm: true
+      # 启用系统指标
+      process: true
+      # 启用 Tomcat 指标
+      tomcat: true
+      # 启用日志back 指标
+      logback: true
+    # 配置指标标签
+    tags:
+      application: ${spring.application.name}
+
+# CORS 跨域安全配置
+cors:
+  # 允许的域名列表（开发环境默认配置，生产环境请在环境变量或配置文件中覆盖）
+  # 支持通配符 *.edu.cn 表示所有 edu.cn 结尾的域名
+  allowed-origins:
+    - http://localhost:3000
+    - http://localhost:5173
+    - http://127.0.0.1:3000
+    - http://127.0.0.1:5173
+  # 允许的 HTTP 方法
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - OPTIONS
+  # 允许的请求头（* 表示允许所有）
+  allowed-headers: "*"
+  # 允许发送凭证（Cookie）
+  allow-credentials: true
+  # 预检请求缓存时间（秒），减少预检请求次数
+  max-age: 3600
+  # 暴露的响应头
+  exposed-headers:
+    - Content-Disposition
+    - Authorization
+
+# 生产环境 CORS 配置示例（请在 application-prod.yml 中覆盖）
+# cors:
+#   allowed-origins:
+#     - https://csoj.school.edu.cn
+#     - https://*.edu.cn
+
+# JWT 认证配置
+jwt:
+  # JWT 密钥（生产环境必须使用环境变量覆盖！）
+  # 生成命令：openssl rand -base64 64
+  secret: ${JWT_SECRET:CSOJ-Default-Secret-Key-Please-Change-In-Production-Environment}
+  # Access Token 过期时间（秒），默认 15 分钟
+  access-token-expiration: 900
+  # Refresh Token 过期时间（秒），默认 7 天
+  refresh-token-expiration: 604800
+  # Token 签发者
+  issuer: csoj
+  # Token 头部名称
+  header: Authorization
+  # Token 前缀
+  prefix: "Bearer "

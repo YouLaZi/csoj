@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">CSOJ 代码沙箱组件交互图</text>
+  
+  <!-- 组件 -->
+  <!-- 控制器 -->
+  <rect x="50" y="100" width="150" height="60" rx="5" ry="5" fill="#4285f4" opacity="0.8" />
+  <text x="125" y="140" font-family="Arial" font-size="16" text-anchor="middle" fill="white">控制器</text>
+  
+  <!-- 代码沙箱工厂 -->
+  <rect x="325" y="100" width="150" height="60" rx="5" ry="5" fill="#34a853" opacity="0.8" />
+  <text x="400" y="140" font-family="Arial" font-size="16" text-anchor="middle" fill="white">代码沙箱工厂</text>
+  
+  <!-- 语言策略 -->
+  <rect x="600" y="100" width="150" height="60" rx="5" ry="5" fill="#fbbc05" opacity="0.8" />
+  <text x="675" y="140" font-family="Arial" font-size="16" text-anchor="middle" fill="white">语言策略</text>
+  
+  <!-- 模型 -->
+  <rect x="325" y="250" width="150" height="60" rx="5" ry="5" fill="#ea4335" opacity="0.8" />
+  <text x="400" y="290" font-family="Arial" font-size="16" text-anchor="middle" fill="white">请求/响应模型</text>
+  
+  <!-- 安全管理器 -->
+  <rect x="325" y="400" width="150" height="60" rx="5" ry="5" fill="#673ab7" opacity="0.8" />
+  <text x="400" y="440" font-family="Arial" font-size="16" text-anchor="middle" fill="white">安全管理器</text>
+  
+  <!-- 进程工具 -->
+  <rect x="600" y="400" width="150" height="60" rx="5" ry="5" fill="#00acc1" opacity="0.8" />
+  <text x="675" y="440" font-family="Arial" font-size="16" text-anchor="middle" fill="white">进程工具</text>
+  
+  <!-- 文件系统 -->
+  <rect x="50" y="400" width="150" height="60" rx="5" ry="5" fill="#ff6d00" opacity="0.8" />
+  <text x="125" y="440" font-family="Arial" font-size="16" text-anchor="middle" fill="white">文件系统</text>
+  
+  <!-- 连接线和箭头 -->
+  <!-- 控制器 -> 工厂 -->
+  <line x1="200" y1="130" x2="325" y2="130" stroke="#333" stroke-width="2" />
+  <polygon points="315,125 325,130 315,135" fill="#333" />
+  <text x="260" y="120" font-family="Arial" font-size="12" text-anchor="middle">1. 请求执行代码</text>
+  
+  <!-- 工厂 -> 策略 -->
+  <line x1="475" y1="130" x2="600" y2="130" stroke="#333" stroke-width="2" />
+  <polygon points="590,125 600,130 590,135" fill="#333" />
+  <text x="540" y="120" font-family="Arial" font-size="12" text-anchor="middle">2. 获取语言策略</text>
+  
+  <!-- 策略 -> 模型 -->
+  <line x1="675" y1="160" x2="675" y2="280" stroke="#333" stroke-width="2" />
+  <line x1="675" y1="280" x2="475" y2="280" stroke="#333" stroke-width="2" />
+  <polygon points="485,275 475,280 485,285" fill="#333" />
+  <text x="580" y="270" font-family="Arial" font-size="12" text-anchor="middle">3. 使用请求模型</text>
+  
+  <!-- 策略 -> 文件系统 -->
+  <line x1="675" y1="350" x2="675" y2="430" stroke="#333" stroke-width="2" />
+  <line x1="675" y1="430" x2="200" y2="430" stroke="#333" stroke-width="2" />
+  <polygon points="210,425 200,430 210,435" fill="#333" />
+  <text x="400" y="420" font-family="Arial" font-size="12" text-anchor="middle">4. 保存代码到文件</text>
+  
+  <!-- 策略 -> 安全管理器 -->
+  <line x1="600" y1="430" x2="475" y2="430" stroke="#333" stroke-width="2" />
+  <polygon points="485,425 475,430 485,435" fill="#333" />
+  <text x="540" y="420" font-family="Arial" font-size="12" text-anchor="middle">5. 设置安全限制</text>
+  
+  <!-- 策略 -> 进程工具 -->
+  <line x1="675" y1="350" x2="675" y2="400" stroke="#333" stroke-width="2" />
+  <polygon points="670,390 675,400 680,390" fill="#333" />
+  <text x="700" y="375" font-family="Arial" font-size="12" text-anchor="middle">6. 执行进程</text>
+  
+  <!-- 策略 -> 控制器 -->
+  <path d="M 600 160 C 500 200 200 200 125 160" stroke="#333" stroke-width="2" fill="none" />
+  <polygon points="130,170 125,160 135,165" fill="#333" />
+  <text x="350" y="200" font-family="Arial" font-size="12" text-anchor="middle">7. 返回执行结果</text>
+</svg>

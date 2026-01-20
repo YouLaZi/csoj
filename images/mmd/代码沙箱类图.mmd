@@ -1,0 +1,59 @@
+classDiagram
+    direction LR
+
+    class CodeSandbox {
+        +ExecuteCodeResponse executeCode(ExecuteCodeRequest request)
+    }
+
+    class CodeSandboxFactory {
+        +CodeSandboxStrategy getCodeSandboxStrategy(String language)
+    }
+
+    class CodeSandboxStrategy {
+        +ExecuteCodeResponse executeCode(ExecuteCodeRequest request)
+    }
+
+    class JavaNativeCodeSandbox {
+        +ExecuteCodeResponse executeCode(ExecuteCodeRequest request)
+    }
+
+    class DockerCodeSandbox {
+        +ExecuteCodeResponse executeCode(ExecuteCodeRequest request)
+    }
+
+    class JavaDockerCodeSandbox {
+        +ExecuteCodeResponse executeCode(ExecuteCodeRequest request)
+    }
+
+    class ExecuteCodeRequest {
+        +List~String~ inputList
+        +String code
+        +String language
+    }
+
+    class ExecuteCodeResponse {
+        +List~String~ outputList
+        +String message
+        +Integer status
+        +JudgeInfo judgeInfo
+    }
+
+    class JudgeInfo {
+        +String message
+        +Long time
+        +Long memory
+    }
+
+    CodeSandboxFactory --> CodeSandboxStrategy : 创建
+    CodeSandboxStrategy <|-- JavaNativeCodeSandbox : 实现
+    CodeSandboxStrategy <|-- DockerCodeSandbox : 实现
+    CodeSandboxStrategy <|-- JavaDockerCodeSandbox : 实现
+    CodeSandbox ..> ExecuteCodeRequest : 使用
+    CodeSandbox ..> ExecuteCodeResponse : 返回
+    ExecuteCodeResponse --> JudgeInfo : 包含
+
+    note "这是一个基于项目结构和现有文档绘制的\n代码沙箱类图，展示了主要类及其关系。"
+
+    %% 图例标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    title[图4-5 代码沙箱类图]:::title

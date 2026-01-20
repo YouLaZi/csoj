@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">CSOJ 代码沙箱系统架构</text>
+  
+  <!-- 接口层 -->
+  <rect x="100" y="80" width="600" height="60" rx="5" ry="5" fill="#4285f4" opacity="0.8" />
+  <text x="400" y="120" font-family="Arial" font-size="18" text-anchor="middle" fill="white">接口层 (API Layer)</text>
+  
+  <!-- 工厂层 -->
+  <rect x="100" y="160" width="600" height="60" rx="5" ry="5" fill="#34a853" opacity="0.8" />
+  <text x="400" y="200" font-family="Arial" font-size="18" text-anchor="middle" fill="white">工厂层 (Factory Layer)</text>
+  
+  <!-- 策略层 -->
+  <rect x="100" y="240" width="600" height="100" rx="5" ry="5" fill="#fbbc05" opacity="0.8" />
+  <text x="400" y="270" font-family="Arial" font-size="18" text-anchor="middle">策略层 (Strategy Layer)</text>
+  
+  <!-- 语言策略 -->
+  <rect x="120" y="290" width="80" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="160" y="310" font-family="Arial" font-size="12" text-anchor="middle">Java</text>
+  
+  <rect x="220" y="290" width="80" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="260" y="310" font-family="Arial" font-size="12" text-anchor="middle">Python</text>
+  
+  <rect x="320" y="290" width="80" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="360" y="310" font-family="Arial" font-size="12" text-anchor="middle">C++</text>
+  
+  <rect x="420" y="290" width="80" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="460" y="310" font-family="Arial" font-size="12" text-anchor="middle">C#</text>
+  
+  <rect x="520" y="290" width="80" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="560" y="310" font-family="Arial" font-size="12" text-anchor="middle">JavaScript</text>
+  
+  <rect x="620" y="290" width="60" height="30" rx="5" ry="5" fill="white" stroke="#fbbc05" />
+  <text x="650" y="310" font-family="Arial" font-size="12" text-anchor="middle">...</text>
+  
+  <!-- 模型层 -->
+  <rect x="100" y="360" width="600" height="60" rx="5" ry="5" fill="#ea4335" opacity="0.8" />
+  <text x="400" y="400" font-family="Arial" font-size="18" text-anchor="middle" fill="white">模型层 (Model Layer)</text>
+  
+  <!-- 安全层 -->
+  <rect x="100" y="440" width="600" height="60" rx="5" ry="5" fill="#673ab7" opacity="0.8" />
+  <text x="400" y="480" font-family="Arial" font-size="18" text-anchor="middle" fill="white">安全层 (Security Layer)</text>
+  
+  <!-- 工具层 -->
+  <rect x="100" y="520" width="600" height="60" rx="5" ry="5" fill="#00acc1" opacity="0.8" />
+  <text x="400" y="560" font-family="Arial" font-size="18" text-anchor="middle" fill="white">工具层 (Utility Layer)</text>
+  
+  <!-- 连接线 -->
+  <line x1="400" y1="140" x2="400" y2="160" stroke="#333" stroke-width="2" />
+  <line x1="400" y1="220" x2="400" y2="240" stroke="#333" stroke-width="2" />
+  <line x1="400" y1="340" x2="400" y2="360" stroke="#333" stroke-width="2" />
+  <line x1="400" y1="420" x2="400" y2="440" stroke="#333" stroke-width="2" />
+  <line x1="400" y1="500" x2="400" y2="520" stroke="#333" stroke-width="2" />
+</svg>

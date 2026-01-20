@@ -1,0 +1,151 @@
+erDiagram
+    %% 用户相关
+    User ||--o{ Question : "创建"
+    User ||--o{ QuestionSubmit : "提交"
+    User ||--o{ Post : "发布"
+    User ||--o{ Comment : "评论"
+    User ||--o{ PostThumb : "点赞"
+    User ||--o{ PostFavour : "收藏"
+    User ||--o{ CommentLike : "点赞"
+    User ||--|| UserPoints : "拥有"
+    User ||--o{ PointsRecord : "产生"
+    
+    %% 题目相关
+    Question ||--o{ QuestionSubmit : "被提交"
+    Question ||--o{ Comment : "被评论"
+    
+    %% 帖子相关
+    Post ||--o{ Comment : "被评论"
+    Post ||--o{ PostThumb : "被点赞"
+    Post ||--o{ PostFavour : "被收藏"
+    
+    %% 评论相关
+    Comment ||--o{ CommentLike : "被点赞"
+    Comment ||--o{ Comment : "回复"
+    
+    %% 积分相关
+    PointsRule ||--o{ PointsRecord : "应用"
+    
+    User {
+        bigint id PK
+        string userAccount
+        string userPassword
+        string userName
+        string userAvatar
+        string userProfile
+        string userRole
+        datetime createTime
+        datetime updateTime
+    }
+    
+    Question {
+        bigint id PK
+        string title
+        text content
+        string tags
+        text answer
+        int submitNum
+        int acceptedNum
+        text judgeCase
+        text judgeConfig
+        int thumbNum
+        int favourNum
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    QuestionSubmit {
+        bigint id PK
+        string language
+        text code
+        text judgeInfo
+        int status
+        bigint questionId FK
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    Post {
+        bigint id PK
+        string title
+        text content
+        string tags
+        int thumbNum
+        int favourNum
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    PostThumb {
+        bigint id PK
+        bigint postId FK
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    PostFavour {
+        bigint id PK
+        bigint postId FK
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    Comment {
+        bigint id PK
+        text content
+        bigint userId FK
+        bigint objectId
+        string objectType
+        bigint parentId
+        bigint rootId
+        bigint replyUserId FK
+        int likeCount
+        int status
+        datetime createTime
+        datetime updateTime
+    }
+    
+    CommentLike {
+        bigint id PK
+        bigint commentId FK
+        bigint userId FK
+        datetime createTime
+        datetime updateTime
+    }
+    
+    UserPoints {
+        bigint id PK
+        bigint userId FK
+        int totalPoints
+        int weeklyPoints
+        int monthlyPoints
+        datetime updateTime
+    }
+    
+    PointsRecord {
+        bigint id PK
+        bigint userId FK
+        int points
+        string description
+        string type
+        bigint relatedId
+        datetime createTime
+    }
+    
+    PointsRule {
+        bigint id PK
+        string name
+        string description
+        int pointsValue
+        string type
+        int status
+    }
+    
+    %% 图例标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    title[图3-2 系统整体ER图]:::title

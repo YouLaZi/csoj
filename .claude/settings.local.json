@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__zread__get_repo_structure",
+      "Bash(tree:*)",
+      "Bash(mvn clean compile:*)",
+      "Bash(mvn clean install:*)",
+      "Bash(mysql:*)",
+      "Bash(curl:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell \"Get-Process java -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, StartTime\")",
+      "Bash(powershell \"Invoke-WebRequest -Uri ''http://localhost:8121/api/user/get/login'' -UseBasicParsing | Select-Object StatusCode, Content\")",
+      "Bash(powershell \"Invoke-WebRequest -Uri ''http://localhost:8090/health'' -UseBasicParsing | Select-Object StatusCode, Content\")",
+      "Bash(tail:*)",
+      "Bash(powershell:*)",
+      "Bash(mvn clean package:*)",
+      "Bash(start:*)",
+      "Bash(netstat:*)",
+      "Bash(tasklist:*)",
+      "Bash(dir:*)",
+      "Bash(taskkill:*)",
+      "Bash(mvn compile:*)",
+      "Bash(mvn package:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(mvn spotless:apply:*)",
+      "Bash(ls:*)",
+      "mcp__web-search-prime__webSearchPrime",
+      "Bash(mvn test:*)",
+      "mcp__web-reader__webReader"
+    ]
+  }
+}

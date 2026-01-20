@@ -1,0 +1,270 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "CSOJ 在线判题系统监控",
+    "tags": ["csoj", "oj", "education"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "系统健康状态",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"csoj-backend\"}",
+            "legendFormat": "系统状态"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "red" },
+                { "value": 1, "color": "green" }
+              ]
+            },
+            "mappings": [
+              { "type": "value", "value": "0", "text": "离线" },
+              { "type": "value", "value": "1", "text": "在线" }
+            ]
+          }
+        },
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 }
+      },
+      {
+        "id": 2,
+        "title": "当前在线用户数",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "user_online_count",
+            "legendFormat": "在线用户"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "palette-classic" },
+            "unit": "short"
+          }
+        },
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 }
+      },
+      {
+        "id": 3,
+        "title": "活跃比赛数",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "contest_active_count",
+            "legendFormat": "活跃比赛"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "unit": "short"
+          }
+        },
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 }
+      },
+      {
+        "id": 4,
+        "title": "判题队列大小",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "judge_queue_size",
+            "legendFormat": "队列大小"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 200,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": 0, "color": "green" },
+                { "value": 100, "color": "yellow" },
+                { "value": 180, "color": "red" }
+              ]
+            }
+          }
+        },
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 }
+      },
+      {
+        "id": 5,
+        "title": "题目提交统计",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(question_submit_total{type=\"total\"}[5m])",
+            "legendFormat": "提交速率"
+          },
+          {
+            "expr": "rate(question_submit_total{type=\"success\"}[5m])",
+            "legendFormat": "成功速率"
+          },
+          {
+            "expr": "rate(question_submit_total{type=\"failure\"}[5m])",
+            "legendFormat": "失败速率"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 }
+      },
+      {
+        "id": 6,
+        "title": "用户登录/注册统计",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(user_login_total[5m])",
+            "legendFormat": "登录速率"
+          },
+          {
+            "expr": "rate(user_register_total[5m])",
+            "legendFormat": "注册速率"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 }
+      },
+      {
+        "id": 7,
+        "title": "判题执行时间分布",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(judge_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "P50 中位数"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(judge_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(judge_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "P99"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 }
+      },
+      {
+        "id": 8,
+        "title": "JVM 内存使用",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{area=\"heap\"}",
+            "legendFormat": "堆内存使用"
+          },
+          {
+            "expr": "jvm_memory_max_bytes{area=\"heap\"}",
+            "legendFormat": "堆内存最大"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 }
+      },
+      {
+        "id": 9,
+        "title": "JVM GC 时间",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(jvm_gc_pause_seconds_sum[5m])",
+            "legendFormat": "GC 时间"
+          },
+          {
+            "expr": "rate(jvm_gc_pause_seconds_count[5m])",
+            "legendFormat": "GC 次数"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 }
+      },
+      {
+        "id": 10,
+        "title": "HTTP 请求速率",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count[5m])",
+            "legendFormat": "{{method}} {{uri}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 }
+      },
+      {
+        "id": 11,
+        "title": "Tomcat 线程池状态",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "tomcat_threads_busy_threads",
+            "legendFormat": "活跃线程"
+          },
+          {
+            "expr": "tomcat_threads_config_max_threads",
+            "legendFormat": "最大线程"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 }
+      },
+      {
+        "id": 12,
+        "title": "比赛参与统计",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(contest_join_total[5m])",
+            "legendFormat": "加入速率"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops"
+          }
+        },
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 }
+      }
+    ]
+  }
+}

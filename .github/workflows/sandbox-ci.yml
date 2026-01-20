@@ -1,0 +1,236 @@
+# CSOJ Code Sandbox CI Pipeline
+# 代码沙箱服务的持续集成
+
+name: Sandbox CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'csoj-code-sandbox-master/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'csoj-code-sandbox-master/**'
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
+
+jobs:
+  # ========================================
+  # Job 1: 沙箱代码质量检查
+  # ========================================
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: Compile Check
+        working-directory: ./csoj-code-sandbox-master
+        run: mvn clean compile
+
+      - name: Check Dockerfile Security
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: csoj-code-sandbox-master/Dockerfile
+          failure-threshold: error
+
+      - name: Check Docker Compose Configuration
+        run: |
+          docker-compose -f docker-compose.yml config > /dev/null
+
+  # ========================================
+  # Job 2: 沙箱功能测试
+  # ========================================
+  test:
+    name: Sandbox Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: Build Sandbox
+        working-directory: ./csoj-code-sandbox-master
+        run: mvn clean package -DskipTests
+
+      - name: Build Docker Image
+        run: |
+          docker build -t csoj-sandbox-test ./csoj-code-sandbox-master
+
+      - name: Start Sandbox Container
+        run: |
+          docker run -d \
+            -p 8090:8090 \
+            --name csoj-sandbox \
+            csoj-sandbox-test
+
+      - name: Wait for Sandbox
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:8090/actuator/health; then
+              echo "Sandbox is ready!"
+              break
+            fi
+            echo "Waiting for sandbox... ($i/30)"
+            sleep 2
+          done
+
+      - name: Test Java Execution
+        run: |
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "java",
+              "code": "public class Main { public static void main(String[] args) { System.out.println(\"Hello, World!\"); } }",
+              "input": "",
+              "timeout": 5000
+            }'
+
+      - name: Test Python Execution
+        run: |
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "python",
+              "code": "print(\"Hello from Python!\")",
+              "input": "",
+              "timeout": 5000
+            }'
+
+      - name: Test C++ Execution
+        run: |
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "cpp",
+              "code": "#include <iostream>\nint main() { std::cout << \"Hello from C++!\" << std::endl; return 0; }",
+              "input": "",
+              "timeout": 5000
+            }'
+
+      - name: Test Security Isolation
+        run: |
+          # 测试文件系统隔离
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "python",
+              "code": "import os; print(os.listdir(\"/\"))",
+              "input": "",
+              "timeout": 5000
+            }'
+
+          # 测试网络隔离
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "python",
+              "code": "import urllib.request; print(urllib.request.urlopen(\"http://example.com\").read())",
+              "input": "",
+              "timeout": 5000
+            }'
+
+      - name: Test Timeout Handling
+        run: |
+          # 测试超时处理
+          response=$(curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "python",
+              "code": "while True: pass",
+              "input": "",
+              "timeout": 1000
+            }')
+          echo "Response: $response"
+
+      - name: Test Memory Limit
+        run: |
+          # 测试内存限制
+          curl -X POST http://localhost:8090/sandbox/execute \
+            -H "Content-Type: application/json" \
+            -d '{
+              "language": "python",
+              "code": "data = \" \" * (1024 * 1024 * 1024); print(data)",
+              "input": "",
+              "timeout": 5000
+            }'
+
+      - name: Collect Logs
+        if: always()
+        run: |
+          docker logs csoj-sandbox > sandbox-test.log
+          cat sandbox-test.log
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop csoj-sandbox || true
+          docker rm csoj-sandbox || true
+
+      - name: Upload Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-test-logs
+          path: sandbox-test.log
+
+  # ========================================
+  # Job 3: 性能测试
+  # ========================================
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Sandbox
+        run: |
+          docker build -t csoj-sandbox-perf ./csoj-code-sandbox-master
+
+      - name: Start Sandbox
+        run: |
+          docker run -d \
+            -p 8090:8090 \
+            --name csoj-sandbox-perf \
+            csoj-sandbox-perf
+          sleep 10
+
+      - name: Install Apache Bench
+        run: sudo apt-get install -y apache2-utils
+
+      - name: Load Test
+        run: |
+          # 并发执行测试
+          ab -n 1000 -c 10 -T 'application/json' \
+            -p sandbox-payload.json \
+            http://localhost:8090/sandbox/execute
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop csoj-sandbox-perf || true
+          docker rm csoj-sandbox-perf || true

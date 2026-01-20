@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs 排除配置
+  用于排除特定类型的 Bug 检查警告
+-->
+<FindBugsFilter>
+    <!-- 排除 Lombok 生成的代码检查 -->
+    <Match>
+        <Class name="~.*\$.*" />
+    </Match>
+
+    <!-- 排除模型类（DTO/VO/Entity）的 equals/hashCode 警告 -->
+    <Match>
+        <Class name="~.*\.model\..*" />
+        <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
+    </Match>
+
+    <!-- 排除测试代码的检查 -->
+    <Match>
+        <Class name="~.*\.test\..*" />
+    </Match>
+
+    <!-- 排除实体类的序列化警告 -->
+    <Match>
+        <Class name="~.*\.entity\..*" />
+        <Bug pattern="SE_BAD_FIELD,SE_BAD_FIELD_INNER_CLASS" />
+    </Match>
+
+    <!-- 排除配置类的不可序列化警告 -->
+    <Match>
+        <Class name="~.*\.config\..*" />
+        <Bug pattern="SE_BAD_FIELD,SE_BAD_FIELD_INNER_CLASS" />
+    </Match>
+</FindBugsFilter>

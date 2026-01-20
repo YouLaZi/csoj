@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="700" viewBox="0 0 800 700">
+  <!-- 背景 -->
+  <rect width="800" height="700" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">CSOJ 代码执行流程图</text>
+  
+  <!-- 流程图形状 -->
+  <!-- 开始 -->
+  <ellipse cx="400" cy="100" rx="80" ry="30" fill="#4285f4" opacity="0.8" />
+  <text x="400" y="105" font-family="Arial" font-size="14" text-anchor="middle" fill="white">开始</text>
+  
+  <!-- 接收请求 -->
+  <rect x="320" y="150" width="160" height="50" rx="5" ry="5" fill="#34a853" opacity="0.8" />
+  <text x="400" y="180" font-family="Arial" font-size="14" text-anchor="middle" fill="white">接收代码执行请求</text>
+  
+  <!-- 获取策略 -->
+  <rect x="320" y="220" width="160" height="50" rx="5" ry="5" fill="#34a853" opacity="0.8" />
+  <text x="400" y="250" font-family="Arial" font-size="14" text-anchor="middle" fill="white">获取语言执行策略</text>
+  
+  <!-- 保存代码 -->
+  <rect x="320" y="290" width="160" height="50" rx="5" ry="5" fill="#fbbc05" opacity="0.8" />
+  <text x="400" y="320" font-family="Arial" font-size="14" text-anchor="middle" fill="white">保存代码到临时文件</text>
+  
+  <!-- 判断是否需要编译 -->
+  <polygon points="400,360 450,400 400,440 350,400" fill="#ea4335" opacity="0.8" />
+  <text x="400" y="405" font-family="Arial" font-size="14" text-anchor="middle" fill="white">需要编译？</text>
+  
+  <!-- 编译代码 -->
+  <rect x="500" y="375" width="160" height="50" rx="5" ry="5" fill="#fbbc05" opacity="0.8" />
+  <text x="580" y="405" font-family="Arial" font-size="14" text-anchor="middle" fill="white">编译代码</text>
+  
+  <!-- 执行代码 -->
+  <rect x="320" y="460" width="160" height="50" rx="5" ry="5" fill="#673ab7" opacity="0.8" />
+  <text x="400" y="490" font-family="Arial" font-size="14" text-anchor="middle" fill="white">执行代码</text>
+  
+  <!-- 获取结果 -->
+  <rect x="320" y="530" width="160" height="50" rx="5" ry="5" fill="#673ab7" opacity="0.8" />
+  <text x="400" y="560" font-family="Arial" font-size="14" text-anchor="middle" fill="white">获取执行结果</text>
+  
+  <!-- 清理文件 -->
+  <rect x="320" y="600" width="160" height="50" rx="5" ry="5" fill="#00acc1" opacity="0.8" />
+  <text x="400" y="630" font-family="Arial" font-size="14" text-anchor="middle" fill="white">清理临时文件</text>
+  
+  <!-- 结束 -->
+  <ellipse cx="400" cy="680" rx="80" ry="30" fill="#4285f4" opacity="0.8" />
+  <text x="400" y="685" font-family="Arial" font-size="14" text-anchor="middle" fill="white">结束</text>
+  
+  <!-- 连接线和箭头 -->
+  <line x1="400" y1="130" x2="400" y2="150" stroke="#333" stroke-width="2" />
+  <polygon points="395,140 400,150 405,140" fill="#333" />
+  
+  <line x1="400" y1="200" x2="400" y2="220" stroke="#333" stroke-width="2" />
+  <polygon points="395,210 400,220 405,210" fill="#333" />
+  
+  <line x1="400" y1="270" x2="400" y2="290" stroke="#333" stroke-width="2" />
+  <polygon points="395,280 400,290 405,280" fill="#333" />
+  
+  <line x1="400" y1="340" x2="400" y2="360" stroke="#333" stroke-width="2" />
+  <polygon points="395,350 400,360 405,350" fill="#333" />
+  
+  <!-- 是路径 -->
+  <line x1="450" y1="400" x2="500" y2="400" stroke="#333" stroke-width="2" />
+  <polygon points="490,395 500,400 490,405" fill="#333" />
+  <text x="470" y="390" font-family="Arial" font-size="12" text-anchor="middle">是</text>
+  
+  <!-- 编译后回到主流程 -->
+  <line x1="580" y1="425" x2="580" y2="485" stroke="#333" stroke-width="2" />
+  <line x1="580" y1="485" x2="480" y2="485" stroke="#333" stroke-width="2" />
+  <polygon points="490,480 480,485 490,490" fill="#333" />
+  
+  <!-- 否路径 -->
+  <line x1="400" y1="440" x2="400" y2="460" stroke="#333" stroke-width="2" />
+  <polygon points="395,450 400,460 405,450" fill="#333" />
+  <text x="385" y="450" font-family="Arial" font-size="12" text-anchor="middle">否</text>
+  
+  <line x1="400" y1="510" x2="400" y2="530" stroke="#333" stroke-width="2" />
+  <polygon points="395,520 400,530 405,520" fill="#333" />
+  
+  <line x1="400" y1="580" x2="400" y2="600" stroke="#333" stroke-width="2" />
+  <polygon points="395,590 400,600 405,590" fill="#333" />
+  
+  <line x1="400" y1="650" x2="400" y2="650" stroke="#333" stroke-width="2" />
+  <line x1="400" y1="650" x2="400" y2="680" stroke="#333" stroke-width="2" />
+  <polygon points="395,670 400,680 405,670" fill="#333" />
+  
+  <!-- 注释 -->
+  <rect x="600" y="150" width="180" height="100" rx="5" ry="5" fill="white" stroke="#333" stroke-width="1" stroke-dasharray="5,5" />
+  <text x="690" y="180" font-family="Arial" font-size="12" text-anchor="middle">请求包含：</text>
+  <text x="690" y="200" font-family="Arial" font-size="12" text-anchor="middle">- 代码内容</text>
+  <text x="690" y="220" font-family="Arial" font-size="12" text-anchor="middle">- 编程语言</text>
+  <text x="690" y="240" font-family="Arial" font-size="12" text-anchor="middle">- 输入数据</text>
+  
+  <rect x="600" y="530" width="180" height="100" rx="5" ry="5" fill="white" stroke="#333" stroke-width="1" stroke-dasharray="5,5" />
+  <text x="690" y="560" font-family="Arial" font-size="12" text-anchor="middle">结果包含：</text>
+  <text x="690" y="580" font-family="Arial" font-size="12" text-anchor="middle">- 输出结果</text>
+  <text x="690" y="600" font-family="Arial" font-size="12" text-anchor="middle">- 执行状态</text>
+  <text x="690" y="620" font-family="Arial" font-size="12" text-anchor="middle">- 时间和内存信息</text>
+</svg>

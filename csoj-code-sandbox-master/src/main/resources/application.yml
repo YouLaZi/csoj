@@ -1,0 +1,46 @@
+server:
+  port: 8090
+#spring:
+#  datasource:
+#    password: 123456
+
+# Enable Docker environment for code execution
+docker:
+  available: true
+  # Docker配置
+  host:  # Docker守护进程地址，默认自动检测（Windows: npipe:////./pipe/docker_engine, Linux: unix:///var/run/docker.sock）
+  # 容器池配置
+  pool:
+    # 容器镜像
+    image: openjdk:8-alpine
+    # 内存限制（字节）100MB
+    memory-limit: 104857600
+    # CPU核数限制
+    cpu-count: 1
+    # 最大池大小（校园部署建议20-50个容器）
+    max-size: ${DOCKER_POOL_MAX_SIZE:20}
+    # 最小池大小（预创建的容器数量）
+    min-size: ${DOCKER_POOL_MIN_SIZE:5}
+    # 容器最大空闲时间（毫秒），超过此时间将被销毁
+    max-idle-time: 300000  # 5分钟
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+spring:
+  rabbitmq:
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        acknowledge-mode: manual  # 手动确认模式
+        retry:
+          enabled: true
+          max-attempts: 3  # 最大重试3次
+          initial-interval: 1000  # 初始重试间隔1秒
+          multiplier: 2  # 重试间隔倍数
+        default-requeue-rejected: false  # 拒绝的消息不重新入队

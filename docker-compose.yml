@@ -1,0 +1,231 @@
+version: '3.8'
+
+services:
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    container_name: csoj-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-oj_db}
+      MYSQL_USER: ${MYSQL_USER:-oj_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-oj_password}
+      TZ: Asia/Shanghai
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: csoj-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ 消息队列
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: csoj-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build:
+      context: ./csoj-backend-master
+      dockerfile: Dockerfile
+    container_name: csoj-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8121}:8121"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-oj_db}?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-oj_user}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-oj_password}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      CODE_SANDBOX_SECRET: ${CODE_SANDBOX_SECRET:-your-secret-key-here}
+      FILE_UPLOAD_PATH: /app/uploads
+      FILE_URL_PREFIX: /api/files
+      # 异步判题配置
+      ASYNC_JUDGE_CORE_POOL_SIZE: ${ASYNC_JUDGE_CORE_POOL_SIZE:-10}
+      ASYNC_JUDGE_MAX_POOL_SIZE: ${ASYNC_JUDGE_MAX_POOL_SIZE:-20}
+      ASYNC_JUDGE_QUEUE_CAPACITY: ${ASYNC_JUDGE_QUEUE_CAPACITY:-200}
+      # Tomcat 配置
+      TOMCAT_MAX_THREADS: ${TOMCAT_MAX_THREADS:-200}
+      TOMCAT_MAX_CONNECTIONS: ${TOMCAT_MAX_CONNECTIONS:-10000}
+      TOMCAT_ACCEPT_COUNT: ${TOMCAT_ACCEPT_COUNT:-100}
+    volumes:
+      - backend-logs:/app/logs
+      - backend-uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8121/api/system/monitor/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 代码沙箱服务
+  sandbox:
+    build:
+      context: ./csoj-code-sandbox-master
+      dockerfile: Dockerfile
+    container_name: csoj-sandbox
+    restart: unless-stopped
+    ports:
+      - "${SANDBOX_PORT:-8090}:8090"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-guest}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      # Docker 容器池配置
+      DOCKER_POOL_MAX_SIZE: ${DOCKER_POOL_MAX_SIZE:-20}
+      DOCKER_POOL_MIN_SIZE: ${DOCKER_POOL_MIN_SIZE:-5}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - sandbox-logs:/app/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 前端服务（可选）
+  frontend:
+    image: nginx:alpine
+    container_name: csoj-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    volumes:
+      - ./csoj-frontend-master/dist:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - csoj-network
+    profiles:
+      - frontend
+
+  # Prometheus 监控服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: csoj-prometheus
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./csoj-backend-master/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - csoj-network
+    profiles:
+      - monitoring
+
+  # Grafana 可视化服务
+  grafana:
+    image: grafana/grafana:latest
+    container_name: csoj-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: ""
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./csoj-backend-master/docker/grafana/dashboard:/etc/grafana/provisioning/dashboards:ro
+      - ./csoj-backend-master/docker/grafana/datasource:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - csoj-network
+    profiles:
+      - monitoring
+
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
+  backend-logs:
+    driver: local
+  backend-uploads:
+    driver: local
+  sandbox-logs:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  csoj-network:
+    driver: bridge

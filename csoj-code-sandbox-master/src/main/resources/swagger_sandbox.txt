@@ -1,0 +1,162 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "OpenAPI definition",
+        "version": "v0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8090",
+            "description": "Generated server url"
+        }
+    ],
+    "tags": [
+        {
+            "name": "代码沙箱",
+            "description": "代码执行相关接口"
+        }
+    ],
+    "paths": {
+        "/executeCode": {
+            "post": {
+                "tags": [
+                    "代码沙箱"
+                ],
+                "operationId": "executeCodeAsync",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExecuteCodeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExecuteCodeResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/executeCodeSync": {
+            "post": {
+                "tags": [
+                    "代码沙箱"
+                ],
+                "operationId": "executeCodeSyncHttp",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExecuteCodeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExecuteCodeResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "tags": [
+                    "代码沙箱"
+                ],
+                "operationId": "healthCheck",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ExecuteCodeRequest": {
+                "type": "object",
+                "properties": {
+                    "requestId": {
+                        "type": "string"
+                    },
+                    "inputList": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "language": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ExecuteCodeResponse": {
+                "type": "object",
+                "properties": {
+                    "outputList": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "judgeInfo": {
+                        "$ref": "#/components/schemas/JudgeInfo"
+                    }
+                }
+            },
+            "JudgeInfo": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "memory": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "time": {
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                }
+            }
+        }
+    }
+}

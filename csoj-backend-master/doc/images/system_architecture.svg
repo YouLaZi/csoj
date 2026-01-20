@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">在线判题系统架构图</text>
+  
+  <!-- 前端模块 -->
+  <rect x="100" y="100" width="200" height="100" rx="10" ry="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" />
+  <text x="200" y="140" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">前端应用</text>
+  <text x="200" y="170" font-family="Arial" font-size="14" text-anchor="middle">(Vue.js)</text>
+  
+  <!-- 后端API模块 -->
+  <rect x="400" y="100" width="200" height="100" rx="10" ry="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" />
+  <text x="500" y="140" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">后端API服务</text>
+  <text x="500" y="170" font-family="Arial" font-size="14" text-anchor="middle">(Spring Boot)</text>
+  
+  <!-- 代码沙箱模块 -->
+  <rect x="400" y="300" width="200" height="100" rx="10" ry="10" fill="#fff3e0" stroke="#e65100" stroke-width="2" />
+  <text x="500" y="340" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">代码沙箱</text>
+  <text x="500" y="370" font-family="Arial" font-size="14" text-anchor="middle">(Docker)</text>
+  
+  <!-- 判题核心模块 -->
+  <rect x="100" y="300" width="200" height="100" rx="10" ry="10" fill="#e0f7fa" stroke="#006064" stroke-width="2" />
+  <text x="200" y="340" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">判题核心</text>
+  <text x="200" y="370" font-family="Arial" font-size="14" text-anchor="middle">(评判引擎)</text>
+  
+  <!-- 数据存储模块 -->
+  <rect x="250" y="500" width="200" height="100" rx="10" ry="10" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2" />
+  <text x="350" y="540" font-family="Arial" font-size="18" text-anchor="middle" font-weight="bold">数据存储</text>
+  <text x="350" y="570" font-family="Arial" font-size="14" text-anchor="middle">(MySQL/Redis)</text>
+  
+  <!-- 连接线 -->
+  <!-- 前端到后端 -->
+  <line x1="300" y1="150" x2="400" y2="150" stroke="#424242" stroke-width="2" />
+  <polygon points="395,145 405,150 395,155" fill="#424242" />
+  <polygon points="305,145 295,150 305,155" fill="#424242" />
+  
+  <!-- 后端到代码沙箱 -->
+  <line x1="500" y1="200" x2="500" y2="300" stroke="#424242" stroke-width="2" />
+  <polygon points="495,295 500,305 505,295" fill="#424242" />
+  
+  <!-- 代码沙箱到判题核心 -->
+  <line x1="400" y1="350" x2="300" y2="350" stroke="#424242" stroke-width="2" />
+  <polygon points="305,345 295,350 305,355" fill="#424242" />
+  
+  <!-- 判题核心到数据存储 -->
+  <line x1="200" y1="400" x2="300" y2="500" stroke="#424242" stroke-width="2" />
+  <polygon points="295,495 305,505 305,495" fill="#424242" />
+  
+  <!-- 后端到数据存储 -->
+  <line x1="500" y1="200" x2="400" y2="500" stroke="#424242" stroke-width="2" />
+  <polygon points="395,495 405,505 405,495" fill="#424242" />
+  
+  <!-- 图例 -->
+  <rect x="600" y="450" width="150" height="120" fill="#ffffff" stroke="#bdbdbd" stroke-width="1" />
+  <text x="675" y="470" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">图例</text>
+  
+  <rect x="620" y="485" width="20" height="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="1" />
+  <text x="675" y="495" font-family="Arial" font-size="12" text-anchor="middle">前端模块</text>
+  
+  <rect x="620" y="505" width="20" height="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1" />
+  <text x="675" y="515" font-family="Arial" font-size="12" text-anchor="middle">后端模块</text>
+  
+  <rect x="620" y="525" width="20" height="10" fill="#fff3e0" stroke="#e65100" stroke-width="1" />
+  <text x="675" y="535" font-family="Arial" font-size="12" text-anchor="middle">代码沙箱</text>
+  
+  <rect x="620" y="545" width="20" height="10" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="1" />
+  <text x="675" y="555" font-family="Arial" font-size="12" text-anchor="middle">数据存储</text>
+</svg>

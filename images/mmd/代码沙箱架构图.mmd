@@ -1,0 +1,17 @@
+flowchart TD
+    %% 代码沙箱架构图
+    subgraph 代码沙箱架构
+        request[请求接收] --> auth[认证验证]
+        auth --> lang[语言策略选择]
+        lang --> factory[代码沙箱工厂]
+        factory --> env[代码执行环境]
+        
+        request --> resource[资源限制]
+        resource --> env
+        
+        env --> security[安全管理器]
+    end
+    
+    %% 图例标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    title[图4-4 代码沙箱架构图]:::title

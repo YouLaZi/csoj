@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">CSOJ 代码沙箱安全机制</text>
+  
+  <!-- 中心安全图标 -->
+  <circle cx="400" cy="300" r="150" fill="#e8f5e9" stroke="#4caf50" stroke-width="2" />
+  <path d="M 400 180 L 430 230 L 400 210 L 370 230 Z" fill="#4caf50" />
+  <path d="M 400 210 L 400 350 M 350 250 L 450 250 M 350 300 L 450 300 M 350 350 L 450 350" stroke="#4caf50" stroke-width="8" />
+  <circle cx="400" cy="300" r="150" fill="none" stroke="#4caf50" stroke-width="2" />
+  
+  <!-- 安全机制 -->
+  <!-- 1. 安全管理器 -->
+  <circle cx="200" cy="150" r="60" fill="#bbdefb" stroke="#2196f3" stroke-width="2" />
+  <text x="200" y="155" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">安全管理器</text>
+  <line x1="250" y1="180" x2="320" y2="230" stroke="#2196f3" stroke-width="2" stroke-dasharray="5,3" />
+  
+  <!-- 2. 资源限制 -->
+  <circle cx="200" cy="450" r="60" fill="#ffecb3" stroke="#ffc107" stroke-width="2" />
+  <text x="200" y="440" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">资源限制</text>
+  <text x="200" y="460" font-family="Arial" font-size="12" text-anchor="middle">时间/内存/输出</text>
+  <line x1="250" y1="420" x2="320" y2="370" stroke="#ffc107" stroke-width="2" stroke-dasharray="5,3" />
+  
+  <!-- 3. 进程隔离 -->
+  <circle cx="600" cy="150" r="60" fill="#f8bbd0" stroke="#e91e63" stroke-width="2" />
+  <text x="600" y="155" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">进程隔离</text>
+  <line x1="550" y1="180" x2="480" y2="230" stroke="#e91e63" stroke-width="2" stroke-dasharray="5,3" />
+  
+  <!-- 4. 文件系统隔离 -->
+  <circle cx="600" cy="450" r="60" fill="#d1c4e9" stroke="#673ab7" stroke-width="2" />
+  <text x="600" y="440" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">文件系统</text>
+  <text x="600" y="460" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">隔离</text>
+  <line x1="550" y1="420" x2="480" y2="370" stroke="#673ab7" stroke-width="2" stroke-dasharray="5,3" />
+  
+  <!-- 5. API访问控制 -->
+  <circle cx="400" cy="520" r="60" fill="#c8e6c9" stroke="#4caf50" stroke-width="2" />
+  <text x="400" y="525" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">API访问控制</text>
+  <line x1="400" y1="460" x2="400" y2="420" stroke="#4caf50" stroke-width="2" stroke-dasharray="5,3" />
+  
+  <!-- 安全管理器详情 -->
+  <rect x="40" y="50" width="180" height="80" rx="5" ry="5" fill="white" stroke="#2196f3" stroke-width="1" />
+  <text x="130" y="70" font-family="Arial" font-size="12" text-anchor="middle">Java SecurityManager</text>
+  <text x="130" y="90" font-family="Arial" font-size="12" text-anchor="middle">限制代码权限</text>
+  <text x="130" y="110" font-family="Arial" font-size="12" text-anchor="middle">防止危险操作</text>
+  
+  <!-- 资源限制详情 -->
+  <rect x="40" y="500" width="180" height="80" rx="5" ry="5" fill="white" stroke="#ffc107" stroke-width="1" />
+  <text x="130" y="520" font-family="Arial" font-size="12" text-anchor="middle">时间限制: 默认10秒</text>
+  <text x="130" y="540" font-family="Arial" font-size="12" text-anchor="middle">内存限制: -Xmx参数</text>
+  <text x="130" y="560" font-family="Arial" font-size="12" text-anchor="middle">防止资源耗尽</text>
+  
+  <!-- 进程隔离详情 -->
+  <rect x="580" y="50" width="180" height="80" rx="5" ry="5" fill="white" stroke="#e91e63" stroke-width="1" />
+  <text x="670" y="70" font-family="Arial" font-size="12" text-anchor="middle">独立进程执行</text>
+  <text x="670" y="90" font-family="Arial" font-size="12" text-anchor="middle">防止影响主系统</text>
+  <text x="670" y="110" font-family="Arial" font-size="12" text-anchor="middle">可选Docker容器隔离</text>
+  
+  <!-- 文件系统隔离详情 -->
+  <rect x="580" y="500" width="180" height="80" rx="5" ry="5" fill="white" stroke="#673ab7" stroke-width="1" />
+  <text x="670" y="520" font-family="Arial" font-size="12" text-anchor="middle">限制在临时目录</text>
+  <text x="670" y="540" font-family="Arial" font-size="12" text-anchor="middle">执行后清理文件</text>
+  <text x="670" y="560" font-family="Arial" font-size="12" text-anchor="middle">防止文件系统攻击</text>
+</svg>

@@ -1,0 +1,58 @@
+# Prometheus 配置文件
+# 用于监控 CSOJ 在线判题系统
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'csoj-monitor'
+    environment: 'production'
+
+# 告警管理器配置（可选）
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#             - alertmanager:9093
+
+# 告警规则文件（可选）
+# rule_files:
+#   - 'alerts.yml'
+
+# 抓取配置
+scrape_configs:
+  # Spring Boot Actuator 监控端点
+  - job_name: 'csoj-backend'
+    metrics_path: '/api/actuator/prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['host.docker.internal:8121']
+        labels:
+          application: 'csoj-backend'
+          service: 'backend'
+
+  # Prometheus 自身监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # MySQL Exporter（可选 - 需要单独部署）
+  # - job_name: 'mysql'
+  #   static_configs:
+  #     - targets: ['mysql-exporter:9104']
+  #       labels:
+  #         service: 'mysql'
+
+  # Redis Exporter（可选 - 需要单独部署）
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
+  #       labels:
+  #         service: 'redis'
+
+  # Node Exporter（可选 - 用于监控主机指标）
+  # - job_name: 'node'
+  #   static_configs:
+  #     - targets: ['node-exporter:9100']
+  #       labels:
+  #         service: 'system'

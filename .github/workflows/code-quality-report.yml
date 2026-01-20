@@ -1,0 +1,227 @@
+# CSOJ Code Quality Report
+# 每周生成代码质量报告
+
+name: Code Quality Report
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # 每周日 00:00
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  # ========================================
+  # Job 1: 代码复杂度分析
+  # ========================================
+  complexity:
+    name: Code Complexity Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run PMD Analysis
+        working-directory: ./csoj-backend-master
+        run: |
+          mvn pmd:check pmd:cpd
+        continue-on-error: true
+
+      - name: Run SpotBugs
+        working-directory: ./csoj-backend-master
+        run: mvn spotbugs:check
+        continue-on-error: true
+
+      - name: Upload Analysis Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-analysis-reports
+          path: |
+            csoj-backend-master/target/pmd/
+            csoj-backend-master/target/spotbugs/
+            csoj-backend-master/target/cpd/
+
+  # ========================================
+  # Job 2: 技术债务分析
+  # ========================================
+  technical-debt:
+    name: Technical Debt Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: SonarCloud Scan
+        working-directory: ./csoj-backend-master
+        run: mvn sonar:sonar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
+  # ========================================
+  # Job 3: 测试覆盖率趋势
+  # ========================================
+  coverage-trend:
+    name: Coverage Trend Analysis
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root123
+          MYSQL_DATABASE: csoj_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Tests with Coverage
+        working-directory: ./csoj-backend-master
+        run: mvn clean test jacoco:report
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/csoj_test?useSSL=false&serverTimezone=Asia/Shanghai
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root123
+          SPRING_REDIS_HOST: localhost
+          SPRING_REDIS_PORT: 6379
+
+      - name: Generate Coverage Summary
+        id: coverage
+        run: |
+          # 提取覆盖率数据
+          instruction_coverage=$(grep -oP 'Total.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
+          branch_coverage=$(grep -oP 'Branch.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
+          line_coverage=$(grep -oP 'Line.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
+
+          echo "instruction_coverage=$instruction_coverage" >> $GITHUB_OUTPUT
+          echo "branch_coverage=$branch_coverage" >> $GITHUB_OUTPUT
+          echo "line_coverage=$line_coverage" >> $GITHUB_OUTPUT
+
+      - name: Generate Coverage Badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GITHUB_TOKEN }}
+          gistID: ${{ secrets.COVERAGE_GIST_ID }}
+          filename: coverage-badge.json
+          label: Coverage
+          message: ${{ steps.coverage.outputs.instruction_coverage }}%
+          color: brightgreen
+
+  # ========================================
+  # Job 4: 生成质量报告
+  # ========================================
+  generate-report:
+    name: Generate Quality Report
+    runs-on: ubuntu-latest
+    needs: [complexity, technical-debt, coverage-trend]
+
+    steps:
+      - name: Generate Weekly Report
+        run: |
+          cat > weekly-quality-report.md << 'EOF'
+          # 📊 CSOJ 代码质量周报
+
+          **生成时间**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          ## 📈 覆盖率概览
+
+          | 指标 | 当前值 | 目标值 | 状态 |
+          |------|--------|--------|------|
+          | 指令覆盖率 | ${{ needs.coverage-trend.outputs.instruction_coverage }}% | 60% | ${{ steps.coverage.outputs.instruction_coverage >= 60 && '✅' || '⚠️' }} |
+          | 分支覆盖率 | ${{ needs.coverage-trend.outputs.branch_coverage }}% | 50% | ${{ steps.coverage.outputs.branch_coverage >= 50 && '✅' || '⚠️' }} |
+          | 行覆盖率 | ${{ needs.coverage-trend.outputs.line_coverage }}% | 60% | ${{ steps.coverage.outputs.line_coverage >= 60 && '✅' || '⚠️' }} |
+
+          ## 🔍 代码质量指标
+
+          - **复杂度**: PMD 分析完成
+          **Bug 检测**: SpotBugs 分析完成
+          - **代码重复**: CPD 分析完成
+          - **技术债务**: SonarCloud 分析完成
+
+          ## 📝 本周改进建议
+
+          1. 继续提升单元测试覆盖率
+          2. 修复 SpotBugs 检测到的潜在 Bug
+          3. 降低代码复杂度
+          4. 减少代码重复
+
+          ## 🔗 详细报告
+
+          - [JaCoCo 覆盖率报告](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - [SonarCloud 仪表板](https://sonarcloud.io/dashboard?id=${{ github.repository }})
+          EOF
+
+      - name: Create Issue with Report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('weekly-quality-report.md', 'utf8');
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `📊 代码质量周报 - ${new Date().toLocaleDateString('zh-CN')}`,
+              body: report,
+              labels: ['quality-report', 'automated']
+            });
+
+      - name: Post to Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          text: |
+            📊 代码质量周报已生成
+            覆盖率: ${{ needs.coverage-trend.outputs.instruction_coverage }}%
+            查看详情: https://github.com/${{ github.repository }}/issues
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true

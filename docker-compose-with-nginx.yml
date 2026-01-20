@@ -1,0 +1,38 @@
+# CSOJ Docker Compose 配置（包含 Nginx 反向代理）
+# 使用方式：docker-compose -f docker-compose.yml -f docker-compose-with-nginx.yml up
+
+version: '3.8'
+
+services:
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: csoj-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Nginx 配置文件
+      - ./nginx/csoj-http.conf:/etc/nginx/conf.d/default.conf:ro
+      # SSL 证书（HTTPS 时使用）
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      # Let's Encrypt 验证路径
+      - ./nginx/certbot:/var/www/certbot:ro
+      # 日志
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - csoj-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  csoj-network:
+    external: true

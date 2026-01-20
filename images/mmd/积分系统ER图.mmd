@@ -1,0 +1,44 @@
+erDiagram
+    User ||--o{ PointsRecord : "产生"
+    User ||--|| UserPoints : "拥有"
+    PointsRule ||--o{ PointsRecord : "应用"
+    
+    User {
+        bigint id PK
+        string username
+        string password
+        string email
+        datetime createTime
+        datetime updateTime
+    }
+    
+    PointsRecord {
+        bigint id PK
+        bigint userId FK
+        int points
+        string description
+        string type
+        datetime createTime
+    }
+    
+    UserPoints {
+        bigint id PK
+        bigint userId FK
+        int totalPoints
+        int weeklyPoints
+        int monthlyPoints
+        datetime updateTime
+    }
+    
+    PointsRule {
+        bigint id PK
+        string name
+        string description
+        int pointsValue
+        string type
+        int status
+    }
+    
+    %% 图例标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    class title title

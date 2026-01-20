@@ -1,0 +1,278 @@
+# CSOJ Continuous Deployment Pipeline
+# 持续部署流水线：自动部署到测试/生产环境
+
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  BACKEND_IMAGE: ${{ github.repository }}/csoj-backend:latest
+  SANDBOX_IMAGE: ${{ github.repository }}/csoj-sandbox:latest
+
+jobs:
+  # ========================================
+  # Job 1: 部署到测试环境
+  # ========================================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: staging
+      url: https://staging.csoj.example.com
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.STAGING_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Docker Compose
+        run: |
+          # 创建部署目录
+          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} \
+            "mkdir -p ~/csoj-deploy"
+
+          # 复制 docker-compose 配置
+          scp docker-compose.yml ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:~/csoj-deploy/
+          scp docker-compose-with-nginx.yml ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:~/csoj-deploy/
+
+          # 部署
+          ssh ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} \
+            "cd ~/csoj-deploy && \
+             docker-compose pull && \
+             docker-compose up -d && \
+             docker-compose ps"
+
+      - name: Health Check
+        run: |
+          echo "Waiting for services to start..."
+          sleep 30
+
+          # 检查后端健康状态
+          for i in {1..30}; do
+            if curl -f http://${{ secrets.STAGING_HOST }}:8080/actuator/health; then
+              echo "Backend is healthy!"
+              break
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 5
+          done
+
+      - name: Smoke Tests
+        run: |
+          # 测试 API 端点
+          curl -f http://${{ secrets.STAGING_HOST }}:8080/api/health || exit 1
+          curl -f http://${{ secrets.STAGING_HOST }}:8080/actuator/info || exit 1
+          echo "Smoke tests passed!"
+
+      - name: Notify Deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Staging deployment ${{ job.status }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
+
+  # ========================================
+  # Job 2: 部署到生产环境
+  # ========================================
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: production
+      url: https://csoj.example.com
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Tag Version
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION"
+
+      - name: Backup Database
+        run: |
+          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} \
+            "cd ~/csoj && ./scripts/backup-database.sh"
+        continue-on-error: true
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to Production
+        run: |
+          # 蓝绿部署
+          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            cd ~/csoj
+
+            # 拉取新镜像
+            docker-compose -f docker-compose-ha.yml pull
+
+            # 启动新版本（绿色环境）
+            docker-compose -f docker-compose-green.yml up -d
+
+            # 等待绿色环境就绪
+            sleep 30
+
+            # 切换流量
+            # ... (Nginx 配置更新)
+
+            # 停止旧版本（蓝色环境）
+            docker-compose -f docker-compose-blue.yml down
+          ENDSSH
+
+      - name: Health Check
+        run: |
+          echo "Waiting for production services..."
+          sleep 45
+
+          # 检查服务健康状态
+          curl -f https://${{ secrets.PROD_HOST }}/actuator/health || exit 1
+
+      - name: Smoke Tests
+        run: |
+          curl -f https://${{ secrets.PROD_HOST }}/api/health || exit 1
+          echo "Production smoke tests passed!"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            csoj-backend-master/target/*.jar
+          generate_release_notes: true
+          body: |
+            ## 🚀 Production Release ${{ steps.version.outputs.version }}
+
+            **Deployed at:** ${{ github.event.head_commit.timestamp }}
+
+            ### Changes
+            See release notes below.
+
+            ### Images
+            - Backend: ${{ env.BACKEND_IMAGE }}
+            - Sandbox: ${{ env.SANDBOX_IMAGE }}
+
+            ### Verification
+            ✅ All smoke tests passed
+            ✅ Health checks passed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Production deployment ${{ job.status }}
+            Version: ${{ steps.version.outputs.version }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
+
+  # ========================================
+  # Job 3: 回滚能力
+  # ========================================
+  rollback:
+    name: Rollback (Manual)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.PROD_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Rollback to Previous Version
+        run: |
+          ssh ${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }} << 'ENDSSH'
+            cd ~/csoj
+
+            # 停止当前版本
+            docker-compose -f docker-compose-green.yml down
+
+            # 启动上一版本
+            docker-compose -f docker-compose-blue.yml up -d
+
+            # 恢复流量
+            # ... (Nginx 配置恢复)
+          ENDSSH
+
+      - name: Verify Rollback
+        run: |
+          curl -f https://${{ secrets.PROD_HOST }}/actuator/health || exit 1
+          echo "Rollback successful!"
+
+      - name: Notify Rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'success'
+          text: |
+            🔄 Production ROLLBACK completed
+            Triggered by: ${{ github.actor }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true

@@ -1,0 +1,21 @@
+flowchart TD
+    %% AI辅助学习流程图
+    user[用户行为] --> collect[数据收集]
+    collect --> extract[特征提取]
+    extract --> profile[用户画像构建]
+    
+    knowledge[知识图谱] --> path[学习路径规划]
+    profile --> path
+    
+    problems[题目库] --> recommend[智能题目推荐]
+    path --> recommend
+    
+    submit[代码提交] --> analysis[代码智能分析]
+    recommend --> analysis
+    
+    analysis --> feedback[学习反馈优化]
+    feedback --> visual[学习进度可视化]
+    
+    %% 图例标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    title[图4-9 AI辅助学习流程图]:::title

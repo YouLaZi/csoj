@@ -1,0 +1,30 @@
+[mysqld]
+# 服务器ID，从库必须与主库不同
+server-id=2
+
+# 启用中继日志
+relay-log=mysql-relay-bin
+
+# 二进制日志格式（从库也可以开启，支持级联复制）
+log-bin=mysql-bin
+binlog-format=ROW
+
+# 只读模式（从库设置为只读）
+read-only=1
+
+# 跳过复制错误（可选，生产环境建议谨慎使用）
+slave-skip-errors=all
+
+# 复制线程数（多线程复制，提升性能）
+slave_parallel_workers=4
+slave_parallel_type=LOGICAL_CLOCK
+
+# 字符集
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+
+# 时区
+default-time-zone='+08:00'
+
+# SQL模式
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION

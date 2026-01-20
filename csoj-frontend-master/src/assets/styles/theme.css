@@ -1,0 +1,356 @@
+:root {
+  /* 基础颜色 - 浅色模式 */
+  --primary-color: #165DFF;
+  --primary-hover-color: #4080FF;
+  --success-color: #00B42A;
+  --warning-color: #FF7D00;
+  --danger-color: #F53F3F;
+  --info-color: #86909C;
+  
+  /* 背景颜色 - 浅色模式 */
+  --bg-color: #FFFFFF;
+  --bg-color-secondary: #F2F3F5;
+  --bg-color-tertiary: #E5E6EB;
+  
+  /* 文本颜色 - 浅色模式 */
+  --text-color-primary: #1D2129;
+  --text-color-regular: #4E5969;
+  --text-color-secondary: #86909C;
+  --text-color-placeholder: #C9CDD4;
+  
+  /* 边框颜色 - 浅色模式 */
+  --border-color: #E5E6EB;
+  --border-color-light: #F2F3F5;
+  
+  /* 阴影 - 浅色模式 */
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  
+  /* 代码编辑器 - 浅色模式 */
+  --editor-bg: #FFFFFF;
+  --editor-line-number: #C9CDD4;
+
+  /* 链接颜色 - 浅色模式 */
+  --link-color: var(--primary-color);
+  --link-hover-color: var(--primary-hover-color);
+  --link-active-color: #0E42D2; /* A darker shade for active links */
+
+  /* 禁用状态 - 浅色模式 */
+  --disabled-text-color: #A9AEB8; /* Lighter than secondary text */
+  --disabled-bg-color: #F2F3F5;   /* Similar to secondary bg */
+  --disabled-border-color: #E5E6EB; /* Similar to border color */
+
+  /* 焦点状态 - 浅色模式 */
+  --focus-ring-color: rgba(22, 93, 255, 0.5); /* Primary color with alpha */
+}
+
+/* 深色模式变量 */
+[data-theme='dark'] {
+  /* 基础颜色 - 深色模式 */
+  --primary-color: #3C7EFF;
+  --primary-hover-color: #306FFF;
+  --success-color: #00B42A;
+  --warning-color: #FF9A2E;
+  --danger-color: #F76965;
+  --info-color: #86909C;
+  
+  /* 背景颜色 - 深色模式 */
+  --bg-color: #17171A;
+  --bg-color-secondary: #2E2E30;
+  --bg-color-tertiary: #3E3E40;
+  
+  /* 文本颜色 - 深色模式 */
+  --text-color-primary: #FFFFFF;
+  --text-color-regular: #C9CDD4;
+  --text-color-secondary: #86909C;
+  --text-color-placeholder: #4E5969;
+  
+  /* 边框颜色 - 深色模式 */
+  --border-color: #3E3E40;
+  --border-color-light: #2E2E30;
+  
+  /* 阴影 - 深色模式 */
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  
+  /* 代码编辑器 - 深色模式 */
+  --editor-bg: #2E2E30;
+  --editor-line-number: #4E5969;
+
+  /* 链接颜色 - 深色模式 */
+  --link-color: var(--primary-color); /* Uses dark mode primary */
+  --link-hover-color: var(--primary-hover-color);
+  --link-active-color: #5C8FFF; /* A lighter shade for active links in dark mode */
+
+  /* 禁用状态 - 深色模式 */
+  --disabled-text-color: #5A5A5C; /* Darker than placeholder text */
+  --disabled-bg-color: #242427;   /* Darker than secondary bg */
+  --disabled-border-color: #333335; /* Darker than border color */
+
+  /* 焦点状态 - 深色模式 */
+  --focus-ring-color: rgba(60, 126, 255, 0.6); /* Dark mode primary color with alpha */
+  
+  /* 组件特定样式 - 深色模式 */
+  --card-bg: #2E2E30;
+  --table-header-bg: #3E3E40;
+  --table-row-hover-bg: #4E5969;
+  --chart-bg: #2E2E30;
+  --chart-text: #C9CDD4;
+  --chart-grid: #3E3E40;
+  --chart-axis: #86909C;
+  --tooltip-bg: #3E3E40;
+  --tooltip-text: #FFFFFF;
+  --modal-bg: #2E2E30;
+  --dropdown-bg: #2E2E30;
+  --menu-bg: #2E2E30;
+  --menu-hover-bg: #3E3E40;
+  --scrollbar-track: #2E2E30;
+  --scrollbar-thumb: #4E5969;
+}
+
+/* 深色模式下的组件样式覆盖 */
+[data-theme='dark'] .arco-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color-primary);
+}
+
+[data-theme='dark'] .arco-table-th {
+  background-color: var(--table-header-bg);
+  color: var(--text-color-primary);
+}
+
+[data-theme='dark'] .arco-table-tr:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+[data-theme='dark'] .arco-input {
+  background-color: var(--bg-color-secondary);
+  border-color: var(--border-color);
+  color: var(--text-color-primary);
+}
+
+[data-theme='dark'] .arco-select-view {
+  background-color: var(--bg-color-secondary);
+  border-color: var(--border-color);
+  color: var(--text-color-primary);
+}
+
+[data-theme='dark'] .arco-dropdown-menu {
+  background-color: var(--dropdown-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme='dark'] .arco-modal {
+  background-color: var(--modal-bg);
+}
+
+[data-theme='dark'] .arco-tabs-nav {
+  color: var(--text-color-regular);
+}
+
+[data-theme='dark'] .arco-tabs-tab-active {
+  color: var(--primary-color);
+}
+
+[data-theme='dark'] .arco-menu {
+  background-color: var(--menu-bg);
+}
+
+[data-theme='dark'] .arco-menu-item:hover {
+  background-color: var(--menu-hover-bg);
+}
+
+/* 统一Arco Design CSS变量映射 */
+:root {
+  /* Arco Design 变量映射到自定义变量 */
+  --color-bg-1: var(--bg-color);
+  --color-bg-2: var(--bg-color-secondary);
+  --color-bg-3: var(--bg-color-tertiary);
+  --color-text-1: var(--text-color-primary);
+  --color-text-2: var(--text-color-regular);
+  --color-text-3: var(--text-color-secondary);
+  --color-border: var(--border-color);
+  --color-border-1: var(--border-color);
+  --color-border-2: var(--border-color-light);
+  --color-primary: var(--primary-color);
+  --color-primary-light-1: var(--primary-hover-color);
+  --color-primary-light-2: var(--primary-hover-color);
+  --color-primary-light-3: var(--primary-hover-color);
+  --color-primary-light-4: var(--primary-hover-color);
+  --color-primary-light-5: var(--primary-hover-color);
+  --color-primary-light-6: var(--primary-hover-color);
+  --color-primary-6: var(--primary-color);
+  --color-success-light-3: var(--success-color);
+  --color-success-light-4: var(--success-color);
+  --color-success-light-5: var(--success-color);
+  --color-danger-light-4: var(--danger-color);
+  --color-fill-1: var(--bg-color-secondary);
+  --color-fill-2: var(--bg-color-tertiary);
+  --color-fill-3: var(--bg-color-tertiary);
+  --color-fill-4: var(--bg-color-tertiary);
+  --color-white: #ffffff;
+  --color-neutral-2: #86909C;
+  --color-neutral-3: #4E5969;
+}
+
+[data-theme='dark'] {
+  /* 深色模式下的Arco Design变量映射 */
+  --color-bg-1: var(--bg-color);
+  --color-bg-2: var(--bg-color-secondary);
+  --color-bg-3: var(--bg-color-tertiary);
+  --color-text-1: var(--text-color-primary);
+  --color-text-2: var(--text-color-regular);
+  --color-text-3: var(--text-color-secondary);
+  --color-border: var(--border-color);
+  --color-border-1: var(--border-color);
+  --color-border-2: var(--border-color-light);
+  --color-primary: var(--primary-color);
+  --color-primary-light-1: var(--primary-hover-color);
+  --color-primary-light-2: var(--primary-hover-color);
+  --color-primary-light-3: var(--primary-hover-color);
+  --color-primary-light-4: var(--primary-hover-color);
+  --color-primary-light-5: var(--primary-hover-color);
+  --color-primary-light-6: var(--primary-hover-color);
+  --color-primary-6: var(--primary-color);
+  --color-success-light-3: var(--success-color);
+  --color-success-light-4: var(--success-color);
+  --color-success-light-5: var(--success-color);
+  --color-danger-light-4: var(--danger-color);
+  --color-fill-1: var(--bg-color-secondary);
+  --color-fill-2: var(--bg-color-tertiary);
+  --color-fill-3: var(--bg-color-tertiary);
+  --color-fill-4: var(--bg-color-tertiary);
+  --color-white: var(--text-color-primary);
+  --color-neutral-2: var(--text-color-secondary);
+  --color-neutral-3: var(--text-color-regular);
+}
+
+/* 响应式断点 */
+:root {
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+}
+
+/* 全局响应式样式 */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+/* 全局过渡效果 */
+body {
+  transition: background-color 0.3s, color 0.3s;
+  background-color: var(--bg-color);
+  color: var(--text-color-primary);
+}
+
+/* 应用全局样式 */
+.app-container {
+  background-color: var(--bg-color);
+  color: var(--text-color-primary);
+}
+
+/* 卡片样式 */
+.app-card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: var(--box-shadow);
+  transition: box-shadow 0.3s;
+}
+
+.app-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮样式 */
+.app-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.app-button:hover {
+  background-color: var(--primary-hover-color);
+}
+
+/* 输入框样式 */
+.app-input,
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='number'],
+input[type='search'],
+textarea {
+  background-color: var(--bg-color-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-color-primary);
+  border-radius: 4px;
+  padding: 8px 12px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.app-input:focus,
+input[type='text']:focus,
+input[type='password']:focus,
+input[type='email']:focus,
+input[type='number']:focus,
+input[type='search']:focus,
+textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring-color);
+  outline: none;
+}
+
+.app-input::placeholder,
+textarea::placeholder {
+  color: var(--text-color-placeholder);
+}
+
+/* 链接样式 */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--link-active-color);
+}
+
+/* 禁用元素样式 */
+.disabled,
+[disabled] {
+  color: var(--disabled-text-color) !important;
+  background-color: var(--disabled-bg-color) !important;
+  border-color: var(--disabled-border-color) !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+}
+
+/* 旧的 .app-input，如果仍需保留，可以重命名或调整 */
+.app-input-legacy { /* Renamed to avoid conflict if needed */
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color-primary);
+  border-radius: 4px;
+  padding: 8px 12px;
+  transition: border-color 0.3s;
+}
+
+.app-input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}

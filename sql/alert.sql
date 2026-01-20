@@ -1,0 +1,27 @@
+-- 异常告警表
+CREATE TABLE IF NOT EXISTS `alert` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `title` VARCHAR(255) NOT NULL COMMENT '告警标题',
+    `alert_type` VARCHAR(50) NOT NULL COMMENT '告警类型 (error, warning, info)',
+    `severity` VARCHAR(50) NOT NULL COMMENT '告警级别 (critical, high, medium, low)',
+    `source` VARCHAR(100) NOT NULL COMMENT '告警来源',
+    `content` TEXT COMMENT '告警内容',
+    `stack_trace` TEXT COMMENT '异常堆栈信息',
+    `request_path` VARCHAR(500) COMMENT '相关请求路径',
+    `user_id` BIGINT COMMENT '相关用户ID',
+    `is_processed` TINYINT DEFAULT 0 COMMENT '是否已处理',
+    `processed_by` BIGINT COMMENT '处理人ID',
+    `processed_time` DATETIME COMMENT '处理时间',
+    `process_note` VARCHAR(500) COMMENT '处理备注',
+    `is_notified` TINYINT DEFAULT 0 COMMENT '是否已发送通知',
+    `notify_method` VARCHAR(100) COMMENT '通知方式',
+    `notify_count` INT DEFAULT 0 COMMENT '通知次数',
+    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `is_delete` TINYINT DEFAULT 0 COMMENT '是否删除',
+    PRIMARY KEY (`id`),
+    KEY `idx_alert_type` (`alert_type`),
+    KEY `idx_severity` (`severity`),
+    KEY `idx_create_time` (`create_time`),
+    KEY `idx_is_processed` (`is_processed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='异常告警表';

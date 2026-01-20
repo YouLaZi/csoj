@@ -1,0 +1,40 @@
+flowchart TD
+    subgraph 前端应用层
+        vue[Vue 3 组件]
+        ts[TypeScript]
+        arco[Arco Design UI]
+    end
+
+    subgraph API网关层
+        route[请求路由]
+        auth[身份验证]
+        limit[限流与监控]
+    end
+
+    subgraph 业务服务层
+        user[用户服务]
+        problem[题目服务]
+        judge[判题服务]
+        points[积分服务]
+        discuss[讨论区服务]
+        ai[AI辅助学习服务]
+    end
+
+    subgraph 基础设施层
+        mysql[MySQL 数据库]
+        redis[Redis 缓存]
+        docker[Docker 容器]
+        mq[消息队列]
+        search[搜索引擎]
+    end
+
+    前端应用层 --> API网关层
+    API网关层 --> 业务服务层
+    业务服务层 --> 基础设施层
+
+    %% 标题
+    classDef title fill:none,stroke:none,color:black,font-size:16px
+    class title title
+
+    %% 图例标题
+    title[图3-1 系统整体架构图]:::title
