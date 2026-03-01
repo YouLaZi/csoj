@@ -104,6 +104,7 @@ jobs:
         with:
           sarif_file: 'trivy-image-results.sarif'
           category: 'docker-image-backend'
+        continue-on-error: true
 
   # ========================================
   # Job 2: 构建代码沙箱 Docker 镜像
@@ -173,6 +174,7 @@ jobs:
         with:
           sarif_file: 'trivy-sandbox-results.sarif'
           category: 'docker-image-sandbox'
+        continue-on-error: true
 
   # ========================================
   # Job 3: 多架构测试
