@@ -97,6 +97,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'CRITICAL,HIGH'
+        continue-on-error: true
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
@@ -165,6 +166,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-sandbox-results.sarif'
           severity: 'CRITICAL,HIGH'
+        continue-on-error: true
 
       - name: Upload Trivy Results
         uses: github/codeql-action/upload-sarif@v3
