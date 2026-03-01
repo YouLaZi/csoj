@@ -198,6 +198,7 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
           category: 'trivy'
+        continue-on-error: true
 
   # ========================================
   # Job 4: 构建验证
