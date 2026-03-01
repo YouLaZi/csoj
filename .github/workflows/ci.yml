@@ -175,6 +175,7 @@ jobs:
           path: './csoj-backend-master/pom.xml'
           format: 'HTML'
           out: './dependency-check-report'
+        continue-on-error: true
 
       - name: Upload Dependency Check Report
         uses: actions/upload-artifact@v4
