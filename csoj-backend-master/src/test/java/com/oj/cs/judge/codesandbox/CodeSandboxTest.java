@@ -6,10 +6,10 @@ import java.util.Scanner;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.oj.cs.judge.codesandbox.impl.RemoteCodeSandbox;
 import com.oj.cs.judge.codesandbox.model.ExecuteCodeRequest;
 import com.oj.cs.judge.codesandbox.model.ExecuteCodeResponse;
 import com.oj.cs.model.enums.QuestionSubmitLanguageEnum;
@@ -20,9 +20,11 @@ class CodeSandboxTest {
   @Value("${codesandbox.type:example}")
   private String type;
 
+  @Autowired private CodeSandboxFactory codeSandboxFactory;
+
   @Test
   void executeCode() {
-    CodeSandbox codeSandbox = new RemoteCodeSandbox();
+    CodeSandbox codeSandbox = codeSandboxFactory.getCodeSandbox(type);
     String code = "int main() { }";
     String language = QuestionSubmitLanguageEnum.JAVA.getValue();
     List<String> inputList = Arrays.asList("1 2", "3 4");
@@ -34,7 +36,7 @@ class CodeSandboxTest {
 
   @Test
   void executeCodeByValue() {
-    CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
+    CodeSandbox codeSandbox = codeSandboxFactory.getCodeSandbox(type);
     String code = "int main() { }";
     String language = QuestionSubmitLanguageEnum.JAVA.getValue();
     List<String> inputList = Arrays.asList("1 2", "3 4");
@@ -46,7 +48,7 @@ class CodeSandboxTest {
 
   @Test
   void executeCodeByProxy() {
-    CodeSandbox codeSandbox = CodeSandboxFactory.newInstance(type);
+    CodeSandbox codeSandbox = codeSandboxFactory.getCodeSandbox(type);
     codeSandbox = new CodeSandboxProxy(codeSandbox);
     String code =
         "public class Main {\n"

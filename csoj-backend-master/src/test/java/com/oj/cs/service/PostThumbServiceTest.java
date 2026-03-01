@@ -24,7 +24,8 @@ class PostThumbServiceTest {
 
   @Test
   void doPostThumb() {
+    // 测试点赞/取消点赞功能，-1表示取消点赞，1表示点赞成功，0表示失败
     int i = postThumbService.doPostThumb(1L, loginUser);
-    Assertions.assertTrue(i >= 0);
+    Assertions.assertTrue(i >= -1 && i <= 1);
   }
 }

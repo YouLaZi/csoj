@@ -22,8 +22,7 @@ import lombok.Data;
  * <p>Spring Data Elasticsearch 5.x 注解说明： - @Document: indexName 属性保持不变 - @Field: type 属性已废弃，由
  * Elasticsearch 自动检测; format 改为 dateFormatter
  */
-// todo 取消注释开启 ES（须先配置 ES）
-// @Document(indexName = "post")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "post")
 @Data
 public class PostEsDTO implements Serializable {
 

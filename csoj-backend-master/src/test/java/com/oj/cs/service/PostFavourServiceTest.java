@@ -27,8 +27,9 @@ class PostFavourServiceTest {
 
   @Test
   void doPostFavour() {
+    // 测试收藏/取消收藏功能，-1表示取消收藏，1表示收藏成功，0表示失败
     int i = postFavourService.doPostFavour(1L, loginUser);
-    Assertions.assertTrue(i >= 0);
+    Assertions.assertTrue(i >= -1 && i <= 1);
   }
 
   @Test
