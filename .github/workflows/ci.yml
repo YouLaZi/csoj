@@ -110,7 +110,8 @@ jobs:
         working-directory: ./csoj-backend-master
         # Skip integration tests that require full Spring context (MySQL, Redis, Elasticsearch)
         # Only run unit tests with Mockito
-        run: mvn clean test jacoco:report -Dtest='!**/*ServiceTest,!**/*MapperTest,!**/*DaoTest,**/*UnitTest'
+        # Use escaped exclamation mark to avoid bash history expansion
+        run: mvn clean test jacoco:report -Dtest="\!**/*ServiceTest,\!**/*MapperTest,\!**/*DaoTest,**/*UnitTest"
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/csoj_test?useSSL=false&serverTimezone=Asia/Shanghai
           SPRING_DATASOURCE_USERNAME: root
