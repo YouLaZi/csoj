@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect, withDefaults, defineProps } from "vue";
+import { onMounted, ref, watchEffect, withDefaults } from "vue";
 import { useRouter } from "vue-router";
 import message from "@arco-design/web-vue/es/message";
 import CodeEditor from "@/components/CodeEditor.vue";

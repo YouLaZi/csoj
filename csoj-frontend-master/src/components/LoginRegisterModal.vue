@@ -1,7 +1,7 @@
 <template>
   <a-modal
     v-model:visible="visible"
-    :title="isLogin ? '用户登录' : '用户注册'"
+    :title="isLogin ? $t('user.login') : $t('user.register')"
     :footer="false"
     :mask-closable="false"
     width="480px"
@@ -16,20 +16,30 @@
       :model="loginForm"
       @submit="handleLoginSubmit"
     >
-      <a-form-item field="userAccount" label="账号">
-        <a-input v-model="loginForm.userAccount" placeholder="请输入账号" />
-      </a-form-item>
-      <a-form-item field="userPassword" tooltip="密码不少于 8 位" label="密码">
-        <a-input-password
-          v-model="loginForm.userPassword"
-          placeholder="请输入密码"
+      <a-form-item field="userAccount" :label="$t('form.userAccount')">
+        <a-input
+          v-model="loginForm.userAccount"
+          :placeholder="$t('form.pleaseEnterAccount')"
         />
       </a-form-item>
-      <a-form-item field="verificationCode" label="验证码">
+      <a-form-item
+        field="userPassword"
+        :tooltip="$t('form.passwordMinLength')"
+        :label="$t('form.password')"
+      >
+        <a-input-password
+          v-model="loginForm.userPassword"
+          :placeholder="$t('form.pleaseEnterPassword')"
+        />
+      </a-form-item>
+      <a-form-item
+        field="verificationCode"
+        :label="$t('form.verificationCode')"
+      >
         <div class="verification-container">
           <a-input
             v-model="loginForm.verificationCode"
-            placeholder="请输入验证码"
+            :placeholder="$t('form.pleaseEnterCode')"
           />
           <VerificationCode ref="verificationCodeRef" />
         </div>
@@ -37,13 +47,17 @@
       <a-form-item>
         <div class="form-actions">
           <a-button type="primary" html-type="submit" class="submit-btn">
-            登录
+            {{ $t("user.login") }}
           </a-button>
         </div>
       </a-form-item>
       <div class="additional-actions">
-        <a-button @click="switchMode" type="text">没有账号？去注册</a-button>
-        <a-button @click="showForgotPassword" type="text">忘记密码？</a-button>
+        <a-button @click="switchMode" type="text"
+          >{{ $t("form.noAccount") }}{{ $t("form.goRegister") }}</a-button
+        >
+        <a-button @click="showForgotPassword" type="text">{{
+          $t("form.forgotPassword")
+        }}</a-button>
       </div>
     </a-form>
 
@@ -56,44 +70,56 @@
       :rules="registerRules"
       @submit="handleRegisterSubmit"
     >
-      <a-form-item field="userAccount" label="账号">
-        <a-input v-model="registerForm.userAccount" placeholder="请输入账号" />
+      <a-form-item field="userAccount" :label="$t('form.userAccount')">
+        <a-input
+          v-model="registerForm.userAccount"
+          :placeholder="$t('form.pleaseEnterAccount')"
+        />
       </a-form-item>
-      <a-form-item field="userPassword" tooltip="密码不少于 8 位" label="密码">
+      <a-form-item
+        field="userPassword"
+        :tooltip="$t('form.passwordMinLength')"
+        :label="$t('form.password')"
+      >
         <a-input-password
           v-model="registerForm.userPassword"
-          placeholder="请输入密码"
+          :placeholder="$t('form.pleaseEnterPassword')"
         />
       </a-form-item>
       <a-form-item
         field="checkPassword"
-        tooltip="请再次输入密码"
-        label="确认密码"
+        :tooltip="$t('form.pleaseEnterAgainPassword')"
+        :label="$t('form.confirmPassword')"
       >
         <a-input-password
           v-model="registerForm.checkPassword"
-          placeholder="请再次输入密码"
+          :placeholder="$t('form.pleaseEnterAgainPassword')"
         />
       </a-form-item>
-      <a-form-item field="userName" label="用户名">
-        <a-input v-model="registerForm.userName" placeholder="请输入用户名" />
+      <a-form-item field="userName" :label="$t('form.username')">
+        <a-input
+          v-model="registerForm.userName"
+          :placeholder="$t('form.pleaseEnterUsername')"
+        />
       </a-form-item>
       <a-form-item>
         <div class="form-actions">
           <a-button type="primary" html-type="submit" class="submit-btn">
-            注册
+            {{ $t("user.register") }}
           </a-button>
         </div>
       </a-form-item>
       <div class="additional-actions">
-        <a-button @click="switchMode" type="text">已有账号？去登录</a-button>
+        <a-button @click="switchMode" type="text"
+          >{{ $t("form.hasAccount") }}{{ $t("form.goLogin") }}</a-button
+        >
       </div>
     </a-form>
   </a-modal>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, defineExpose } from "vue";
+import { reactive, ref } from "vue";
 import {
   UserControllerService,
   UserLoginRequest,
@@ -102,7 +128,10 @@ import {
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { useI18n } from "vue-i18n";
 import VerificationCode from "@/components/VerificationCode.vue";
+
+const { t } = useI18n();
 
 // 控制模态框显示
 const visible = ref(false);
@@ -131,25 +160,25 @@ const registerForm = reactive({
 // 注册表单校验规则
 const registerRules = {
   userAccount: [
-    { required: true, message: "请输入账号" },
-    { minLength: 4, message: "账号长度不能小于 4 位" },
+    { required: true, message: t("form.pleaseEnterAccount") },
+    { minLength: 4, message: t("form.accountMinLength") },
   ],
   userPassword: [
-    { required: true, message: "请输入密码" },
-    { minLength: 8, message: "密码长度不能小于 8 位" },
+    { required: true, message: t("form.pleaseEnterPassword") },
+    { minLength: 8, message: t("form.passwordLengthMin") },
   ],
   checkPassword: [
-    { required: true, message: "请再次输入密码" },
+    { required: true, message: t("form.pleaseEnterAgainPassword") },
     {
       validator: (value: string) => {
         return value === registerForm.userPassword;
       },
-      message: "两次输入的密码不一致",
+      message: t("form.passwordNotMatch"),
     },
   ],
   userName: [
-    { required: true, message: "请输入用户名" },
-    { minLength: 2, message: "用户名长度不能小于 2 位" },
+    { required: true, message: t("form.pleaseEnterUsername") },
+    { minLength: 2, message: t("form.usernameMinLength") },
   ],
 };
 
@@ -201,7 +230,7 @@ const showForgotPassword = () => {
 const handleLoginSubmit = async () => {
   // 验证码校验
   if (!loginForm.verificationCode) {
-    message.error("请输入验证码");
+    message.error(t("form.pleaseEnterCode"));
     return;
   }
 
@@ -213,7 +242,7 @@ const handleLoginSubmit = async () => {
     loginForm.verificationCode.toLowerCase() !==
       verificationCodeRef.value.code.value.toLowerCase()
   ) {
-    message.error("验证码错误");
+    message.error(t("form.codeError"));
     verificationCodeRef.value.refreshCode();
     loginForm.verificationCode = "";
     return;
@@ -227,7 +256,7 @@ const handleLoginSubmit = async () => {
   try {
     // 显示加载中提示
     const loadingMessage = message.loading({
-      content: "登录中...",
+      content: t("form.logining"),
       duration: 0,
     });
 
@@ -243,9 +272,9 @@ const handleLoginSubmit = async () => {
       }
       await store.dispatch("user/getLoginUser");
       close();
-      message.success("登录成功");
+      message.success(t("user.loginSuccess"));
     } else {
-      message.error("登录失败，" + res.message);
+      message.error(t("user.loginFailed") + "，" + res.message);
       // 刷新验证码
       if (verificationCodeRef.value) {
         verificationCodeRef.value.refreshCode();
@@ -258,9 +287,11 @@ const handleLoginSubmit = async () => {
 
     // 显示友好的错误信息
     if (error.message === "Network Error") {
-      message.error("网络连接错误，请检查网络连接或确认后端服务是否启动");
+      message.error(t("error.networkError"));
     } else {
-      message.error("登录失败，" + (error.message || "未知错误"));
+      message.error(
+        t("user.loginFailed") + "，" + (error.message || t("message.failed"))
+      );
     }
 
     // 刷新验证码
@@ -283,7 +314,7 @@ const handleRegisterSubmit = async () => {
     registerRequest
   );
   if (res.code === 0) {
-    message.success("注册成功");
+    message.success(t("user.registerSuccess"));
     // 切换到登录模式
     isLogin.value = true;
     // 清空登录表单
@@ -294,7 +325,7 @@ const handleRegisterSubmit = async () => {
       verificationCodeRef.value.refreshCode();
     }
   } else {
-    message.error("注册失败，" + res.message);
+    message.error(t("user.registerFailed") + "，" + res.message);
   }
 };
 

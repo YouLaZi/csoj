@@ -4,7 +4,7 @@
       <div class="header">
         <div class="logo-container">
           <img src="@/assets/logo.png" class="logo" />
-          <h2>智码 CSOJ</h2>
+          <h2>{{ $t("app.name") }}</h2>
         </div>
         <div class="decoration"></div>
       </div>
@@ -14,15 +14,23 @@
         :model="form"
         @submit="handleSubmit"
       >
-        <a-form-item field="email" label="注册邮箱">
-          <a-input v-model="form.email" placeholder="请输入注册时使用的邮箱" />
+        <a-form-item
+          field="email"
+          :label="$t('forgotPassword.registeredEmail')"
+        >
+          <a-input
+            v-model="form.email"
+            :placeholder="$t('forgotPassword.emailPlaceholder')"
+          />
         </a-form-item>
         <a-form-item>
           <div class="form-actions">
             <a-button type="primary" html-type="submit" class="submit-btn">
-              发送重置链接
+              {{ $t("forgotPassword.sendResetLink") }}
             </a-button>
-            <a-button @click="toLogin" type="text">返回登录</a-button>
+            <a-button @click="toLogin" type="text">{{
+              $t("forgotPassword.backToLogin")
+            }}</a-button>
           </div>
         </a-form-item>
       </a-form>
@@ -35,6 +43,9 @@ import { reactive } from "vue";
 import { UserControllerService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const form = reactive({
   email: "",
@@ -50,19 +61,19 @@ const toLogin = () => {
 
 const handleSubmit = async () => {
   if (!form.email) {
-    message.error("请输入邮箱地址");
+    message.error(t("forgotPassword.pleaseEnterEmail"));
     return;
   }
   // 邮箱格式校验 (简单示例)
   const emailRegex = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;
   if (!emailRegex.test(form.email)) {
-    message.error("请输入有效的邮箱地址");
+    message.error(t("forgotPassword.invalidEmail"));
     return;
   }
 
   try {
     const loadingMessage = message.loading({
-      content: "正在发送邮件...",
+      content: t("forgotPassword.sending"),
       duration: 0,
     });
     // 调用后端API发送密码重置邮件
@@ -72,17 +83,15 @@ const handleSubmit = async () => {
     loadingMessage.close();
 
     if (res.code === 0) {
-      message.success(
-        "密码重置链接已发送至您的邮箱，请注意查收。如果没有收到，请检查垃圾邮件。"
-      );
+      message.success(t("forgotPassword.sendSuccess"));
       // 可以选择跳转到登录页或提示用户检查邮箱
       // router.push("/user/login");
     } else {
-      message.error("发送失败，" + res.message);
+      message.error(t("forgotPassword.sendFailed") + "，" + res.message);
     }
   } catch (error) {
     console.error("发送密码重置邮件错误:", error);
-    message.error("发送失败，请稍后重试或联系管理员");
+    message.error(t("forgotPassword.sendFailedRetry"));
   }
 };
 </script>
@@ -156,5 +165,25 @@ const handleSubmit = async () => {
 .submit-btn {
   flex-grow: 1;
   margin-right: 16px;
+}
+
+/* 深色模式适配 */
+[data-theme="dark"] .page-container {
+  background-color: var(--bg-color) !important;
+  background-image: none;
+}
+
+[data-theme="dark"] #forgotPasswordView {
+  background-color: var(--bg-color-secondary) !important;
+  border-top-color: var(--primary-color) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .header h2 {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme="dark"] .decoration {
+  background-color: var(--primary-color) !important;
 }
 </style>

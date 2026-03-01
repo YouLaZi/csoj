@@ -13,7 +13,7 @@
     <div class="chat-bot-header">
       <div class="chat-bot-title">
         <icon-robot class="float-button-icon" />
-        <span>解题助手</span>
+        <span>{{ t("chatbot.title") }}</span>
       </div>
       <div class="chat-bot-actions">
         <a-button type="text" size="mini" @click="toggleMinimize">
@@ -66,7 +66,9 @@
                   "
                   class="errors"
                 >
-                  <div class="analysis-title">错误分析：</div>
+                  <div class="analysis-title">
+                    {{ t("chatbot.errorAnalysis") }}
+                  </div>
                   <ul>
                     <li
                       v-for="(error, idx) in message.codeAnalysis.errors"
@@ -83,7 +85,9 @@
                   "
                   class="suggestions"
                 >
-                  <div class="analysis-title">改进建议：</div>
+                  <div class="analysis-title">
+                    {{ t("chatbot.suggestions") }}
+                  </div>
                   <ul>
                     <li
                       v-for="(suggestion, idx) in message.codeAnalysis
@@ -120,7 +124,7 @@
       <div class="chat-input">
         <a-input
           v-model="inputMessage"
-          placeholder="请输入您的问题..."
+          :placeholder="t('chatbot.inputPlaceholder')"
           allow-clear
           @keyup.enter="sendMessage"
         >
@@ -134,17 +138,17 @@
 
       <!-- 学习进度面板 -->
       <div class="learning-progress" v-if="!minimized">
-        <div class="progress-header">学习进度</div>
+        <div class="progress-header">{{ t("chatbot.learningProgress") }}</div>
         <div class="progress-stats">
           <div class="progress-item">
-            <div class="progress-label">已解决题目</div>
+            <div class="progress-label">{{ t("chatbot.solvedProblems") }}</div>
             <div class="progress-value">
               {{ learningProgress.solvedProblems }}/
               {{ learningProgress.totalProblems }}
             </div>
           </div>
           <div class="progress-item">
-            <div class="progress-label">最近学习主题</div>
+            <div class="progress-label">{{ t("chatbot.recentTopics") }}</div>
             <div class="progress-tags">
               <a-tag
                 v-for="(topic, index) in learningProgress.recentTopics"
@@ -155,7 +159,9 @@
             </div>
           </div>
           <div class="progress-item">
-            <div class="progress-label">推荐学习</div>
+            <div class="progress-label">
+              {{ t("chatbot.recommendedTopics") }}
+            </div>
             <div class="progress-tags">
               <a-tag
                 v-for="(topic, index) in learningProgress.recommendedTopics"
@@ -186,6 +192,7 @@
 import { ref, reactive, onMounted, nextTick, watch } from "vue";
 import axios from "axios";
 import { Message as ArcoMessage } from "@arco-design/web-vue";
+import { useI18n } from "vue-i18n";
 import {
   IconRobot,
   IconMinus,
@@ -204,6 +211,8 @@ import QuestionService from "@/services/QuestionService";
 import ChatBotService from "@/services/ChatBotService";
 import type { ChatMessage, LearningProgress, Question } from "@/types/chat";
 import { useUserStore } from "@/store/useUserStore";
+
+const { t } = useI18n();
 
 const visible = ref(false);
 const minimized = ref(false);
@@ -272,11 +281,11 @@ function copyCode(code: string) {
   navigator.clipboard
     .writeText(code)
     .then(() => {
-      ArcoMessage.success("代码已复制到剪贴板");
+      ArcoMessage.success(t("chatbot.codeCopied"));
     })
     .catch((err) => {
       console.error("复制失败:", err);
-      ArcoMessage.error("复制失败");
+      ArcoMessage.error(t("chatbot.copyFailed"));
     });
 }
 
@@ -288,8 +297,7 @@ async function loadChatHistory(questionId?: number) {
       // 用户未登录，显示提示消息
       messages.value = [
         {
-          content:
-            "你好！我是解题助手。请登录后使用完整功能，包括保存聊天历史和个性化推荐。",
+          content: t("chatbot.welcomeGuest"),
           type: "bot",
           contentType: "text",
         },
@@ -308,7 +316,7 @@ async function loadChatHistory(questionId?: number) {
       // 如果没有历史记录，或者特定问题的历史为空，则显示默认欢迎消息
       messages.value = [
         {
-          content: "你好！我是解题助手，有什么可以帮到你的吗？",
+          content: t("chatbot.welcome"),
           type: "bot",
           contentType: "text",
         },
@@ -322,7 +330,7 @@ async function loadChatHistory(questionId?: number) {
     console.error("加载聊天历史失败:", error);
     messages.value = [
       {
-        content: "加载聊天历史失败，请稍后再试。",
+        content: t("chatbot.loadHistoryFailed"),
         type: "bot",
         contentType: "text",
       },
@@ -350,7 +358,9 @@ async function fetchCurrentQuestionInfo() {
 
         // 在加载完历史后，添加关于当前题目的提示信息
         messages.value.push({
-          content: `我注意到你正在查看题目「${currentQuestion.value.title}」，有什么需要帮助的吗？`,
+          content: t("chatbot.questionContext", {
+            title: currentQuestion.value.title,
+          }),
           type: "bot",
           contentType: "text",
         });
@@ -375,7 +385,7 @@ async function fetchCurrentQuestionInfo() {
 
         // 在加载完历史后，添加关于当前题目的提示信息
         messages.value.push({
-          content: `我注意到你正在查看题目「${result.data.title}」，有什么需要帮助的吗？`,
+          content: t("chatbot.questionContext", { title: result.data.title }),
           type: "bot",
           contentType: "text",
         });
@@ -538,7 +548,7 @@ async function sendMessage() {
   // 添加一个临时的思考消息
   const thinkingIndex = messages.value.length;
   messages.value.push({
-    content: "思考中...",
+    content: t("chatbot.thinking"),
     type: "bot",
     contentType: "text",
   });
@@ -584,7 +594,7 @@ async function sendMessage() {
     console.error("发送消息失败:", error);
     // 更新为错误消息
     messages.value[thinkingIndex] = {
-      content: "抱歉，我暂时无法回答您的问题。请检查网络连接或稍后再试。",
+      content: t("chatbot.networkError"),
       type: "bot",
       contentType: "text",
     };
@@ -636,24 +646,23 @@ watch(
 const toolbarButtons = [
   {
     icon: IconCode,
-    text: "代码分析",
+    text: t("chatbot.codeAnalysis"),
     action: () => {
-      inputMessage.value =
-        "请分析以下代码：\n```java\n// 在这里粘贴你的代码\n```";
+      inputMessage.value = t("chatbot.codeAnalysisPrompt");
     },
   },
   {
     icon: IconBook,
-    text: "算法知识",
+    text: t("chatbot.algorithmKnowledge"),
     action: () => {
-      inputMessage.value = "请介绍一下这道题可能用到的算法知识";
+      inputMessage.value = t("chatbot.algorithmPrompt");
     },
   },
   {
     icon: IconBulb,
-    text: "解题思路",
+    text: t("chatbot.solutionHints"),
     action: () => {
-      inputMessage.value = "请给我一些解决这道题的思路";
+      inputMessage.value = t("chatbot.solutionPrompt");
     },
   },
 ];
@@ -1363,6 +1372,68 @@ async function updateLearningProgress() {
 }
 
 /* 深色模式适配 */
+[data-theme="dark"] .chat-bot-container {
+  background-color: var(--bg-color-secondary) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] .chat-bot-body {
+  background-color: var(--bg-color-secondary) !important;
+}
+
+[data-theme="dark"] .chat-messages {
+  background-color: var(--bg-color) !important;
+  background-image: none;
+}
+
+[data-theme="dark"] .message.bot {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] .message.bot .message-content {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme="dark"] .chat-input {
+  background: linear-gradient(
+    to bottom,
+    var(--bg-color-secondary),
+    var(--bg-color)
+  ) !important;
+  border-top-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .code-block {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="dark"] .code-block pre {
+  background: linear-gradient(
+    135deg,
+    var(--bg-color-tertiary),
+    var(--bg-color-secondary)
+  ) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme="dark"] .inline-code {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .math-block {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 系统偏好深色模式适配 */
 @media (prefers-color-scheme: dark) {
   .chat-bot-container {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2);

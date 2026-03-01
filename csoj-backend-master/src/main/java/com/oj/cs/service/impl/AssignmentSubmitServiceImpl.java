@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,7 @@ public class AssignmentSubmitServiceImpl
     extends ServiceImpl<com.oj.cs.mapper.AssignmentSubmitMapper, AssignmentSubmit>
     implements AssignmentSubmitService {
 
-  @Resource private AssignmentService assignmentService;
+  @Resource @Lazy private AssignmentService assignmentService;
 
   @Resource private UserService userService;
 

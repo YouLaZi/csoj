@@ -1,65 +1,132 @@
 <template>
-  <div class="page-container">
-    <div id="userRegisterView">
-      <div class="register-header">
-        <h2>用户注册</h2>
-        <div class="register-decoration"></div>
+  <div class="register-page">
+    <div class="register-container">
+      <!-- 装饰背景 -->
+      <div class="decoration">
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
       </div>
-      <a-form
-        label-align="left"
-        auto-label-width
-        :model="form"
-        :rules="rules"
-        @submit="handleSubmit"
-      >
-        <a-form-item field="userAccount" label="账号">
-          <a-input v-model="form.userAccount" placeholder="请输入账号" />
-        </a-form-item>
-        <a-form-item
-          field="userPassword"
-          tooltip="密码不少于 8 位"
-          label="密码"
+
+      <!-- 注册卡片 -->
+      <div class="register-card">
+        <!-- 头部 -->
+        <div class="register-header">
+          <h1 class="title">{{ $t("register.createAccount") }}</h1>
+          <p class="subtitle">{{ $t("register.subtitle") }}</p>
+        </div>
+
+        <!-- 表单 -->
+        <a-form
+          layout="vertical"
+          :model="form"
+          :rules="rules"
+          @submit="handleSubmit"
+          class="register-form"
         >
-          <a-input-password
-            v-model="form.userPassword"
-            placeholder="请输入密码"
-          />
-        </a-form-item>
-        <a-form-item
-          field="checkPassword"
-          tooltip="请再次输入密码"
-          label="确认密码"
-        >
-          <a-input-password
-            v-model="form.checkPassword"
-            placeholder="请再次输入密码"
-          />
-        </a-form-item>
-        <a-form-item field="userName" label="用户名">
-          <a-input v-model="form.userName" placeholder="请输入用户名" />
-        </a-form-item>
-        <a-form-item>
-          <div class="form-actions">
-            <a-button type="primary" html-type="submit" class="submit-btn">
-              注册
+          <a-form-item
+            field="userAccount"
+            :label="$t('form.userAccount')"
+            hide-label
+          >
+            <a-input
+              v-model="form.userAccount"
+              :placeholder="$t('register.accountPlaceholder')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-user />
+              </template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item field="userName" :label="$t('form.username')" hide-label>
+            <a-input
+              v-model="form.userName"
+              :placeholder="$t('form.pleaseEnterUsername')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-idcard />
+              </template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item
+            field="userPassword"
+            :label="$t('form.password')"
+            hide-label
+          >
+            <a-input-password
+              v-model="form.userPassword"
+              :placeholder="$t('register.passwordPlaceholder')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-lock />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item
+            field="checkPassword"
+            :label="$t('form.confirmPassword')"
+            hide-label
+          >
+            <a-input-password
+              v-model="form.checkPassword"
+              :placeholder="$t('form.pleaseEnterAgainPassword')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-safe />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              size="large"
+              long
+              class="submit-btn"
+            >
+              {{ $t("user.register") }}
             </a-button>
-            <a-button @click="toLogin" type="text">已有账号？去登录</a-button>
-          </div>
-        </a-form-item>
-      </a-form>
+          </a-form-item>
+        </a-form>
+
+        <!-- 底部链接 -->
+        <div class="register-footer">
+          <span class="footer-text">{{ $t("form.hasAccount") }}</span>
+          <a-button type="text" @click="toLogin" class="footer-link">
+            {{ $t("register.loginNow") }}
+          </a-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { UserControllerService, UserRegisterRequest } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import {
+  IconUser,
+  IconIdcard,
+  IconLock,
+  IconSafe,
+} from "@arco-design/web-vue/es/icon";
 
-/**
- * 表单信息
- */
+const { t } = useI18n();
+
 const form = reactive({
   userAccount: "",
   userPassword: "",
@@ -67,47 +134,36 @@ const form = reactive({
   userName: "",
 } as UserRegisterRequest & { checkPassword: string });
 
-/**
- * 表单校验规则
- */
 const rules = {
   userAccount: [
-    { required: true, message: "请输入账号" },
-    { minLength: 4, message: "账号长度不能小于 4 位" },
+    { required: true, message: t("form.pleaseEnterAccount") },
+    { minLength: 4, message: t("form.accountMinLength") },
   ],
   userPassword: [
-    { required: true, message: "请输入密码" },
-    { minLength: 8, message: "密码长度不能小于 8 位" },
+    { required: true, message: t("form.pleaseEnterPassword") },
+    { minLength: 8, message: t("form.passwordLengthMin") },
   ],
   checkPassword: [
-    { required: true, message: "请再次输入密码" },
+    { required: true, message: t("form.pleaseEnterAgainPassword") },
     {
       validator: (value: string) => {
         return value === form.userPassword;
       },
-      message: "两次输入的密码不一致",
+      message: t("form.passwordNotMatch"),
     },
   ],
   userName: [
-    { required: true, message: "请输入用户名" },
-    { minLength: 2, message: "用户名长度不能小于 2 位" },
+    { required: true, message: t("form.pleaseEnterUsername") },
+    { minLength: 2, message: t("form.usernameMinLength") },
   ],
 };
 
 const router = useRouter();
 
-/**
- * 跳转到登录页
- */
 const toLogin = () => {
-  router.push({
-    path: "/user/login",
-  });
+  router.push({ path: "/user/login" });
 };
 
-/**
- * 提交表单
- */
 const handleSubmit = async () => {
   const registerRequest: UserRegisterRequest = {
     userAccount: form.userAccount,
@@ -119,119 +175,260 @@ const handleSubmit = async () => {
     registerRequest
   );
   if (res.code === 0) {
-    message.success("注册成功");
-    // 跳转到登录页
-    router.push({
-      path: "/user/login",
-    });
+    message.success(t("user.registerSuccess"));
+    router.push({ path: "/user/login" });
   } else {
-    message.error("注册失败，" + res.message);
+    message.error(t("user.registerFailed") + "，" + res.message);
   }
 };
 </script>
 
 <style scoped>
-.page-container {
+/* ========================================
+   注册页面 - 简约优雅
+   ======================================== */
+
+.register-page {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #f0f5f9;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23e1e8ed" stroke-width="0.5"/></svg>');
-}
-
-#userRegisterView {
-  max-width: 480px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 32px 40px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    var(--bg-color-tertiary) 100%
+  );
+  padding: var(--spacing-xl);
   position: relative;
   overflow: hidden;
-  border-top: 4px solid #34495e;
 }
 
-.register-header {
-  margin-bottom: 32px;
-  text-align: center;
+.register-container {
+  width: 100%;
+  max-width: 420px;
   position: relative;
 }
 
-.register-header h2 {
-  font-size: 24px;
-  color: #2c3e50;
-  font-weight: 600;
-  margin-bottom: 16px;
+/* ========================================
+   装饰元素
+   ======================================== */
+
+.decoration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    var(--primary-lighter-color) 0%,
+    transparent 70%
+  );
+  top: -100px;
+  left: -100px;
+}
+
+.circle-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    var(--primary-lighter-color) 0%,
+    transparent 70%
+  );
+  bottom: -50px;
+  right: -50px;
+}
+
+/* ========================================
+   注册卡片
+   ======================================== */
+
+.register-card {
+  background: var(--bg-color-secondary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   头部
+   ======================================== */
+
+.register-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-sm) 0;
   letter-spacing: 1px;
 }
 
-.register-decoration {
-  width: 60px;
-  height: 3px;
-  background-color: #34495e;
-  margin: 0 auto;
-  position: relative;
+.subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-color-secondary);
+  margin: 0;
 }
 
-.register-decoration::before,
-.register-decoration::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #34495e;
-  top: -2.5px;
+/* ========================================
+   表单
+   ======================================== */
+
+.register-form {
+  margin-bottom: var(--spacing-lg);
 }
 
-.register-decoration::before {
-  left: -10px;
+.register-form :deep(.arco-form-item) {
+  margin-bottom: var(--spacing-lg);
 }
 
-.register-decoration::after {
-  right: -10px;
+.register-form :deep(.arco-input-wrapper),
+.register-form :deep(.arco-input-password) {
+  background-color: var(--bg-color-tertiary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.verification-container {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+.register-form :deep(.arco-input-wrapper:hover),
+.register-form :deep(.arco-input-password:hover) {
+  border-color: var(--border-color);
 }
 
-.verification-container .arco-input-wrapper {
-  flex: 1;
+.register-form :deep(.arco-input-wrapper:focus-within),
+.register-form :deep(.arco-input-password:focus-within) {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
+.register-form :deep(.arco-input) {
+  background: transparent;
 }
 
+.register-form :deep(.arco-input::placeholder) {
+  color: var(--text-color-placeholder);
+}
+
+/* 提交按钮 */
 .submit-btn {
-  width: 120px;
-  background-color: #34495e;
-  border-color: #34495e;
+  height: 48px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover-color)
+  );
+  border: none;
+  transition: all var(--transition-base);
 }
 
 .submit-btn:hover {
-  background-color: #2c3e50;
-  border-color: #2c3e50;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* 书香风格装饰 */
-#userRegisterView::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path d="M40,40 L160,40 L160,160 L40,160 Z" fill="none" stroke="%23e1e8ed" stroke-width="0.5" stroke-dasharray="2"/></svg>');
-  opacity: 0.3;
-  pointer-events: none;
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   底部链接
+   ======================================== */
+
+.register-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color-light);
+}
+
+.footer-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.footer-link {
+  color: var(--primary-color);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: 0;
+}
+
+.footer-link:hover {
+  background: transparent;
+}
+
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 480px) {
+  .register-page {
+    padding: var(--spacing-md);
+  }
+
+  .register-card {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+/* ========================================
+   深色模式
+   ======================================== */
+
+[data-theme="dark"] .register-page {
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    var(--bg-color-secondary) 100%
+  );
+}
+
+[data-theme="dark"] .register-card {
+  background: var(--bg-color-secondary);
+  box-shadow: var(--shadow-xl);
+}
+
+[data-theme="dark"] .circle-1,
+[data-theme="dark"] .circle-2 {
+  background: radial-gradient(
+    circle,
+    var(--primary-light-color) 0%,
+    transparent 70%
+  );
+  opacity: 0.2;
+}
+
+[data-theme="dark"] .register-form :deep(.arco-input-wrapper),
+[data-theme="dark"] .register-form :deep(.arco-input-password) {
+  background-color: var(--bg-color-tertiary);
 }
 </style>

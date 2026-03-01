@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import jakarta.annotation.Resource;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,7 @@ public class AssignmentServiceImpl
 
   @Resource private UserService userService;
 
-  @Resource private AssignmentSubmitService assignmentSubmitService;
+  @Resource @Lazy private AssignmentSubmitService assignmentSubmitService;
 
   @Override
   @Transactional(rollbackFor = Exception.class)

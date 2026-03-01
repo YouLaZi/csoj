@@ -5,6 +5,9 @@ spring:
   # 默认 dev 环境
   profiles:
     active: dev
+  # 允许循环依赖（临时解决方案）
+  main:
+    allow-circular-references: true
   # 支持 swagger3
   mvc:
     pathmatch:
@@ -165,8 +168,10 @@ cors:
   allowed-origins:
     - http://localhost:3000
     - http://localhost:5173
+    - http://localhost:8081
     - http://127.0.0.1:3000
     - http://127.0.0.1:5173
+    - http://127.0.0.1:8081
   # 允许的 HTTP 方法
   allowed-methods:
     - GET

@@ -12,10 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { ThemeManager, ThemeType } from "@/utils/themeManager";
 import { IconMoonFill, IconSunFill } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
+
+const { t } = useI18n();
 
 // 当前主题状态
 const currentTheme = ref<ThemeType>(ThemeType.LIGHT);
@@ -27,14 +30,12 @@ const isDarkMode = computed(() => {
 
 // 计算提示文本
 const themeTooltip = computed(() => {
-  return isDarkMode.value ? "切换到浅色模式" : "切换到深色模式";
+  return isDarkMode.value ? t("theme.toggleLight") : t("theme.toggleDark");
 });
 
 // 初始化主题
 onMounted(() => {
-  // 初始化主题管理器
-  ThemeManager.init();
-  // 获取当前主题
+  // ThemeManager.init() 已在 App.vue 中调用，这里只获取当前主题
   currentTheme.value = ThemeManager.getTheme();
 
   // 监听主题变化事件
@@ -79,7 +80,6 @@ defineExpose({
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  margin-right: 16px;
 }
 
 .theme-toggle-button {
@@ -92,12 +92,5 @@ defineExpose({
 .theme-toggle-button:hover {
   color: var(--primary-color);
   border-color: var(--primary-color);
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-  .theme-toggle {
-    margin-right: 8px;
-  }
 }
 </style>

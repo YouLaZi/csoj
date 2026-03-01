@@ -1,6 +1,6 @@
 <template>
   <div class="checkin-calendar">
-    <a-card title="每日签到" :bordered="false">
+    <a-card :title="$t('home.dailyCheckin')" :bordered="false">
       <template #extra>
         <a-button
           type="primary"
@@ -8,7 +8,11 @@
           @click="handleCheckin"
           :disabled="hasCheckedToday"
         >
-          {{ hasCheckedToday ? "今日已签到" : "立即签到" }}
+          {{
+            hasCheckedToday
+              ? $t("home.alreadyCheckedIn")
+              : $t("home.checkinNow")
+          }}
         </a-button>
       </template>
 
@@ -28,13 +32,18 @@
 
       <div class="checkin-info">
         <p>
-          已连续签到: <span class="highlight">{{ consecutiveDays }}</span> 天
+          {{ $t("home.consecutiveDays") }}:
+          <span class="highlight">{{ consecutiveDays }}</span>
+          {{ $t("points.days") }}
         </p>
         <p>
-          本月签到: <span class="highlight">{{ monthlyCheckins }}</span> 天
+          {{ $t("home.monthlyCheckins") }}:
+          <span class="highlight">{{ monthlyCheckins }}</span>
+          {{ $t("points.days") }}
         </p>
         <p>
-          总积分: <span class="highlight">{{ totalPoints }}</span>
+          {{ $t("home.totalPointsLabel") }}:
+          <span class="highlight">{{ totalPoints }}</span>
         </p>
       </div>
     </a-card>
@@ -46,6 +55,9 @@ import { ref, computed, onMounted } from "vue";
 import { Message } from "@arco-design/web-vue";
 import CheckinService from "@/services/CheckinService";
 import { useUserStore } from "@/store/useUserStore";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 // 当前日期
 const currentDate = ref(new Date());
@@ -87,7 +99,7 @@ const hasCheckedToday = computed(() => {
 // 签到操作
 const handleCheckin = async () => {
   if (hasCheckedToday.value) {
-    Message.warning("今日已签到");
+    Message.warning(t("points.alreadyChecked"));
     return;
   }
 
@@ -102,15 +114,19 @@ const handleCheckin = async () => {
     if (res.success) {
       // 签到成功，重新加载签到数据
       await loadCheckinData();
-      Message.success(`签到成功，获得${res.data.points}积分！`);
+      Message.success(
+        t("points.checkinSuccess") +
+          `，${t("points.getPoints").replace("{n}", res.data.points)}！`
+      );
     } else {
       console.error("签到失败:", res.message);
-      Message.error(res.message || "签到失败");
+      Message.error(res.message || t("message.failed"));
     }
   } catch (error) {
     console.error("签到错误:", error);
-    const errorMessage = error instanceof Error ? error.message : "未知错误";
-    Message.error("签到失败：" + errorMessage);
+    const errorMessage =
+      error instanceof Error ? error.message : t("message.failed");
+    Message.error(t("points.checkinFailed") + "：" + errorMessage);
   }
 };
 
@@ -259,9 +275,80 @@ onMounted(() => {
   margin-bottom: 16px;
 }
 
+.checkin-calendar :deep(.arco-card) {
+  background-color: var(--bg-color-secondary);
+  border-color: var(--border-color-light);
+}
+
+.checkin-calendar :deep(.arco-card-header) {
+  border-bottom-color: var(--border-color-light);
+}
+
+.checkin-calendar :deep(.arco-card-title) {
+  color: var(--text-color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
 .calendar-container {
   margin-bottom: 16px;
   overflow: hidden;
+  width: 100%;
+}
+
+/* 日历面板样式优化 */
+.calendar-container :deep(.arco-calendar) {
+  width: 100%;
+  min-width: auto;
+}
+
+.calendar-container :deep(.arco-picker-panel) {
+  width: 100%;
+  border-color: var(--border-color-light);
+  background-color: var(--bg-color-secondary);
+}
+
+.calendar-container :deep(.arco-picker-header) {
+  border-bottom-color: var(--border-color-light);
+  padding: 8px 4px;
+}
+
+.calendar-container :deep(.arco-picker-header-title) {
+  color: var(--text-color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.calendar-container :deep(.arco-picker-body) {
+  padding: 4px;
+}
+
+.calendar-container :deep(.arco-calendar-month-cell) {
+  padding: 0;
+}
+
+/* 日历单元格样式 */
+.calendar-container :deep(.arco-picker-date) {
+  width: 100%;
+  padding: 4px 0;
+}
+
+.calendar-container :deep(.arco-picker-cell-value) {
+  color: var(--text-color-primary);
+}
+
+.calendar-container
+  :deep(.arco-picker-cell:not(.arco-picker-cell-selected):hover) {
+  background-color: var(--bg-color-tertiary);
+}
+
+.calendar-container :deep(.arco-picker-cell-selected .arco-picker-cell-value) {
+  background-color: var(--primary-color);
+}
+
+/* 周标题样式 */
+.calendar-container :deep(.arco-calendar-week-list-item) {
+  color: var(--text-color-secondary);
+  font-size: 12px;
+  padding: 4px 0;
 }
 
 .calendar-cell {
@@ -271,14 +358,16 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   transition: all 0.2s ease;
+  min-height: 28px;
+  font-size: 13px;
 }
 
 .checked-day {
-  color: #52c41a;
+  color: var(--success-color);
   font-weight: bold;
-  background-color: rgba(82, 196, 26, 0.1);
+  background-color: rgba(90, 154, 110, 0.15);
   border-radius: 4px;
-  border: 1px solid rgba(82, 196, 26, 0.3);
+  border: 1px solid rgba(90, 154, 110, 0.3);
 }
 
 .check-mark {
@@ -286,25 +375,75 @@ onMounted(() => {
   bottom: 2px;
   right: 2px;
   font-size: 10px;
-  color: #165dff;
+  color: var(--primary-color);
 }
 
 .checkin-info {
-  margin-top: 8px;
+  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color-light);
 }
 
 .checkin-info p {
-  margin: 4px 0;
-  flex: 1 1 auto;
+  margin: 0;
+  flex: 1 1 45%;
+  font-size: 13px;
+  color: var(--text-color-regular);
 }
 
 .highlight {
-  color: #165dff;
-  font-weight: bold;
-  margin: 0 4px;
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 2px;
+}
+
+/* 深色模式 */
+[data-theme="dark"] .checkin-calendar :deep(.arco-card) {
+  background-color: var(--bg-color-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .checkin-calendar :deep(.arco-card-header) {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .calendar-container :deep(.arco-picker-panel) {
+  background-color: var(--bg-color-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .calendar-container :deep(.arco-picker-header) {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .calendar-container :deep(.arco-picker-header-title) {
+  color: var(--text-color-primary);
+}
+
+[data-theme="dark"] .calendar-container :deep(.arco-picker-cell-value) {
+  color: var(--text-color-primary);
+}
+
+[data-theme="dark"]
+  .calendar-container
+  :deep(.arco-picker-cell:not(.arco-picker-cell-selected):hover) {
+  background-color: var(--bg-color-tertiary);
+}
+
+[data-theme="dark"] .calendar-container :deep(.arco-calendar-week-list-item) {
+  color: var(--text-color-secondary);
+}
+
+[data-theme="dark"] .checked-day {
+  background-color: rgba(107, 179, 126, 0.2);
+  border-color: rgba(107, 179, 126, 0.4);
+}
+
+[data-theme="dark"] .checkin-info {
+  border-top-color: var(--border-color);
 }
 
 /* 移动端适配 */
@@ -313,12 +452,18 @@ onMounted(() => {
     padding: 0;
   }
 
-  .calendar-container :deep(.arco-calendar-cell) {
-    height: 32px;
+  .calendar-cell {
+    min-height: 24px;
+    font-size: 12px;
   }
 
   .checkin-info {
     flex-direction: column;
+    gap: 4px;
+  }
+
+  .checkin-info p {
+    flex: 1 1 100%;
   }
 }
 </style>

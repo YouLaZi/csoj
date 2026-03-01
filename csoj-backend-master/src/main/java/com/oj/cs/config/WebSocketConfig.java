@@ -2,6 +2,7 @@ package com.oj.cs.config;
 
 import jakarta.annotation.Resource;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -31,8 +32,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     registry.addHandler(contestWebSocketHandler, "/ws/contest").setAllowedOrigins("*");
   }
 
-  /** 支持 ServerEndpoint 注解方式 */
+  /** 支持 ServerEndpoint 注解方式（仅在 Servlet 容器环境中加载） */
   @Bean
+  @ConditionalOnWebApplication
   public ServerEndpointExporter serverEndpointExporter() {
     return new ServerEndpointExporter();
   }

@@ -1,61 +1,78 @@
 <template>
   <div id="postsView">
-    <a-card title="帖子列表">
-      <a-row :gutter="[16, 16]" style="margin-bottom: 16px">
-        <a-col :span="8">
-          <a-input-search
-            v-model="searchParams.searchText"
-            placeholder="请输入搜索关键词"
-            @search="doSubmit"
-          />
-        </a-col>
-        <a-col :span="16" style="text-align: right">
-          <a-button type="primary" @click="toAddPost">创建帖子</a-button>
-        </a-col>
-      </a-row>
-      <a-table
-        :ref="tableRef"
-        :columns="columns"
-        :data="dataList"
-        :pagination="{
-          showTotal: true,
-          pageSize: searchParams.pageSize,
-          current: searchParams.current,
-          total,
-        }"
-        @page-change="onPageChange"
-      >
-        <template #title="{ record }">
-          <a @click="viewPost(record)">{{ record.title }}</a>
-        </template>
-        <template #createTime="{ record }">
-          {{ moment(record.createTime).format("YYYY-MM-DD") }}
-        </template>
-        <template #optional="{ record }">
-          <a-space>
-            <a-button type="primary" @click="viewPost(record)"> 查看 </a-button>
-            <a-button v-if="isMyPost(record)" @click="doFavour(record)">
-              {{ record.hasFavour ? "取消收藏" : "收藏" }}
-            </a-button>
-            <a-button v-if="isMyPost(record)" @click="doThumb(record)">
-              {{ record.hasThumb ? "取消点赞" : "点赞" }}
-            </a-button>
-            <a-button @click="toggleComments(record)">
-              {{ record.showComments ? "收起评论" : "查看评论" }}
-            </a-button>
-          </a-space>
-        </template>
-      </a-table>
-    </a-card>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">{{ t("posts.pageTitle") }}</h1>
+        <p class="page-subtitle">{{ t("posts.pageSubtitle") }}</p>
+      </div>
+      <a-button type="primary" @click="toAddPost">
+        <template #icon><icon-plus /></template>
+        {{ t("posts.createPost") }}
+      </a-button>
+    </div>
 
-    <!-- 选中帖子的评论区域 -->
-    <div v-if="selectedPost">
-      <a-divider>{{ selectedPost.title }} - 评论区</a-divider>
-      <CommentList
-        :objectId="selectedPost.id"
-        objectType="post"
-        @refresh="refreshPostData"
+    <!-- 搜索区域 -->
+    <div class="search-section">
+      <a-input-search
+        v-model="searchParams.searchText"
+        :placeholder="t('posts.searchPlaceholder')"
+        size="large"
+        @search="doSubmit"
+        @press-enter="doSubmit"
       />
+    </div>
+
+    <!-- 帖子列表 -->
+    <div class="posts-section">
+      <div class="posts-list">
+        <div
+          v-for="post in dataList"
+          :key="post.id"
+          class="post-card"
+          @click="viewPost(post)"
+        >
+          <div class="post-main">
+            <h3 class="post-title">{{ post.title }}</h3>
+            <p class="post-content-preview">{{ post.content }}</p>
+            <div class="post-footer">
+              <div class="post-stats">
+                <span class="stat-item">
+                  <icon-thumb-up />
+                  {{ post.thumbNum || 0 }}
+                </span>
+                <span class="stat-item">
+                  <icon-star />
+                  {{ post.favourNum || 0 }}
+                </span>
+              </div>
+              <span class="post-time">
+                {{ moment(post.createTime).format("YYYY-MM-DD") }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 空状态 -->
+      <div v-if="dataList.length === 0" class="empty-state">
+        <icon-file class="empty-icon" />
+        <p class="empty-text">{{ t("posts.noData") }}</p>
+        <a-button type="primary" @click="toAddPost">{{
+          t("posts.createFirst")
+        }}</a-button>
+      </div>
+
+      <!-- 分页 -->
+      <div v-if="total > searchParams.pageSize" class="pagination-section">
+        <a-pagination
+          :total="total"
+          :current="searchParams.current"
+          :page-size="searchParams.pageSize"
+          show-total
+          @change="onPageChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -66,19 +83,20 @@ import {
   PostControllerService,
   PostQueryRequest,
   PostVO,
-  PostFavourControllerService,
-  PostFavourAddRequest,
-  PostThumbControllerService,
-  PostThumbAddRequest,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import moment from "moment";
-import { useStore } from "vuex";
-import CommentList from "@/components/CommentList.vue";
+import {
+  IconPlus,
+  IconThumbUp,
+  IconStar,
+  IconFile,
+} from "@arco-design/web-vue/es/icon";
 
-const tableRef = ref();
-const store = useStore();
+const { t } = useI18n();
+
 const router = useRouter();
 
 const dataList = ref([]);
@@ -89,65 +107,28 @@ const searchParams = ref<PostQueryRequest>({
   current: 1,
 });
 
-// 选中的帖子（用于显示评论）
-const selectedPost = ref(null);
-
 const loadData = async () => {
   const res = await PostControllerService.listPostVoByPageUsingPost(
     searchParams.value
   );
   if (res.code === 0) {
-    // 为每个帖子添加showComments属性，用于控制评论的显示和隐藏
     dataList.value = res.data.records.map((post) => ({
       ...post,
       showComments: false,
     }));
     total.value = res.data.total;
   } else {
-    message.error("加载失败，" + res.message);
+    message.error(t("posts.loadFailed") + "，" + res.message);
   }
 };
 
-/**
- * 监听 searchParams 变量，改变时触发页面的重新加载
- */
 watchEffect(() => {
   loadData();
 });
 
-/**
- * 页面加载时，请求数据
- */
 onMounted(() => {
   loadData();
 });
-
-const columns = [
-  {
-    title: "标题",
-    slotName: "title",
-  },
-  {
-    title: "内容",
-    dataIndex: "content",
-    ellipsis: true,
-  },
-  {
-    title: "点赞数",
-    dataIndex: "thumbNum",
-  },
-  {
-    title: "收藏数",
-    dataIndex: "favourNum",
-  },
-  {
-    title: "创建时间",
-    slotName: "createTime",
-  },
-  {
-    slotName: "optional",
-  },
-];
 
 const onPageChange = (page: number) => {
   searchParams.value = {
@@ -156,115 +137,229 @@ const onPageChange = (page: number) => {
   };
 };
 
-/**
- * 确认搜索，重新加载数据
- */
 const doSubmit = () => {
-  // 这里需要重置搜索页号
   searchParams.value = {
     ...searchParams.value,
     current: 1,
   };
 };
 
-/**
- * 跳转到帖子详情页
- * @param post
- */
 const viewPost = (post: PostVO) => {
   router.push({
     path: `/view/post/${post.id}`,
   });
 };
 
-/**
- * 跳转到创建帖子页
- */
 const toAddPost = () => {
   router.push({
     path: `/add/post`,
   });
 };
-
-/**
- * 判断是否是当前用户的帖子
- * @param post
- */
-const isMyPost = (post: PostVO) => {
-  const loginUser = store.state.user.loginUser;
-  return loginUser && loginUser.id === post.userId;
-};
-
-/**
- * 收藏/取消收藏帖子
- * @param post
- */
-const doFavour = async (post: PostVO) => {
-  const postFavourAddRequest: PostFavourAddRequest = {
-    postId: post.id,
-  };
-  const res = await PostFavourControllerService.doPostFavourUsingPost(
-    postFavourAddRequest
-  );
-  if (res.code === 0) {
-    message.success(post.hasFavour ? "取消收藏成功" : "收藏成功");
-    // 重新加载数据
-    loadData();
-  } else {
-    message.error("操作失败，" + res.message);
-  }
-};
-
-/**
- * 点赞/取消点赞帖子
- * @param post
- */
-const doThumb = async (post: PostVO) => {
-  const postThumbAddRequest: PostThumbAddRequest = {
-    postId: post.id,
-  };
-  const res = await PostThumbControllerService.doThumbUsingPost(
-    postThumbAddRequest
-  );
-  if (res.code === 0) {
-    message.success(post.hasThumb ? "取消点赞成功" : "点赞成功");
-    // 重新加载数据
-    loadData();
-  } else {
-    message.error("操作失败，" + res.message);
-  }
-};
-
-/**
- * 切换评论区的显示和隐藏
- * @param post
- */
-const toggleComments = (post) => {
-  // 更新帖子的showComments状态
-  post.showComments = !post.showComments;
-
-  if (post.showComments) {
-    // 如果显示评论，则设置当前选中的帖子
-    selectedPost.value = post;
-  } else {
-    // 如果隐藏评论，则清空当前选中的帖子
-    selectedPost.value = null;
-  }
-};
-
-/**
- * 刷新帖子数据
- */
-const refreshPostData = () => {
-  // 评论操作后刷新帖子数据
-  loadData();
-};
 </script>
 
 <style scoped>
+/* ========================================
+   帖子列表页面 - 简约大方
+   ======================================== */
+
 #postsView {
-  max-width: 1280px;
+  padding: var(--spacing-xl);
+  max-width: var(--content-max-width);
   margin: 0 auto;
-  padding: 16px;
+}
+
+/* ========================================
+   页面头部
+   ======================================== */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.page-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-color-secondary);
+  margin: 0;
+}
+
+/* ========================================
+   搜索区域
+   ======================================== */
+
+.search-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.search-section :deep(.arco-input-wrapper) {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+}
+
+.search-section :deep(.arco-input-wrapper:hover) {
+  border-color: var(--border-color);
+}
+
+.search-section :deep(.arco-input-wrapper:focus-within) {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+/* ========================================
+   帖子列表
+   ======================================== */
+
+.posts-section {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.posts-list {
+  padding: var(--spacing-md);
+}
+
+.post-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.post-card:hover {
+  background: var(--bg-color-tertiary);
+}
+
+.post-main {
+  max-width: 100%;
+}
+
+.post-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-card:hover .post-title {
+  color: var(--primary-color);
+}
+
+.post-content-preview {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: var(--line-height-relaxed);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-stats {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-placeholder);
+}
+
+.post-time {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-placeholder);
+}
+
+/* ========================================
+   空状态
+   ======================================== */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-3xl);
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: var(--text-color-placeholder);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-text {
+  font-size: var(--font-size-base);
+  color: var(--text-color-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* ========================================
+   分页
+   ======================================== */
+
+.pagination-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border-color-light);
+}
+
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 768px) {
+  #postsView {
+    padding: var(--spacing-md);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+}
+
+/* ========================================
+   深色模式
+   ======================================== */
+
+[data-theme="dark"] .posts-section {
+  background: var(--bg-color-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .post-card:hover {
+  background: var(--bg-color-tertiary);
+}
+
+[data-theme="dark"] .search-section :deep(.arco-input-wrapper) {
+  background: var(--bg-color-tertiary);
 }
 </style>

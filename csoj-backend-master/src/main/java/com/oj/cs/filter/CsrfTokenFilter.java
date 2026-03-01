@@ -43,6 +43,16 @@ public class CsrfTokenFilter implements Filter {
       return;
     }
 
+    // 跳过公开查询接口的 CSRF 验证（这些接口只读数据，不修改状态）
+    String requestUri = httpRequest.getRequestURI();
+    if (requestUri != null
+        && (requestUri.contains("/list/page")
+            || requestUri.contains("/search")
+            || requestUri.contains("/get/"))) {
+      chain.doFilter(request, response);
+      return;
+    }
+
     // 获取会话中的 CSRF Token
     String sessionToken = (String) httpRequest.getSession().getAttribute(CSRF_TOKEN_ATTR);
 

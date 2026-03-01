@@ -53,6 +53,20 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
   @Override
   public String getHeader(String name) {
     String value = super.getHeader(name);
+    // 跳过不需要 XSS 过滤的请求头（如 Origin、Referer、Content-Type 等）
+    if (name != null
+        && (name.equalsIgnoreCase("Origin")
+            || name.equalsIgnoreCase("Referer")
+            || name.equalsIgnoreCase("Content-Type")
+            || name.equalsIgnoreCase("Authorization")
+            || name.equalsIgnoreCase("Accept")
+            || name.equalsIgnoreCase("Accept-Language")
+            || name.equalsIgnoreCase("Accept-Encoding")
+            || name.equalsIgnoreCase("User-Agent")
+            || name.equalsIgnoreCase("X-Requested-With")
+            || name.equalsIgnoreCase("X-CSRF-Token"))) {
+      return value;
+    }
     return cleanXss(value);
   }
 

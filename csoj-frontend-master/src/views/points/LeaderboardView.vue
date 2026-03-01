@@ -1,85 +1,76 @@
 <template>
   <div class="leaderboard-view">
-    <a-row :gutter="16">
-      <a-col :span="24">
-        <a-card class="intro-card" :bordered="false">
-          <template #title>
-            <div class="card-title">
-              <a-typography-title :heading="3">积分排行榜</a-typography-title>
-              <a-tag color="#165dff">实时更新</a-tag>
-            </div>
-          </template>
-          <a-typography-paragraph>
-            在CodeSmart平台，您可以通过多种方式获取积分：
-            <a-row :gutter="16" class="points-rules">
-              <a-col :xs="24" :sm="12" :md="6">
-                <a-card class="rule-card" :bordered="false">
-                  <template #title>
-                    <div class="rule-title"><icon-calendar /> 每日签到</div>
-                  </template>
-                  <div class="rule-points">+15积分</div>
-                </a-card>
-              </a-col>
-              <a-col :xs="24" :sm="12" :md="6">
-                <a-card class="rule-card" :bordered="false">
-                  <template #title>
-                    <div class="rule-title"><icon-code-block /> 提交题目</div>
-                  </template>
-                  <div class="rule-points">+5积分</div>
-                </a-card>
-              </a-col>
-              <a-col :xs="24" :sm="12" :md="6">
-                <a-card class="rule-card" :bordered="false">
-                  <template #title>
-                    <div class="rule-title"><icon-check-circle /> 题目通过</div>
-                  </template>
-                  <div class="rule-points">+20积分</div>
-                </a-card>
-              </a-col>
-              <a-col :xs="24" :sm="12" :md="6">
-                <a-card class="rule-card" :bordered="false">
-                  <template #title>
-                    <div class="rule-title"><icon-file /> 发布题解</div>
-                  </template>
-                  <div class="rule-points">+30积分</div>
-                </a-card>
-              </a-col>
-            </a-row>
-            <div class="motivation-text">
-              积分越高，排名越靠前。快来参与吧！
-            </div>
-          </a-typography-paragraph>
-        </a-card>
-      </a-col>
-    </a-row>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <h1 class="page-title">{{ t("leaderboard.pageTitle") }}</h1>
+      <p class="page-subtitle">{{ t("leaderboard.pageSubtitle") }}</p>
+    </div>
 
-    <a-row>
-      <a-col :span="24">
-        <PointsLeaderboard />
-      </a-col>
-    </a-row>
+    <!-- 积分规则卡片 -->
+    <div class="rules-section">
+      <div class="rules-grid">
+        <div class="rule-card">
+          <div class="rule-icon">
+            <icon-calendar />
+          </div>
+          <div class="rule-content">
+            <div class="rule-title">{{ t("leaderboard.dailyCheckin") }}</div>
+            <div class="rule-points">{{ t("leaderboard.dailyPoints") }}</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon">
+            <icon-code-block />
+          </div>
+          <div class="rule-content">
+            <div class="rule-title">{{ t("leaderboard.submitQuestion") }}</div>
+            <div class="rule-points">{{ t("leaderboard.submitPoints") }}</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon">
+            <icon-check-circle />
+          </div>
+          <div class="rule-content">
+            <div class="rule-title">
+              {{ t("leaderboard.questionAccepted") }}
+            </div>
+            <div class="rule-points">{{ t("leaderboard.acceptedPoints") }}</div>
+          </div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon">
+            <icon-file />
+          </div>
+          <div class="rule-content">
+            <div class="rule-title">{{ t("leaderboard.publishSolution") }}</div>
+            <div class="rule-points">{{ t("leaderboard.solutionPoints") }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <a-row :gutter="16" class="info-section">
-      <a-col :span="24">
-        <a-alert type="info">
-          <template #icon>
-            <icon-info-circle />
-          </template>
-          <template #title>关于积分排行榜</template>
-          <template #default>
-            <p>
-              排行榜数据每小时更新一次。您可以选择查看日榜、周榜、月榜或总榜。
-            </p>
-            <p>如果您有任何问题或建议，请联系我们的支持团队。</p>
-          </template>
-        </a-alert>
-      </a-col>
-    </a-row>
+    <!-- 排行榜组件 -->
+    <PointsLeaderboard />
+
+    <!-- 提示信息 -->
+    <div class="info-section">
+      <div class="info-card">
+        <icon-info-circle class="info-icon" />
+        <div class="info-content">
+          <div class="info-title">{{ t("leaderboard.aboutTitle") }}</div>
+          <div class="info-text">
+            {{ t("leaderboard.aboutDesc") }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import {
   IconCalendar,
   IconCodeBlock,
@@ -89,169 +80,203 @@ import {
 } from "@arco-design/web-vue/es/icon";
 import PointsLeaderboard from "@/components/PointsLeaderboard.vue";
 
+const { t } = useI18n();
+
 onMounted(() => {
-  document.title = "积分排行榜 - CodeSmart";
+  document.title = t("leaderboard.pageTitle") + " - CodeSmart";
 });
 </script>
 
 <style scoped>
+/* ========================================
+   积分排行榜页面 - 简约大方
+   ======================================== */
+
 .leaderboard-view {
-  padding: 24px;
-  /* max-width: 1200px; */ /* 移除最大宽度限制，允许表格更宽 */
+  padding: var(--spacing-xl);
+  max-width: var(--content-max-width);
   margin: 0 auto;
 }
 
-.intro-card {
-  margin-bottom: 28px;
-  border-radius: 12px;
-  background-color: var(--color-bg-2);
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+/* ========================================
+   页面头部
+   ======================================== */
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
 }
 
-.intro-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  transform: translateY(-4px);
+.page-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-sm) 0;
 }
 
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.page-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-color-secondary);
+  margin: 0;
 }
 
-.points-rules {
-  margin-top: 24px;
-  margin-bottom: 24px;
+/* ========================================
+   积分规则
+   ======================================== */
+
+.rules-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
 }
 
 .rule-card {
-  margin-bottom: 20px;
-  border-radius: 12px;
-  background-color: var(--color-fill-2);
-  transition: all 0.3s ease;
-  height: 100%;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
 }
 
 .rule-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-color: var(--primary-light-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.rule-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-lighter-color);
+  border-radius: var(--radius-md);
+  color: var(--primary-color);
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.rule-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .rule-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  color: var(--color-text-1);
-  font-size: 16px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .rule-points {
-  font-size: 22px;
-  font-weight: bold;
-  color: #ff7d00;
-  text-align: center;
-  padding: 16px 0;
-  margin-top: auto;
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--warning-color);
 }
 
-.motivation-text {
-  margin-top: 24px;
-  font-weight: 600;
-  text-align: center;
-  font-size: 18px;
-  color: var(--color-text-1);
-  background: linear-gradient(
-    90deg,
-    var(--color-primary-light-4),
-    var(--color-primary),
-    var(--color-primary-light-4)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: shine 3s infinite linear;
-}
+/* ========================================
+   提示信息
+   ======================================== */
 
 .info-section {
-  margin-top: 28px;
-  margin-bottom: 28px;
-  animation: fadeIn 0.8s ease-in-out;
+  margin-top: var(--spacing-xl);
 }
 
-/* 深色模式适配 */
-:root[data-theme="dark"] .intro-card {
-  background-color: var(--color-bg-2);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+.info-card {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background: var(--primary-lighter-color);
+  border: 1px solid var(--primary-light-color);
+  border-radius: var(--radius-lg);
 }
 
-:root[data-theme="dark"] .rule-card {
-  background-color: var(--color-fill-2);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+.info-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-:root[data-theme="dark"] .rule-points {
-  color: #ff9500;
+.info-content {
+  flex: 1;
 }
 
-:root[data-theme="dark"] .motivation-text {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary-light-3),
-    var(--color-primary),
-    var(--color-primary-light-3)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
+.info-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
-/* 动画效果 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.info-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-regular);
+  line-height: var(--line-height-relaxed);
 }
 
-@keyframes shine {
-  0% {
-    background-position: 0%;
-  }
-  100% {
-    background-position: 400%;
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 992px) {
+  .rules-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .leaderboard-view {
-    padding: 16px;
+    padding: var(--spacing-md);
   }
 
-  .card-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .page-title {
+    font-size: var(--font-size-2xl);
   }
 
-  .rule-points {
-    font-size: 18px;
-    padding: 12px 0;
+  .rules-grid {
+    grid-template-columns: 1fr;
   }
 
-  .motivation-text {
-    font-size: 16px;
+  .rule-card {
+    padding: var(--spacing-md);
   }
 
-  .rule-title {
-    font-size: 14px;
+  .rule-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
   }
+}
+
+/* ========================================
+   深色模式
+   ======================================== */
+
+[data-theme="dark"] .rule-card {
+  background: var(--bg-color-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .rule-card:hover {
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .rule-icon {
+  background: var(--primary-light-color);
+}
+
+[data-theme="dark"] .info-card {
+  background: var(--primary-light-color);
+  border-color: var(--primary-color);
 }
 </style>

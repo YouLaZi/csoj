@@ -1,13 +1,15 @@
 <template>
   <div class="system-announcement">
-    <a-card title="系统公告" :bordered="false">
+    <a-card :title="$t('home.systemAnnouncement')" :bordered="false">
       <template #extra>
-        <a-tag color="red" v-if="hasNewAnnouncement">新</a-tag>
+        <a-tag color="red" v-if="hasNewAnnouncement">{{
+          $t("announcement.new")
+        }}</a-tag>
       </template>
 
       <a-empty
         v-if="!announcements || announcements.length === 0"
-        description="暂无公告"
+        :description="$t('announcement.noAnnouncements')"
       />
 
       <a-list v-else :max-height="300">
@@ -16,7 +18,9 @@
             <template #title>
               <div class="announcement-title">
                 <span>{{ item.title }}</span>
-                <a-tag v-if="item.isNew" color="red" size="small">新</a-tag>
+                <a-tag v-if="item.isNew" color="red" size="small">{{
+                  $t("announcement.new")
+                }}</a-tag>
               </div>
             </template>
             <template #description>

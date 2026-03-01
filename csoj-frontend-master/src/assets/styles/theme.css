@@ -1,287 +1,356 @@
-:root {
-  /* 基础颜色 - 浅色模式 */
-  --primary-color: #165DFF;
-  --primary-hover-color: #4080FF;
-  --success-color: #00B42A;
-  --warning-color: #FF7D00;
-  --danger-color: #F53F3F;
-  --info-color: #86909C;
-  
-  /* 背景颜色 - 浅色模式 */
-  --bg-color: #FFFFFF;
-  --bg-color-secondary: #F2F3F5;
-  --bg-color-tertiary: #E5E6EB;
-  
-  /* 文本颜色 - 浅色模式 */
-  --text-color-primary: #1D2129;
-  --text-color-regular: #4E5969;
-  --text-color-secondary: #86909C;
-  --text-color-placeholder: #C9CDD4;
-  
-  /* 边框颜色 - 浅色模式 */
-  --border-color: #E5E6EB;
-  --border-color-light: #F2F3F5;
-  
-  /* 阴影 - 浅色模式 */
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  
-  /* 代码编辑器 - 浅色模式 */
-  --editor-bg: #FFFFFF;
-  --editor-line-number: #C9CDD4;
+/* ========================================
+   智码 CSOJ - 简约大方设计系统
+   Minimalist & Elegant Design System
+   ======================================== */
 
-  /* 链接颜色 - 浅色模式 */
+/* 导入优雅字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* ========================================
+     核心色彩 - 浅色模式
+     采用柔和、内敛的配色方案
+     ======================================== */
+
+  /* 主色调 - 沉稳的靛蓝 */
+  --primary-color: #4F6F8F;
+  --primary-hover-color: #3D5A73;
+  --primary-light-color: #E8EEF4;
+  --primary-lighter-color: #F4F7FA;
+
+  /* 功能色 */
+  --success-color: #5A9A6E;
+  --warning-color: #C4954A;
+  --danger-color: #C45C5C;
+  --info-color: #7A8B9A;
+
+  /* ========================================
+     背景层次 - 营造空间感
+     ======================================== */
+  --bg-color: #FAFBFC;
+  --bg-color-secondary: #FFFFFF;
+  --bg-color-tertiary: #F5F7F9;
+  --bg-color-elevated: #FFFFFF;
+
+  /* ========================================
+     文字层次 - 清晰的视觉层级
+     ======================================== */
+  --text-color-primary: #2C3E50;
+  --text-color-regular: #5A6D7E;
+  --text-color-secondary: #8A9AAA;
+  --text-color-placeholder: #B8C5D1;
+  --text-color-disabled: #C5D0DA;
+
+  /* ========================================
+     边框与分割
+     ======================================== */
+  --border-color: #E8EDF2;
+  --border-color-light: #F0F4F7;
+  --border-color-dark: #D4DDE5;
+
+  /* ========================================
+     阴影 - 柔和、细腻
+     ======================================== */
+  --shadow-sm: 0 1px 3px rgba(44, 62, 80, 0.04);
+  --shadow-md: 0 4px 12px rgba(44, 62, 80, 0.06);
+  --shadow-lg: 0 8px 24px rgba(44, 62, 80, 0.08);
+  --shadow-xl: 0 16px 48px rgba(44, 62, 80, 0.10);
+  --box-shadow: var(--shadow-sm);
+
+  /* ========================================
+     圆角 - 统一且柔和
+     ======================================== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ========================================
+     间距系统
+     ======================================== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* ========================================
+     排版系统
+     ======================================== */
+  --font-family-serif: 'Noto Serif SC', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+
+  --line-height-tight: 1.4;
+  --line-height-base: 1.6;
+  --line-height-relaxed: 1.8;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ========================================
+     动效系统 - 流畅、克制
+     ======================================== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.35s ease;
+  --transition-slower: 0.5s ease;
+
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ========================================
+     组件特定变量
+     ======================================== */
+  --header-height: 64px;
+  --sidebar-width: 240px;
+  --content-max-width: 1400px;
+  --card-padding: var(--spacing-lg);
+  --card-radius: var(--radius-lg);
+
+  /* 代码编辑器 */
+  --editor-bg: #FAFBFC;
+  --editor-line-number: #B8C5D1;
+
+  /* 链接 */
   --link-color: var(--primary-color);
   --link-hover-color: var(--primary-hover-color);
-  --link-active-color: #0E42D2; /* A darker shade for active links */
 
-  /* 禁用状态 - 浅色模式 */
-  --disabled-text-color: #A9AEB8; /* Lighter than secondary text */
-  --disabled-bg-color: #F2F3F5;   /* Similar to secondary bg */
-  --disabled-border-color: #E5E6EB; /* Similar to border color */
-
-  /* 焦点状态 - 浅色模式 */
-  --focus-ring-color: rgba(22, 93, 255, 0.5); /* Primary color with alpha */
+  /* 焦点状态 */
+  --focus-ring-color: rgba(79, 111, 143, 0.3);
+  --focus-ring-width: 2px;
 }
 
-/* 深色模式变量 */
+/* ========================================
+   深色模式 - 沉稳、护眼
+   ======================================== */
 [data-theme='dark'] {
-  /* 基础颜色 - 深色模式 */
-  --primary-color: #3C7EFF;
-  --primary-hover-color: #306FFF;
-  --success-color: #00B42A;
-  --warning-color: #FF9A2E;
-  --danger-color: #F76965;
-  --info-color: #86909C;
-  
-  /* 背景颜色 - 深色模式 */
-  --bg-color: #17171A;
-  --bg-color-secondary: #2E2E30;
-  --bg-color-tertiary: #3E3E40;
-  
-  /* 文本颜色 - 深色模式 */
-  --text-color-primary: #FFFFFF;
-  --text-color-regular: #C9CDD4;
-  --text-color-secondary: #86909C;
-  --text-color-placeholder: #4E5969;
-  
-  /* 边框颜色 - 深色模式 */
-  --border-color: #3E3E40;
-  --border-color-light: #2E2E30;
-  
-  /* 阴影 - 深色模式 */
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  
-  /* 代码编辑器 - 深色模式 */
-  --editor-bg: #2E2E30;
-  --editor-line-number: #4E5969;
+  /* 主色调 - 深色模式下提亮 */
+  --primary-color: #6B9BC3;
+  --primary-hover-color: #7EABD0;
+  --primary-light-color: #2A3A4A;
+  --primary-lighter-color: #1E2A36;
 
-  /* 链接颜色 - 深色模式 */
-  --link-color: var(--primary-color); /* Uses dark mode primary */
-  --link-hover-color: var(--primary-hover-color);
-  --link-active-color: #5C8FFF; /* A lighter shade for active links in dark mode */
+  /* 功能色 */
+  --success-color: #6BB37E;
+  --warning-color: #D4AA5A;
+  --danger-color: #D46B6B;
+  --info-color: #8A9BB0;
 
-  /* 禁用状态 - 深色模式 */
-  --disabled-text-color: #5A5A5C; /* Darker than placeholder text */
-  --disabled-bg-color: #242427;   /* Darker than secondary bg */
-  --disabled-border-color: #333335; /* Darker than border color */
+  /* 背景层次 */
+  --bg-color: #14181E;
+  --bg-color-secondary: #1C2229;
+  --bg-color-tertiary: #242C36;
+  --bg-color-elevated: #1C2229;
 
-  /* 焦点状态 - 深色模式 */
-  --focus-ring-color: rgba(60, 126, 255, 0.6); /* Dark mode primary color with alpha */
-  
-  /* 组件特定样式 - 深色模式 */
-  --card-bg: #2E2E30;
-  --table-header-bg: #3E3E40;
-  --table-row-hover-bg: #4E5969;
-  --chart-bg: #2E2E30;
-  --chart-text: #C9CDD4;
-  --chart-grid: #3E3E40;
-  --chart-axis: #86909C;
-  --tooltip-bg: #3E3E40;
-  --tooltip-text: #FFFFFF;
-  --modal-bg: #2E2E30;
-  --dropdown-bg: #2E2E30;
-  --menu-bg: #2E2E30;
-  --menu-hover-bg: #3E3E40;
-  --scrollbar-track: #2E2E30;
-  --scrollbar-thumb: #4E5969;
+  /* 文字层次 */
+  --text-color-primary: #E8EDF2;
+  --text-color-regular: #B8C5D1;
+  --text-color-secondary: #7A8B9A;
+  --text-color-placeholder: #5A6D7E;
+  --text-color-disabled: #4A5A6A;
+
+  /* 边框 */
+  --border-color: #2A3440;
+  --border-color-light: #222A34;
+  --border-color-dark: #364050;
+
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.35);
+  --box-shadow: var(--shadow-sm);
+
+  /* 代码编辑器 */
+  --editor-bg: #1C2229;
+  --editor-line-number: #4A5A6A;
+
+  /* 焦点状态 */
+  --focus-ring-color: rgba(107, 155, 195, 0.4);
 }
 
-/* 深色模式下的组件样式覆盖 */
-[data-theme='dark'] .arco-card {
-  background-color: var(--card-bg);
-  border-color: var(--border-color);
-  color: var(--text-color-primary);
-}
-
-[data-theme='dark'] .arco-table-th {
-  background-color: var(--table-header-bg);
-  color: var(--text-color-primary);
-}
-
-[data-theme='dark'] .arco-table-tr:hover {
-  background-color: var(--table-row-hover-bg);
-}
-
-[data-theme='dark'] .arco-input {
-  background-color: var(--bg-color-secondary);
-  border-color: var(--border-color);
-  color: var(--text-color-primary);
-}
-
-[data-theme='dark'] .arco-select-view {
-  background-color: var(--bg-color-secondary);
-  border-color: var(--border-color);
-  color: var(--text-color-primary);
-}
-
-[data-theme='dark'] .arco-dropdown-menu {
-  background-color: var(--dropdown-bg);
-  border-color: var(--border-color);
-}
-
-[data-theme='dark'] .arco-modal {
-  background-color: var(--modal-bg);
-}
-
-[data-theme='dark'] .arco-tabs-nav {
-  color: var(--text-color-regular);
-}
-
-[data-theme='dark'] .arco-tabs-tab-active {
-  color: var(--primary-color);
-}
-
-[data-theme='dark'] .arco-menu {
-  background-color: var(--menu-bg);
-}
-
-[data-theme='dark'] .arco-menu-item:hover {
-  background-color: var(--menu-hover-bg);
-}
-
-/* 统一Arco Design CSS变量映射 */
+/* ========================================
+   Arco Design 组件变量映射
+   ======================================== */
 :root {
-  /* Arco Design 变量映射到自定义变量 */
   --color-bg-1: var(--bg-color);
   --color-bg-2: var(--bg-color-secondary);
   --color-bg-3: var(--bg-color-tertiary);
+  --color-bg-4: var(--bg-color-elevated);
   --color-text-1: var(--text-color-primary);
   --color-text-2: var(--text-color-regular);
   --color-text-3: var(--text-color-secondary);
+  --color-text-4: var(--text-color-placeholder);
   --color-border: var(--border-color);
-  --color-border-1: var(--border-color);
-  --color-border-2: var(--border-color-light);
+  --color-border-1: var(--border-color-light);
+  --color-border-2: var(--border-color);
+  --color-border-3: var(--border-color-dark);
   --color-primary: var(--primary-color);
-  --color-primary-light-1: var(--primary-hover-color);
-  --color-primary-light-2: var(--primary-hover-color);
-  --color-primary-light-3: var(--primary-hover-color);
-  --color-primary-light-4: var(--primary-hover-color);
-  --color-primary-light-5: var(--primary-hover-color);
-  --color-primary-light-6: var(--primary-hover-color);
   --color-primary-6: var(--primary-color);
-  --color-success-light-3: var(--success-color);
-  --color-success-light-4: var(--success-color);
-  --color-success-light-5: var(--success-color);
-  --color-danger-light-4: var(--danger-color);
-  --color-fill-1: var(--bg-color-secondary);
-  --color-fill-2: var(--bg-color-tertiary);
-  --color-fill-3: var(--bg-color-tertiary);
-  --color-fill-4: var(--bg-color-tertiary);
-  --color-white: #ffffff;
-  --color-neutral-2: #86909C;
-  --color-neutral-3: #4E5969;
-}
-
-[data-theme='dark'] {
-  /* 深色模式下的Arco Design变量映射 */
-  --color-bg-1: var(--bg-color);
-  --color-bg-2: var(--bg-color-secondary);
-  --color-bg-3: var(--bg-color-tertiary);
-  --color-text-1: var(--text-color-primary);
-  --color-text-2: var(--text-color-regular);
-  --color-text-3: var(--text-color-secondary);
-  --color-border: var(--border-color);
-  --color-border-1: var(--border-color);
-  --color-border-2: var(--border-color-light);
-  --color-primary: var(--primary-color);
   --color-primary-light-1: var(--primary-hover-color);
-  --color-primary-light-2: var(--primary-hover-color);
-  --color-primary-light-3: var(--primary-hover-color);
-  --color-primary-light-4: var(--primary-hover-color);
-  --color-primary-light-5: var(--primary-hover-color);
-  --color-primary-light-6: var(--primary-hover-color);
-  --color-primary-6: var(--primary-color);
-  --color-success-light-3: var(--success-color);
-  --color-success-light-4: var(--success-color);
-  --color-success-light-5: var(--success-color);
-  --color-danger-light-4: var(--danger-color);
-  --color-fill-1: var(--bg-color-secondary);
+  --color-primary-light-2: var(--primary-light-color);
+  --color-primary-light-3: var(--primary-lighter-color);
+  --color-primary-light-4: var(--primary-lighter-color);
+  --color-link-1: var(--primary-color);
+  --color-link-2: var(--primary-hover-color);
+  --color-link-3: var(--primary-hover-color);
+  --color-success-6: var(--success-color);
+  --color-warning-6: var(--warning-color);
+  --color-danger-6: var(--danger-color);
+  --color-fill-1: var(--bg-color-tertiary);
   --color-fill-2: var(--bg-color-tertiary);
-  --color-fill-3: var(--bg-color-tertiary);
-  --color-fill-4: var(--bg-color-tertiary);
-  --color-white: var(--text-color-primary);
+  --color-fill-3: var(--border-color);
+  --color-fill-4: var(--border-color-dark);
   --color-neutral-2: var(--text-color-secondary);
   --color-neutral-3: var(--text-color-regular);
 }
 
-/* 响应式断点 */
+[data-theme='dark'] {
+  --color-bg-1: var(--bg-color);
+  --color-bg-2: var(--bg-color-secondary);
+  --color-bg-3: var(--bg-color-tertiary);
+  --color-bg-4: var(--bg-color-elevated);
+  --color-text-1: var(--text-color-primary);
+  --color-text-2: var(--text-color-regular);
+  --color-text-3: var(--text-color-secondary);
+  --color-text-4: var(--text-color-placeholder);
+  --color-border: var(--border-color);
+  --color-border-1: var(--border-color-light);
+  --color-border-2: var(--border-color);
+  --color-border-3: var(--border-color-dark);
+  --color-primary: var(--primary-color);
+  --color-primary-6: var(--primary-color);
+  --color-primary-light-1: var(--primary-hover-color);
+  --color-primary-light-2: var(--primary-light-color);
+  --color-primary-light-3: var(--primary-lighter-color);
+  --color-primary-light-4: var(--primary-lighter-color);
+  --color-link-1: var(--primary-color);
+  --color-link-2: var(--primary-hover-color);
+  --color-link-3: var(--primary-hover-color);
+  --color-success-6: var(--success-color);
+  --color-warning-6: var(--warning-color);
+  --color-danger-6: var(--danger-color);
+  --color-fill-1: var(--bg-color-tertiary);
+  --color-fill-2: var(--bg-color-tertiary);
+  --color-fill-3: var(--border-color);
+  --color-fill-4: var(--border-color-dark);
+  --color-neutral-2: var(--text-color-secondary);
+  --color-neutral-3: var(--text-color-regular);
+}
+
+/* ========================================
+   响应式断点
+   ======================================== */
 :root {
   --breakpoint-xs: 480px;
   --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1600px;
 }
 
-/* 全局响应式样式 */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-}
-
-/* 全局过渡效果 */
+/* ========================================
+   全局基础样式
+   ======================================== */
 body {
-  transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
   background-color: var(--bg-color);
   color: var(--text-color-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-slow), color var(--transition-slow);
 }
 
-/* 应用全局样式 */
-.app-container {
-  background-color: var(--bg-color);
+/* 标题使用衬线字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-serif);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-color-primary);
+  line-height: var(--line-height-tight);
 }
 
-/* 卡片样式 */
+/* 优雅的链接样式 */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* ========================================
+   卡片样式 - 简约精致
+   ======================================== */
 .app-card {
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  box-shadow: var(--box-shadow);
-  transition: box-shadow 0.3s;
+  background-color: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--card-padding);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
 
 .app-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
-/* 按钮样式 */
+/* ========================================
+   按钮样式 - 克制优雅
+   ======================================== */
 .app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--primary-color);
-  color: white;
+  color: #FFFFFF;
   border: none;
-  border-radius: 4px;
-  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all var(--transition-fast);
 }
 
 .app-button:hover {
   background-color: var(--primary-hover-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
-/* 输入框样式 */
+.app-button:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   输入框样式 - 清爽简洁
+   ======================================== */
 .app-input,
 input[type='text'],
 input[type='password'],
@@ -292,9 +361,21 @@ textarea {
   background-color: var(--bg-color-secondary);
   border: 1px solid var(--border-color);
   color: var(--text-color-primary);
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.app-input:hover,
+input[type='text']:hover,
+input[type='password']:hover,
+input[type='email']:hover,
+input[type='number']:hover,
+input[type='search']:hover,
+textarea:hover {
+  border-color: var(--border-color-dark);
 }
 
 .app-input:focus,
@@ -305,7 +386,7 @@ input[type='number']:focus,
 input[type='search']:focus,
 textarea:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px var(--focus-ring-color);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus-ring-color);
   outline: none;
 }
 
@@ -314,43 +395,379 @@ textarea::placeholder {
   color: var(--text-color-placeholder);
 }
 
-/* 链接样式 */
-a {
-  color: var(--link-color);
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-a:hover {
-  color: var(--link-hover-color);
-  text-decoration: underline;
-}
-
-a:active {
-  color: var(--link-active-color);
-}
-
-/* 禁用元素样式 */
+/* ========================================
+   禁用状态
+   ======================================== */
 .disabled,
 [disabled] {
-  color: var(--disabled-text-color) !important;
-  background-color: var(--disabled-bg-color) !important;
-  border-color: var(--disabled-border-color) !important;
+  color: var(--text-color-disabled) !important;
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color-light) !important;
   cursor: not-allowed !important;
   opacity: 0.7;
 }
 
-/* 旧的 .app-input，如果仍需保留，可以重命名或调整 */
-.app-input-legacy { /* Renamed to avoid conflict if needed */
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  color: var(--text-color-primary);
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: border-color 0.3s;
+/* ========================================
+   深色模式 - 全局覆盖
+   ======================================== */
+
+/* 页面背景 */
+[data-theme='dark'] body,
+[data-theme='dark'] html,
+[data-theme='dark'] #app,
+[data-theme='dark'] .app-container {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color-primary) !important;
 }
 
-.app-input:focus {
-  border-color: var(--primary-color);
-  outline: none;
+/* 布局组件 */
+[data-theme='dark'] .arco-layout,
+[data-theme='dark'] .arco-layout-content,
+[data-theme='dark'] .arco-layout-header,
+[data-theme='dark'] .arco-layout-footer {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+/* 卡片和容器 */
+[data-theme='dark'] .arco-card,
+[data-theme='dark'] .arco-collapse,
+[data-theme='dark'] .arco-collapse-item,
+[data-theme='dark'] .arco-list,
+[data-theme='dark'] .arco-list-item,
+[data-theme='dark'] .arco-comment,
+[data-theme='dark'] .arco-comment-inner,
+[data-theme='dark'] .arco-descriptions {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 表单元素 - 输入框 */
+[data-theme='dark'] .arco-input,
+[data-theme='dark'] .arco-textarea,
+[data-theme='dark'] .arco-input-wrapper,
+[data-theme='dark'] .arco-input-password,
+[data-theme='dark'] .arco-input-search,
+[data-theme='dark'] .arco-select .arco-select-view,
+[data-theme='dark'] .arco-picker,
+[data-theme='dark'] .arco-input-number,
+[data-theme='dark'] .arco-cascader .arco-cascader-view {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-input::placeholder,
+[data-theme='dark'] .arco-textarea::placeholder,
+[data-theme='dark'] .arco-input-wrapper::placeholder,
+[data-theme='dark'] .arco-input-password::placeholder,
+[data-theme='dark'] .arco-input-search::placeholder {
+  color: var(--text-color-placeholder) !important;
+}
+
+/* 输入框内部元素 */
+[data-theme='dark'] .arco-input-inner,
+[data-theme='dark'] .arco-textarea-inner,
+[data-theme='dark'] .arco-input-password .arco-input-inner {
+  color: var(--text-color-primary) !important;
+}
+
+/* 输入框悬停和聚焦状态 */
+[data-theme='dark'] .arco-input:hover,
+[data-theme='dark'] .arco-textarea:hover,
+[data-theme='dark'] .arco-input-wrapper:hover,
+[data-theme='dark'] .arco-input-password:hover {
+  border-color: var(--border-color-dark) !important;
+}
+
+[data-theme='dark'] .arco-input:focus,
+[data-theme='dark'] .arco-textarea:focus,
+[data-theme='dark'] .arco-input-wrapper:focus-within,
+[data-theme='dark'] .arco-input-password:focus-within {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 2px var(--focus-ring-color) !important;
+}
+
+/* Select 下拉选择器 */
+[data-theme='dark'] .arco-select-view-value,
+[data-theme='dark'] .arco-select-view-value-text {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-select-view-suffix .arco-select-view-icon {
+  color: var(--text-color-secondary) !important;
+}
+
+/* 日期选择器 */
+[data-theme='dark'] .arco-picker-input,
+[data-theme='dark'] .arco-picker-value {
+  color: var(--text-color-primary) !important;
+}
+
+/* 标签输入框 */
+[data-theme='dark'] .arco-input-tag,
+[data-theme='dark'] .arco-input-tag .arco-input-tag-input {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-input-tag .arco-tag {
+  background-color: var(--primary-light-color) !important;
+  color: var(--primary-color) !important;
+}
+
+/* 搜索框 */
+[data-theme='dark'] .arco-input-search .arco-input-wrapper {
+  background-color: var(--bg-color-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 按钮 */
+[data-theme='dark'] .arco-btn-secondary,
+[data-theme='dark'] .arco-btn-outline {
+  background-color: transparent !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-btn-secondary:hover,
+[data-theme='dark'] .arco-btn-outline:hover {
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+[data-theme='dark'] .arco-btn-text {
+  color: var(--text-color-primary) !important;
+}
+
+/* 模态框和抽屉 */
+[data-theme='dark'] .arco-modal,
+[data-theme='dark'] .arco-modal-body,
+[data-theme='dark'] .arco-modal-header,
+[data-theme='dark'] .arco-modal-footer,
+[data-theme='dark'] .arco-drawer,
+[data-theme='dark'] .arco-drawer-body,
+[data-theme='dark'] .arco-drawer-header,
+[data-theme='dark'] .arco-drawer-footer {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 下拉菜单 */
+[data-theme='dark'] .arco-dropdown,
+[data-theme='dark'] .arco-dropdown-menu,
+[data-theme='dark'] .arco-dropdown-option {
+  background-color: var(--bg-color-elevated) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-dropdown-option:hover {
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+/* 表格 */
+[data-theme='dark'] .arco-table,
+[data-theme='dark'] .arco-table-container,
+[data-theme='dark'] .arco-table-body,
+[data-theme='dark'] .arco-table-head {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-table-th {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-table-td {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme='dark'] .arco-table-tr:hover .arco-table-td {
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+/* 标签页 */
+[data-theme='dark'] .arco-tabs,
+[data-theme='dark'] .arco-tabs-nav,
+[data-theme='dark'] .arco-tabs-content {
+  background-color: transparent !important;
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-tabs-tab {
+  color: var(--text-color-regular) !important;
+}
+
+[data-theme='dark'] .arco-tabs-tab-active {
+  color: var(--primary-color) !important;
+}
+
+/* 消息和通知 */
+[data-theme='dark'] .arco-message,
+[data-theme='dark'] .arco-notification {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+/* 分页 */
+[data-theme='dark'] .arco-pagination {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-pagination-item,
+[data-theme='dark'] .arco-pagination-item-active {
+  background-color: var(--bg-color-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color-primary) !important;
+}
+
+/* 徽章和标签 */
+[data-theme='dark'] .arco-tag {
+  background-color: var(--bg-color-tertiary) !important;
+  color: var(--text-color-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 分割线 */
+[data-theme='dark'] .arco-divider {
+  border-color: var(--border-color) !important;
+}
+
+/* 空状态 */
+[data-theme='dark'] .arco-empty {
+  color: var(--text-color-secondary) !important;
+}
+
+/* 工具提示 */
+[data-theme='dark'] .arco-tooltip-content {
+  background-color: var(--bg-color-elevated) !important;
+  color: var(--text-color-primary) !important;
+}
+
+/* 头像 */
+[data-theme='dark'] .arco-avatar {
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+/* 进度条 */
+[data-theme='dark'] .arco-progress-line-text {
+  color: var(--text-color-primary) !important;
+}
+
+/* 滚动条 */
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: var(--bg-color-secondary);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: var(--border-color-dark);
+}
+
+/* 表单项 */
+[data-theme='dark'] .arco-form-label-item > label {
+  color: var(--text-color-primary) !important;
+}
+
+/* 步骤条 */
+[data-theme='dark'] .arco-steps {
+  color: var(--text-color-primary) !important;
+}
+
+/* 结果页 */
+[data-theme='dark'] .arco-result {
+  color: var(--text-color-primary) !important;
+}
+
+/* 统计数值 */
+[data-theme='dark'] .arco-statistic {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-statistic-title {
+  color: var(--text-color-secondary) !important;
+}
+
+[data-theme='dark'] .arco-statistic-value {
+  color: var(--text-color-primary) !important;
+}
+
+/* 时间轴 */
+[data-theme='dark'] .arco-timeline-item-content {
+  color: var(--text-color-primary) !important;
+}
+
+/* 树形控件 */
+[data-theme='dark'] .arco-tree {
+  color: var(--text-color-primary) !important;
+}
+
+[data-theme='dark'] .arco-tree-node:hover {
+  background-color: var(--bg-color-tertiary) !important;
+}
+
+/* 上传组件 */
+[data-theme='dark'] .arco-upload-list-item {
+  background-color: var(--bg-color-secondary) !important;
+  color: var(--text-color-primary) !important;
+}
+
+/* 徽标 */
+[data-theme='dark'] .arco-badge-number,
+[data-theme='dark'] .arco-badge-dot {
+  background-color: var(--danger-color) !important;
+}
+
+/* ========================================
+   响应式样式
+   ======================================== */
+@media (max-width: 768px) {
+  body {
+    font-size: var(--font-size-sm);
+  }
+
+  :root {
+    --card-padding: var(--spacing-md);
+    --card-radius: var(--radius-md);
+  }
+}
+
+/* ========================================
+   滚动条美化
+   ======================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color-dark);
+}
+
+/* ========================================
+   选中文字样式
+   ======================================== */
+::selection {
+  background-color: var(--primary-light-color);
+  color: var(--text-color-primary);
+}
+
+/* ========================================
+   焦点可见性 - 无障碍访问
+   ======================================== */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: 2px;
 }

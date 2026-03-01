@@ -18,9 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue";
-
-const router = useRouter();
+// useRouter is available via $router in template
 </script>
 
 <style scoped>

@@ -4,20 +4,25 @@ import ArcoVue from "@arco-design/web-vue";
 import "@arco-design/web-vue/dist/arco.css";
 import router from "./router";
 import store from "./store";
+import i18n from "./locales";
 import "@/plugins/axios";
 import "@/access";
 import "bytemd/dist/index.css";
 import { registerDirectives } from "./directives";
+import { LocaleManager } from "./utils/localeManager";
 
 const app = createApp(App);
 
 // 注册全局指令
 registerDirectives(app);
 
+// 初始化语言设置
+LocaleManager.init();
+
 // 应用启动时初始化 token
 store.dispatch("user/initToken");
 
-app.use(ArcoVue).use(store).use(router).mount("#app");
+app.use(ArcoVue).use(store).use(router).use(i18n).mount("#app");
 
 // 导入错误处理和日志服务
 import ErrorService from "./services/ErrorService";

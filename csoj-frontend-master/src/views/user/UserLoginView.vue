@@ -1,57 +1,112 @@
 <template>
-  <div class="page-container">
-    <div id="userLoginView">
-      <div class="login-header">
-        <div class="logo-container">
-          <img src="@/assets/logo.png" class="logo" />
-          <h2>智码 CSOJ</h2>
-        </div>
-        <div class="login-decoration"></div>
+  <div class="login-page">
+    <div class="login-container">
+      <!-- 装饰背景 -->
+      <div class="decoration">
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+        <div class="decoration-circle circle-3"></div>
       </div>
-      <a-form
-        label-align="left"
-        auto-label-width
-        :model="form"
-        @submit="handleSubmit"
-      >
-        <a-form-item field="userAccount" label="账号">
-          <a-input v-model="form.userAccount" placeholder="请输入账号" />
-        </a-form-item>
-        <a-form-item
-          field="userPassword"
-          tooltip="密码不少于 8 位"
-          label="密码"
+
+      <!-- 登录卡片 -->
+      <div class="login-card">
+        <!-- 头部 -->
+        <div class="login-header">
+          <div class="logo-wrapper">
+            <img src="@/assets/logo.png" class="logo" alt="Logo" />
+          </div>
+          <h1 class="title">{{ $t("app.name") }}</h1>
+          <p class="subtitle">{{ $t("app.title") }}</p>
+        </div>
+
+        <!-- 表单 -->
+        <a-form
+          layout="vertical"
+          :model="form"
+          @submit="handleSubmit"
+          class="login-form"
         >
-          <a-input-password
-            v-model="form.userPassword"
-            placeholder="请输入密码"
-          />
-        </a-form-item>
-        <a-form-item field="verificationCode" label="验证码">
-          <div class="verification-container">
+          <a-form-item
+            field="userAccount"
+            :label="$t('form.userAccount')"
+            hide-label
+          >
             <a-input
-              v-model="form.verificationCode"
-              placeholder="请输入验证码"
-            />
-            <VerificationCode ref="verificationCodeRef" />
-          </div>
-        </a-form-item>
-        <a-form-item>
-          <div class="form-actions">
-            <a-button type="primary" html-type="submit" class="submit-btn">
-              登录
-            </a-button>
-            <div class="additional-actions">
-              <a-button @click="toForgotPassword" type="text"
-                >忘记密码？</a-button
+              v-model="form.userAccount"
+              :placeholder="$t('form.pleaseEnterAccount')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-user />
+              </template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item
+            field="userPassword"
+            :label="$t('form.password')"
+            hide-label
+          >
+            <a-input-password
+              v-model="form.userPassword"
+              :placeholder="$t('form.pleaseEnterPassword')"
+              size="large"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-lock />
+              </template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item
+            field="verificationCode"
+            :label="$t('form.verificationCode')"
+            hide-label
+          >
+            <div class="verification-row">
+              <a-input
+                v-model="form.verificationCode"
+                :placeholder="$t('form.pleaseEnterCode')"
+                size="large"
+                allow-clear
               >
-              <a-button @click="toRegister" type="text"
-                >没有账号？去注册</a-button
-              >
+                <template #prefix>
+                  <icon-safe />
+                </template>
+              </a-input>
+              <VerificationCode
+                ref="verificationCodeRef"
+                class="verification-code"
+              />
             </div>
-          </div>
-        </a-form-item>
-      </a-form>
+          </a-form-item>
+
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              size="large"
+              long
+              class="submit-btn"
+            >
+              {{ $t("user.login") }}
+            </a-button>
+          </a-form-item>
+        </a-form>
+
+        <!-- 底部链接 -->
+        <div class="login-footer">
+          <a-button type="text" @click="toForgotPassword" class="footer-link">
+            {{ $t("form.forgotPassword") }}
+          </a-button>
+          <span class="divider">|</span>
+          <a-button type="text" @click="toRegister" class="footer-link">
+            {{ $t("form.noAccount") }}{{ $t("form.goRegister") }}
+          </a-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -62,14 +117,14 @@ import { UserControllerService, UserLoginRequest } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { useI18n } from "vue-i18n";
 import VerificationCode from "@/components/VerificationCode.vue";
+import { IconUser, IconLock, IconSafe } from "@arco-design/web-vue/es/icon";
 
-// 验证码组件引用
+const { t } = useI18n();
+
 const verificationCodeRef = ref(null);
 
-/**
- * 表单信息
- */
 const form = reactive({
   userAccount: "",
   userPassword: "",
@@ -79,35 +134,20 @@ const form = reactive({
 const router = useRouter();
 const store = useStore();
 
-/**
- * 跳转到忘记密码页
- */
 const toForgotPassword = () => {
-  router.push({
-    path: "/user/forgot-password",
-  });
+  router.push({ path: "/user/forgot-password" });
 };
 
-/**
- * 跳转到注册页
- */
 const toRegister = () => {
-  router.push({
-    path: "/user/register",
-  });
+  router.push({ path: "/user/register" });
 };
 
-/**
- * 提交表单
- */
 const handleSubmit = async () => {
-  // 验证码校验
   if (!form.verificationCode) {
-    message.error("请输入验证码");
+    message.error(t("form.pleaseEnterCode"));
     return;
   }
 
-  // 验证码校验
   if (
     verificationCodeRef.value &&
     verificationCodeRef.value.code &&
@@ -115,7 +155,7 @@ const handleSubmit = async () => {
     form.verificationCode.toLowerCase() !==
       verificationCodeRef.value.code.value.toLowerCase()
   ) {
-    message.error("验证码错误");
+    message.error(t("form.codeError"));
     verificationCodeRef.value.refreshCode();
     form.verificationCode = "";
     return;
@@ -127,40 +167,30 @@ const handleSubmit = async () => {
   } as UserLoginRequest;
 
   try {
-    // 显示加载中提示
     const loadingMessage = message.loading({
-      content: "登录中...",
+      content: t("form.logining"),
       duration: 0,
     });
 
     const res = await UserControllerService.userLoginUsingPost(loginRequest);
-    // 关闭加载提示
     loadingMessage.close();
 
-    // 登录成功，跳转到主页
     if (res.code === 0) {
-      // 先设置token，再获取用户信息
       if (res.data.token) {
         await store.dispatch("user/setToken", res.data.token);
       }
       await store.dispatch("user/getLoginUser");
-      router.push({
-        path: "/",
-        replace: true,
-      });
+      router.push({ path: "/", replace: true });
     }
   } catch (error) {
-    // 处理网络错误
     console.error("登录请求错误:", error);
-
-    // 显示友好的错误信息
     if (error.message === "Network Error") {
-      message.error("网络连接错误，请检查网络连接或确认后端服务是否启动");
+      message.error(t("error.networkError"));
     } else {
-      message.error("登录失败，" + (error.message || "未知错误"));
+      message.error(
+        t("user.loginFailed") + "，" + (error.message || t("message.failed"))
+      );
     }
-
-    // 刷新验证码
     if (verificationCodeRef.value) {
       verificationCodeRef.value.refreshCode();
       form.verificationCode = "";
@@ -170,147 +200,311 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.page-container {
+/* ========================================
+   登录页面 - 简约优雅
+   ======================================== */
+
+.login-page {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #f0f5f9;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="none" stroke="%23e1e8ed" stroke-width="0.5"/></svg>');
-}
-
-#userLoginView {
-  max-width: 480px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 40px 48px;
-  background-color: rgba(255, 255, 255, 0.98);
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    var(--bg-color-tertiary) 100%
+  );
+  padding: var(--spacing-xl);
   position: relative;
   overflow: hidden;
-  border-top: 5px solid #34495e;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-#userLoginView:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-}
-
-.login-header {
-  margin-bottom: 32px;
-  text-align: center;
+.login-container {
+  width: 100%;
+  max-width: 420px;
   position: relative;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+/* ========================================
+   装饰元素
+   ======================================== */
+
+.decoration {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    var(--primary-lighter-color) 0%,
+    transparent 70%
+  );
+  top: -100px;
+  right: -100px;
+}
+
+.circle-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    var(--primary-lighter-color) 0%,
+    transparent 70%
+  );
+  bottom: -50px;
+  left: -50px;
+}
+
+.circle-3 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    var(--primary-lighter-color) 0%,
+    transparent 70%
+  );
+  top: 50%;
+  left: 10%;
+}
+
+/* ========================================
+   登录卡片
+   ======================================== */
+
+.login-card {
+  background: var(--bg-color-secondary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   头部
+   ======================================== */
+
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.logo-wrapper {
+  margin-bottom: var(--spacing-md);
 }
 
 .logo {
-  width: 64px;
-  height: 64px;
-  margin-right: 16px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base);
 }
 
 .logo:hover {
   transform: scale(1.05);
 }
 
-.login-header h2 {
-  font-size: 24px;
-  color: #2c3e50;
-  font-weight: 600;
-  margin-bottom: 0;
-  letter-spacing: 1px;
+.title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  letter-spacing: 2px;
 }
 
-.login-decoration {
-  width: 60px;
-  height: 3px;
-  background-color: #34495e;
-  margin: 0 auto;
-  position: relative;
+.subtitle {
+  font-size: var(--font-size-base);
+  color: var(--text-color-secondary);
+  margin: 0;
 }
 
-.login-decoration::before,
-.login-decoration::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #34495e;
-  top: -2.5px;
+/* ========================================
+   表单
+   ======================================== */
+
+.login-form {
+  margin-bottom: var(--spacing-lg);
 }
 
-.login-decoration::before {
-  left: -10px;
+.login-form :deep(.arco-form-item) {
+  margin-bottom: var(--spacing-lg);
 }
 
-.login-decoration::after {
-  right: -10px;
+.login-form :deep(.arco-input-wrapper),
+.login-form :deep(.arco-input-password) {
+  background-color: var(--bg-color-tertiary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.verification-container {
+.login-form :deep(.arco-input-wrapper:hover),
+.login-form :deep(.arco-input-password:hover) {
+  border-color: var(--border-color);
+}
+
+.login-form :deep(.arco-input-wrapper:focus-within),
+.login-form :deep(.arco-input-password:focus-within) {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+.login-form :deep(.arco-input) {
+  background: transparent;
+}
+
+.login-form :deep(.arco-input::placeholder) {
+  color: var(--text-color-placeholder);
+}
+
+/* 验证码行 */
+.verification-row {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-md);
   align-items: center;
 }
 
-.verification-container .arco-input-wrapper {
+.verification-row :deep(.arco-input-wrapper) {
   flex: 1;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
+.verification-code {
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
-.additional-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
+/* 提交按钮 */
 .submit-btn {
-  width: 130px;
-  height: 40px;
-  background-color: #34495e;
-  border-color: #34495e;
-  border-radius: 6px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
+  height: 48px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover-color)
+  );
+  border: none;
+  transition: all var(--transition-base);
 }
 
 .submit-btn:hover {
-  background-color: #2c3e50;
-  border-color: #2c3e50;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 73, 94, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
-/* 书香风格装饰 */
-#userLoginView::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path d="M40,40 L160,40 L160,160 L40,160 Z" fill="none" stroke="%23e1e8ed" stroke-width="0.5" stroke-dasharray="2"/></svg>');
-  opacity: 0.3;
-  pointer-events: none;
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   底部链接
+   ======================================== */
+
+.login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color-light);
+}
+
+.footer-link {
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.footer-link:hover {
+  color: var(--primary-color);
+  background: transparent;
+}
+
+.divider {
+  color: var(--border-color);
+  font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--spacing-md);
+  }
+
+  .login-card {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .logo {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ========================================
+   深色模式
+   ======================================== */
+
+[data-theme="dark"] .login-page {
+  background: linear-gradient(
+    135deg,
+    var(--bg-color) 0%,
+    var(--bg-color-secondary) 100%
+  );
+}
+
+[data-theme="dark"] .login-card {
+  background: var(--bg-color-secondary);
+  box-shadow: var(--shadow-xl);
+}
+
+[data-theme="dark"] .circle-1,
+[data-theme="dark"] .circle-2,
+[data-theme="dark"] .circle-3 {
+  background: radial-gradient(
+    circle,
+    var(--primary-light-color) 0%,
+    transparent 70%
+  );
+  opacity: 0.2;
+}
+
+[data-theme="dark"] .login-form :deep(.arco-input-wrapper),
+[data-theme="dark"] .login-form :deep(.arco-input-password) {
+  background-color: var(--bg-color-tertiary);
+}
+
+[data-theme="dark"] .submit-btn {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover-color)
+  );
 }
 </style>

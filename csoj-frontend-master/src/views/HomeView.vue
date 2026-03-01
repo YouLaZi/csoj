@@ -1,158 +1,192 @@
 <template>
   <div id="homeView">
-    <a-row :gutter="16">
-      <!-- 左侧边栏：系统公告 和 排行榜 -->
+    <a-row :gutter="24">
+      <!-- 左侧边栏 -->
       <a-col :xs="24" :sm="24" :md="6" :lg="5" :xl="4">
-        <SystemAnnouncement class="scaled-component" />
+        <div class="sidebar-section">
+          <SystemAnnouncement class="sidebar-card" />
+        </div>
+
         <!-- 排行榜预览 -->
-        <a-card
-          title="积分排行榜"
-          :bordered="false"
-          class="leaderboard-card scaled-component"
-        >
-          <template #extra>
-            <a-link @click="$router.push('/points/leaderboard')"
-              >查看完整榜单</a-link
-            >
-          </template>
-          <a-empty
-            v-if="!leaderboard || leaderboard.length === 0"
-            description="暂无数据"
-          />
-          <a-list v-else :max-height="300">
-            <a-list-item v-for="(item, index) in leaderboard" :key="index">
-              <a-list-item-meta>
-                <template #avatar>
-                  <div class="rank-number" :class="{ 'top-rank': index < 3 }">
+        <div class="sidebar-section">
+          <div class="card leaderboard-card">
+            <div class="card-header">
+              <h3 class="card-title">{{ $t("home.pointsLeaderboard") }}</h3>
+              <a-link
+                class="card-extra"
+                @click="$router.push('/points/leaderboard')"
+              >
+                {{ $t("home.viewAll") }}
+              </a-link>
+            </div>
+            <div class="card-body">
+              <a-empty
+                v-if="!leaderboard || leaderboard.length === 0"
+                :description="$t('home.noData')"
+              />
+              <div v-else class="leaderboard-list">
+                <div
+                  v-for="(item, index) in leaderboard"
+                  :key="index"
+                  class="leaderboard-item"
+                >
+                  <div class="rank-badge" :class="{ 'top-rank': index < 3 }">
                     {{ index + 1 }}
                   </div>
-                </template>
-                <template #title>
-                  <a-link @click="$router.push(`/user/profile?id=${item.id}`)">
-                    {{ item.userName }}
-                  </a-link>
-                </template>
-                <template #description>
-                  <div>积分: {{ item.totalPoints }}</div>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </a-list>
-        </a-card>
+                  <div class="user-info">
+                    <a-link
+                      class="user-name"
+                      @click="$router.push(`/user/profile?id=${item.id}`)"
+                    >
+                      {{ item.userName }}
+                    </a-link>
+                    <span class="user-points"
+                      >{{ item.totalPoints }} {{ $t("user.points") }}</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </a-col>
 
-      <!-- 中间内容区: 欢迎信息 和 热门题目 -->
+      <!-- 中间内容区 -->
       <a-col :xs="24" :sm="24" :md="12" :lg="14" :xl="16">
         <!-- 欢迎信息 -->
-        <a-card class="welcome-card" :bordered="false">
-          <template #title>
-            <div class="welcome-title">
-              <icon-home />
-              <span style="margin-left: 8px">欢迎来到在线判题系统</span>
-            </div>
-          </template>
+        <div class="welcome-section">
           <div class="welcome-content">
-            <p>
-              这是一个功能强大的在线编程学习平台，您可以在这里练习编程题目、参与讨论、提高编程技能。
+            <h1 class="welcome-title">{{ $t("home.welcome") }}</h1>
+            <p class="welcome-description">
+              {{ $t("home.welcomeDesc") }}
             </p>
-            <a-space>
-              <a-button type="primary" @click="$router.push('/questions')"
-                >开始刷题</a-button
+            <div class="welcome-actions">
+              <a-button
+                type="primary"
+                size="large"
+                @click="$router.push('/questions')"
               >
-              <a-button @click="$router.push('/posts')">浏览讨论</a-button>
-            </a-space>
+                <template #icon><icon-code /></template>
+                {{ $t("home.startPractice") }}
+              </a-button>
+              <a-button size="large" @click="$router.push('/posts')">
+                <template #icon><icon-message /></template>
+                {{ $t("home.browseDiscussion") }}
+              </a-button>
+            </div>
           </div>
-        </a-card>
+        </div>
 
-        <!-- 热门题目预览 -->
-        <a-card title="热门题目" :bordered="false" class="hot-questions-card">
-          <template #extra>
-            <a-link @click="$router.push('/questions')">查看更多</a-link>
-          </template>
+        <!-- 热门题目 -->
+        <div class="section">
+          <div class="section-header">
+            <h2 class="section-title">{{ $t("home.hotQuestions") }}</h2>
+            <a-link class="section-extra" @click="$router.push('/questions')">
+              {{ $t("home.viewMore") }}
+            </a-link>
+          </div>
+
           <a-empty
             v-if="!hotQuestions || hotQuestions.length === 0"
-            description="暂无数据"
+            :description="$t('home.noData')"
           />
-          <a-list v-else :max-height="400">
-            <a-list-item v-for="(item, index) in hotQuestions" :key="index">
-              <a-list-item-meta>
-                <template #title>
-                  <a-link @click="$router.push(`/view/question/${item.id}`)">
-                    {{ item.title }}
-                  </a-link>
-                </template>
-                <template #description>
-                  <div class="question-tags">
-                    <a-tag
-                      v-for="(tag, tagIndex) in item.tags"
-                      :key="tagIndex"
-                      color="#165DFF"
-                      bordered
-                    >
-                      {{ tag }}
-                    </a-tag>
-                    <a-tag color="#00B42A" bordered>
-                      通过率: {{ item.acceptRate }}%
-                    </a-tag>
-                  </div>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </a-list>
-        </a-card>
+          <div v-else class="questions-grid">
+            <div
+              v-for="item in hotQuestions"
+              :key="item.id"
+              class="question-card"
+              @click="$router.push(`/view/question/${item.id}`)"
+            >
+              <div class="question-header">
+                <h4 class="question-title">{{ item.title }}</h4>
+                <span
+                  class="accept-rate"
+                  :class="getAcceptRateClass(item.acceptRate)"
+                >
+                  {{ item.acceptRate }}%
+                </span>
+              </div>
+              <div class="question-tags">
+                <span
+                  v-for="(tag, tagIndex) in item.tags"
+                  :key="tagIndex"
+                  class="tag"
+                >
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </a-col>
 
-      <!-- 右侧边栏：签到日历 和 用户信息卡片 -->
+      <!-- 右侧边栏 -->
       <a-col :xs="24" :sm="24" :md="6" :lg="5" :xl="4">
         <!-- 用户信息卡片 -->
-        <a-card
-          v-if="userInfo"
-          class="user-info-card scaled-component"
-          :bordered="false"
-        >
-          <div class="user-info-header">
-            <a-avatar
-              v-if="userInfo.userAvatar"
-              :size="64"
-              :image-url="userInfo.userAvatar"
-            >
-            </a-avatar>
-            <a-avatar v-else :size="64">
-              {{ userInfo.userName ? userInfo.userName.charAt(0) : "U" }}
-            </a-avatar>
-            <div class="user-info-details">
-              <div class="user-name">{{ userInfo.userName || "未登录" }}</div>
-              <div class="user-role">{{ userInfo.userRole || "访客" }}</div>
+        <div class="sidebar-section">
+          <div v-if="userInfo" class="card user-card">
+            <div class="user-avatar-section">
+              <a-avatar
+                v-if="userInfo.userAvatar"
+                :size="72"
+                :image-url="userInfo.userAvatar"
+                class="user-avatar"
+              />
+              <a-avatar v-else :size="72" class="user-avatar">
+                {{ userInfo.userName ? userInfo.userName.charAt(0) : "U" }}
+              </a-avatar>
+              <div class="user-details">
+                <div class="user-name">
+                  {{ userInfo.userName || $t("user.notLoggedIn") }}
+                </div>
+                <div class="user-role">
+                  {{ userInfo.userRole || $t("user.guest") }}
+                </div>
+              </div>
+            </div>
+            <div class="user-stats">
+              <div class="stat-item">
+                <div class="stat-value">{{ userInfo.solvedCount || 0 }}</div>
+                <div class="stat-label">{{ $t("user.solved") }}</div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ userInfo.submissionCount || 0 }}
+                </div>
+                <div class="stat-label">{{ $t("user.submissions") }}</div>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <div class="stat-value">{{ userInfo.points || 0 }}</div>
+                <div class="stat-label">{{ $t("user.points") }}</div>
+              </div>
             </div>
           </div>
-          <div class="user-stats">
-            <div class="stat-item">
-              <div class="stat-value">{{ userInfo.solvedCount || 0 }}</div>
-              <div class="stat-label">已解决</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ userInfo.submissionCount || 0 }}</div>
-              <div class="stat-label">提交数</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ userInfo.points || 0 }}</div>
-              <div class="stat-label">积分</div>
+
+          <div v-else class="card login-prompt-card">
+            <div class="login-prompt">
+              <div class="login-icon">
+                <icon-user />
+              </div>
+              <h4 class="login-title">{{ $t("home.loginToTrack") }}</h4>
+              <p class="login-description">{{ $t("home.trackProgress") }}</p>
+              <div class="login-actions">
+                <a-button type="primary" @click="$router.push('/user/login')">
+                  {{ $t("user.login") }}
+                </a-button>
+                <a-button @click="$router.push('/user/register')">
+                  {{ $t("user.register") }}
+                </a-button>
+              </div>
             </div>
           </div>
-        </a-card>
-        <a-card v-else class="login-card scaled-component" :bordered="false">
-          <div class="login-prompt">
-            <icon-user />
-            <p>登录以跟踪您的学习进度</p>
-            <a-space>
-              <a-button type="primary" @click="$router.push('/user/login')"
-                >登录</a-button
-              >
-              <a-button @click="$router.push('/user/register')">注册</a-button>
-            </a-space>
-          </div>
-        </a-card>
-        <CheckinCalendar class="scaled-component" />
+        </div>
+
+        <!-- 签到日历 -->
+        <div class="sidebar-section">
+          <CheckinCalendar class="sidebar-card" />
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -160,7 +194,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
-import { IconHome, IconUser } from "@arco-design/web-vue/es/icon";
+import { IconCode, IconMessage, IconUser } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
 import CheckinCalendar from "@/components/CheckinCalendar.vue";
 import SystemAnnouncement from "@/components/SystemAnnouncement.vue";
@@ -170,33 +204,21 @@ import PointsService from "@/services/PointsService";
 import { setupResizeObserverWorkaround } from "@/utils/resizeObserverHelper";
 import { useUserStore } from "@/store/useUserStore";
 
-// 用户状态管理
 const userStore = useUserStore();
-
-// 用户信息
 const userInfo = ref<any>(null);
-
-// 热门题目
 const hotQuestions = ref<any[]>([]);
-
-// 排行榜数据
 const leaderboard = ref<any[]>([]);
 
-// 加载用户信息
 const loadUserInfo = async () => {
   try {
-    // 检查用户是否已登录
     if (!userStore.isLoggedIn) {
       userInfo.value = null;
       return;
     }
-
-    // 调用后端API获取用户信息
     const res = await UserService.getCurrentUser();
     if (res.code === 0 && res.data) {
       userInfo.value = res.data;
     } else {
-      console.warn("获取用户信息失败:", res);
       userInfo.value = null;
     }
   } catch (error) {
@@ -205,20 +227,16 @@ const loadUserInfo = async () => {
   }
 };
 
-// 重新加载所有数据
 const reloadAllData = () => {
   loadUserInfo();
   loadHotQuestions();
   loadLeaderboard();
 };
 
-// 加载热门题目
 const loadHotQuestions = async () => {
   try {
-    // 调用后端API获取热门题目
     const res = await QuestionService.getHotQuestions(5);
     if (res.code === 0 && res.data && res.data.records) {
-      // 处理API返回的数据格式
       hotQuestions.value = res.data.records.map((item) => ({
         id: item.id,
         title: item.title,
@@ -232,14 +250,8 @@ const loadHotQuestions = async () => {
             : 0,
       }));
     } else {
-      // 如果API调用失败或返回错误，使用模拟数据
       hotQuestions.value = [
-        {
-          id: 1,
-          title: "两数之和",
-          tags: ["数组", "哈希表"],
-          acceptRate: 78,
-        },
+        { id: 1, title: "两数之和", tags: ["数组", "哈希表"], acceptRate: 78 },
         {
           id: 2,
           title: "合并两个有序链表",
@@ -255,7 +267,7 @@ const loadHotQuestions = async () => {
         {
           id: 4,
           title: "二叉树的层序遍历",
-          tags: ["树", "广度优先搜索"],
+          tags: ["树", "BFS"],
           acceptRate: 56,
         },
         {
@@ -271,46 +283,22 @@ const loadHotQuestions = async () => {
   }
 };
 
-// 加载排行榜数据
 const loadLeaderboard = async () => {
   try {
-    // 调用后端API获取排行榜数据
     const res = await PointsService.getLeaderboard("all", 5);
     if (res.code === 0) {
-      // 处理API返回的数据格式
       leaderboard.value = res.data.map((user) => ({
         id: user.userId,
         userName: user.userName || `用户${user.userId.slice(-4)}`,
         totalPoints: user.totalPoints,
       }));
     } else {
-      // 如果API调用失败或返回错误，使用模拟数据
       leaderboard.value = [
-        {
-          id: 1,
-          userName: "张三",
-          points: 980,
-        },
-        {
-          id: 2,
-          userName: "李四",
-          points: 875,
-        },
-        {
-          id: 3,
-          userName: "王五",
-          points: 820,
-        },
-        {
-          id: 4,
-          userName: "赵六",
-          points: 760,
-        },
-        {
-          id: 5,
-          userName: "钱七",
-          points: 695,
-        },
+        { id: 1, userName: "张三", totalPoints: 980 },
+        { id: 2, userName: "李四", totalPoints: 875 },
+        { id: 3, userName: "王五", totalPoints: 820 },
+        { id: 4, userName: "赵六", totalPoints: 760 },
+        { id: 5, userName: "钱七", totalPoints: 695 },
       ];
     }
   } catch (error) {
@@ -318,44 +306,41 @@ const loadLeaderboard = async () => {
   }
 };
 
+const getAcceptRateClass = (rate: number) => {
+  if (rate >= 70) return "rate-high";
+  if (rate >= 40) return "rate-medium";
+  return "rate-low";
+};
+
 let cleanupResizeObserverWorkaround: (() => void) | null = null;
 
 onMounted(() => {
-  // 初始化加载数据
   reloadAllData();
 
-  // 监听用户登录状态变化
   watch(
     () => userStore.isLoggedIn,
     (newValue, oldValue) => {
-      // 当登录状态发生变化时，重新加载所有数据
       if (newValue !== oldValue) {
-        console.log("用户登录状态变化，重新加载数据");
         reloadAllData();
       }
     },
     { immediate: false }
   );
 
-  // 监听用户信息变化
   watch(
     () => userStore.loginUser,
     (newUser, oldUser) => {
-      // 当用户信息发生变化时，重新加载用户相关数据
       if (newUser?.id !== oldUser?.id) {
-        console.log("用户信息变化，重新加载数据");
         reloadAllData();
       }
     },
     { immediate: false, deep: true }
   );
 
-  // 设置ResizeObserver循环错误的解决方案
   cleanupResizeObserverWorkaround = setupResizeObserverWorkaround(200);
 });
 
 onUnmounted(() => {
-  // 清理ResizeObserver错误处理器
   if (cleanupResizeObserverWorkaround) {
     cleanupResizeObserverWorkaround();
     cleanupResizeObserverWorkaround = null;
@@ -364,103 +349,522 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.scaled-component {
-  transform: scale(0.9);
-  transform-origin: top left;
-  margin-bottom: 16px; /* Add some margin to prevent overlap */
-}
+/* ========================================
+   首页布局 - 简约大方
+   ======================================== */
 
 #homeView {
-  padding: 16px;
+  padding: var(--spacing-xl);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
 }
 
-.welcome-card,
-.hot-questions-card,
-.user-info-card,
-.login-card,
-.leaderboard-card {
-  margin-bottom: 16px;
+/* ========================================
+   欢迎区域
+   ======================================== */
+
+.welcome-section {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-hover-color) 100%
+  );
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-3xl) var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  overflow: hidden;
 }
 
-.welcome-title {
-  display: flex;
-  align-items: center;
+.welcome-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 .welcome-content {
-  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
 }
 
-.user-info-header {
+.welcome-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: var(--line-height-tight);
+  letter-spacing: 1px;
+}
+
+.welcome-description {
+  font-size: var(--font-size-lg);
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 var(--spacing-xl) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.welcome-actions .arco-btn {
+  height: 44px;
+  padding: 0 var(--spacing-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.welcome-actions .arco-btn-primary {
+  background: #ffffff;
+  color: var(--primary-color);
+  border: none;
+}
+
+.welcome-actions .arco-btn-primary:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.welcome-actions .arco-btn:not(.arco-btn-primary) {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.welcome-actions .arco-btn:not(.arco-btn-primary):hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   区块和卡片
+   ======================================== */
+
+.section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin: 0;
+}
+
+.section-extra {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.section-extra:hover {
+  color: var(--primary-color);
+}
+
+.card {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.card-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin: 0;
+}
+
+.card-extra {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.card-body {
+  padding: var(--spacing-md);
+}
+
+/* ========================================
+   侧边栏
+   ======================================== */
+
+.sidebar-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.sidebar-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ========================================
+   排行榜
+   ======================================== */
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.leaderboard-item {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
 }
 
-.user-info-details {
-  margin-left: 16px;
+.leaderboard-item:hover {
+  background-color: var(--bg-color-tertiary);
 }
 
-.user-name {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.user-role {
-  color: #86909c;
-  font-size: 14px;
-}
-
-.user-stats {
+.rank-badge {
+  width: 28px;
+  height: 28px;
   display: flex;
-  justify-content: space-around;
-  text-align: center;
-  margin-top: 16px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-color-tertiary);
+  color: var(--text-color-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
 }
 
-.stat-item {
-  padding: 0 8px;
+.rank-badge.top-rank {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover-color)
+  );
+  color: #ffffff;
 }
 
-.stat-value {
-  font-size: 20px;
-  font-weight: bold;
-  color: #165dff;
+.user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.stat-label {
-  font-size: 12px;
-  color: #86909c;
+.user-info .user-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.login-prompt {
-  text-align: center;
-  padding: 16px;
+.user-points {
+  font-size: var(--font-size-xs);
+  color: var(--text-color-secondary);
+  margin-top: 2px;
 }
 
-.login-prompt p {
-  margin: 16px 0;
+/* ========================================
+   题目卡片网格
+   ======================================== */
+
+.questions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.question-card {
+  background: var(--bg-color-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.question-card:hover {
+  border-color: var(--primary-light-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.question-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+  margin: 0;
+  flex: 1;
+  margin-right: var(--spacing-sm);
+  line-height: var(--line-height-tight);
+}
+
+.accept-rate {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.rate-high {
+  background-color: rgba(90, 154, 110, 0.1);
+  color: var(--success-color);
+}
+
+.rate-medium {
+  background-color: rgba(196, 149, 74, 0.1);
+  color: var(--warning-color);
+}
+
+.rate-low {
+  background-color: rgba(196, 92, 92, 0.1);
+  color: var(--danger-color);
 }
 
 .question-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--spacing-xs);
 }
 
-.rank-number {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: var(--color-fill-1);
+.tag {
+  font-size: var(--font-size-xs);
+  color: var(--text-color-secondary);
+  background-color: var(--bg-color-tertiary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* ========================================
+   用户卡片
+   ======================================== */
+
+.user-card {
+  padding: var(--spacing-lg);
+}
+
+.user-avatar-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  font-weight: bold;
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
 }
 
-.top-rank {
-  background-color: #165dff;
-  color: white;
+.user-avatar {
+  margin-bottom: var(--spacing-md);
+  border: 3px solid var(--primary-light-color);
+}
+
+.user-details .user-name {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.user-details .user-role {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.user-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color-light);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-color-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 32px;
+  background-color: var(--border-color-light);
+}
+
+/* ========================================
+   登录提示卡片
+   ======================================== */
+
+.login-prompt-card {
+  padding: var(--spacing-xl);
+}
+
+.login-prompt {
+  text-align: center;
+}
+
+.login-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-md);
+  background-color: var(--primary-lighter-color);
+  border-radius: var(--radius-full);
+  color: var(--primary-color);
+  font-size: 28px;
+}
+
+.login-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.login-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.login-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.login-actions .arco-btn {
+  flex: 1;
+}
+
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 992px) {
+  #homeView {
+    padding: var(--spacing-lg);
+  }
+
+  .welcome-section {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .welcome-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .welcome-description {
+    font-size: var(--font-size-base);
+  }
+
+  .questions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  #homeView {
+    padding: var(--spacing-md);
+  }
+
+  .welcome-section {
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .welcome-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .welcome-actions {
+    flex-direction: column;
+  }
+
+  .welcome-actions .arco-btn {
+    width: 100%;
+  }
+
+  .sidebar-section {
+    margin-bottom: var(--spacing-md);
+  }
+}
+
+/* ========================================
+   深色模式适配
+   ======================================== */
+
+[data-theme="dark"] .welcome-section {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-hover-color) 100%
+  );
+}
+
+[data-theme="dark"] .question-card:hover {
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .login-icon {
+  background-color: var(--primary-light-color);
 }
 </style>

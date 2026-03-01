@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuditLogServiceImpl extends ServiceImpl<AuditLogMapper, AuditLog>
     implements AuditLogService {
 
-  @Resource private AuditLogService auditLogService;
+  @Resource private AuditLogMapper auditLogMapper;
 
   /**
    * 异步保存审计日志
@@ -35,7 +35,7 @@ public class AuditLogServiceImpl extends ServiceImpl<AuditLogMapper, AuditLog>
   @Override
   public void saveAsync(AuditLog auditLog) {
     try {
-      boolean saved = auditLogService.save(auditLog);
+      boolean saved = this.save(auditLog);
       if (!saved) {
         log.error("审计日志保存失败: {}", auditLog);
       }
@@ -71,7 +71,7 @@ public class AuditLogServiceImpl extends ServiceImpl<AuditLogMapper, AuditLog>
       queryWrapper.orderByDesc("createTime");
     }
 
-    return auditLogService.page(new Page<>(current, size), queryWrapper);
+    return this.page(new Page<>(current, size), queryWrapper);
   }
 
   /**

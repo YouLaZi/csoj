@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { IconThumbUp, IconMessage } from "@arco-design/web-vue/es/icon";
 import message from "@arco-design/web-vue/es/message";
 import moment from "moment";

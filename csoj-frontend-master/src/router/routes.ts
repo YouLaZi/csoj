@@ -24,27 +24,27 @@ import NotFoundView from "@/views/error/NotFoundView.vue";
 export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
-    name: "用户",
+    name: "nav.user",
     component: UserLayout,
     children: [
       {
         path: "login",
-        name: "用户登录",
+        name: "nav.login",
         component: UserLoginView,
       },
       {
         path: "register",
-        name: "用户注册",
+        name: "nav.register",
         component: UserRegisterView,
       },
       {
         path: "forgot-password",
-        name: "忘记密码",
+        name: "nav.forgotPassword",
         component: ForgotPasswordView,
       },
       {
         path: "reset-password",
-        name: "重置密码",
+        name: "nav.resetPassword",
         component: () => import("@/views/user/ResetPasswordView.vue"),
       },
     ],
@@ -54,7 +54,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/user/profile",
-    name: "个人中心",
+    name: "nav.profile",
     component: UserProfileView,
     meta: {
       access: ACCESS_ENUM.USER,
@@ -62,7 +62,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/user/preferences",
-    name: "个性化设置",
+    name: "nav.preferences",
     component: () => import("@/views/user/UserPreferencesView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
@@ -70,17 +70,20 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/questions",
-    name: "浏览题目",
+    name: "nav.questions",
     component: QuestionsView,
   },
   {
     path: "/question_submit",
-    name: "浏览题目提交",
+    name: "nav.questionSubmit",
     component: QuestionSubmitView,
+    meta: {
+      access: ACCESS_ENUM.USER,
+    },
   },
   {
     path: "/view/question/:id",
-    name: "在线做题",
+    name: "nav.doQuestion",
     component: ViewQuestionView,
     props: true,
     meta: {
@@ -90,7 +93,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/add/question",
-    name: "创建题目",
+    name: "nav.createQuestion",
     component: AddQuestionView,
     meta: {
       access: ACCESS_ENUM.USER,
@@ -98,7 +101,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/update/question",
-    name: "更新题目",
+    name: "nav.updateQuestion",
     component: AddQuestionView,
     meta: {
       access: ACCESS_ENUM.USER,
@@ -107,7 +110,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/manage/question",
-    name: "管理题目",
+    name: "nav.manageQuestion",
     meta: {
       access: ACCESS_ENUM.ADMIN,
     },
@@ -115,7 +118,7 @@ export const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "list",
-        name: "题目列表",
+        name: "nav.questionList",
         component: ManageQuestionView,
         meta: {
           access: ACCESS_ENUM.ADMIN,
@@ -123,7 +126,7 @@ export const routes: Array<RouteRecordRaw> = [
       },
       {
         path: "batch-import",
-        name: "批量导入题目",
+        name: "nav.batchImport",
         component: () =>
           import("@/views/admin/question/BatchImportQuestionsView.vue"),
         meta: {
@@ -134,12 +137,12 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/posts",
-    name: "浏览帖子",
+    name: "nav.posts",
     component: PostsView,
   },
   {
     path: "/view/post/:id",
-    name: "查看帖子",
+    name: "nav.viewPost",
     component: ViewPostView,
     props: true,
     meta: {
@@ -148,7 +151,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/tags",
-    name: "标签管理",
+    name: "nav.tags",
     component: TagsView,
     props: true,
     meta: {
@@ -157,7 +160,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/admin/posts",
-    name: "帖子管理",
+    name: "nav.postManage",
     component: () => import("@/views/admin/AdminPostsView.vue"),
     meta: {
       access: ACCESS_ENUM.ADMIN,
@@ -165,7 +168,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/add/post",
-    name: "创建帖子",
+    name: "nav.createPost",
     component: () => import("@/views/post/AddPostView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
@@ -173,7 +176,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/update/post",
-    name: "更新帖子",
+    name: "nav.updatePost",
     component: () => import("@/views/post/AddPostView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
@@ -182,12 +185,12 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/",
-    name: "主页",
+    name: "nav.home",
     component: HomeView,
   },
   {
     path: "/hide",
-    name: "隐藏页面",
+    name: "nav.hidden",
     component: HomeView,
     meta: {
       hideInMenu: true,
@@ -195,41 +198,39 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/checkin",
-    name: "每日签到",
+    name: "nav.checkin",
     component: CheckinView,
     meta: {
       access: ACCESS_ENUM.USER,
     },
-  }, // 积分排行榜路由
+  },
   {
     path: "/points/leaderboard",
-    name: "积分排行榜",
+    name: "nav.leaderboard",
     component: LeaderboardView,
   },
   {
     path: "/permission-example",
-    name: "权限示例",
+    name: "nav.permissionExample",
     component: PermissionExample,
     meta: {
       access: ACCESS_ENUM.USER,
-      title: "权限示例",
+      title: "nav.permissionExample",
     },
   },
-
   {
     path: "/about",
-    name: "关于",
+    name: "nav.about",
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
-  // 保留旧路由以兼容性
   {
     path: "/leaderboard",
     redirect: "/points/leaderboard",
   },
   {
     path: "/noAuth",
-    name: "无权限",
+    name: "nav.noAuth",
     component: NoAuthView,
     meta: {
       hideInMenu: true,
@@ -237,7 +238,7 @@ export const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/:pathMatch(.*)*",
-    name: "NotFound",
+    name: "nav.notFound",
     component: NotFoundView,
     meta: {
       hideInMenu: true,
