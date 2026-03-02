@@ -182,15 +182,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-backend, build-sandbox]
     if: github.event_name != 'pull_request'
-    continue-on-error: true
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
@@ -198,25 +191,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull Backend Image
+      - name: Pull and Test Backend Image
         run: |
+          echo "Pulling backend image: ${{ needs.build-backend.outputs.primary-tag }}"
           docker pull ${{ needs.build-backend.outputs.primary-tag }}
+          echo "Inspecting backend image..."
           docker inspect ${{ needs.build-backend.outputs.primary-tag }}
+          echo "Testing backend image - checking Java version..."
+          docker run --rm --entrypoint="" ${{ needs.build-backend.outputs.primary-tag }} java -version
 
-      - name: Pull Sandbox Image
+      - name: Pull and Test Sandbox Image
         run: |
+          echo "Pulling sandbox image: ${{ needs.build-sandbox.outputs.primary-tag }}"
           docker pull ${{ needs.build-sandbox.outputs.primary-tag }}
+          echo "Inspecting sandbox image..."
           docker inspect ${{ needs.build-sandbox.outputs.primary-tag }}
-
-      - name: Start Services for Test
-        run: |
-          docker-compose -f docker-compose.yml up -d mysql redis rabbitmq
-          sleep 30
-
-      - name: Health Check
-        run: |
-          curl -f http://localhost:15672 || true
-          docker ps
+          echo "Sandbox image pulled successfully!"
 
   # ========================================
   # Job 4: 生成部署摘要
