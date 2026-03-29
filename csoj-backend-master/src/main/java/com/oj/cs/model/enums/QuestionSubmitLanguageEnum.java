@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ObjectUtils;
 /** 题目提交编程语言枚举 */
 public enum QuestionSubmitLanguageEnum {
   JAVA("java", "java"),
+  C("c", "c"),
   CPLUSPLUS("cpp", "cpp"),
   GOLANG("go", "go"),
   PYTHON("python", "python"),
@@ -17,7 +18,7 @@ public enum QuestionSubmitLanguageEnum {
   SWIFT("swift", "swift"),
   OBJECTIVE_C("objc", "objc"),
   CSHARP("csharp", "csharp"),
-  JAVASCRIPT("js", "js");
+  JAVASCRIPT("javascript", "javascript");
 
   private final String text;
 

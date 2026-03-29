@@ -41,38 +41,34 @@
         </a-tabs>
       </a-col>
       <a-col :md="12" :xs="24">
-        <a-form :model="form" layout="inline">
-          <a-form-item
-            field="language"
-            label="编程语言"
-            style="min-width: 240px"
-          >
+        <a-form :model="form" layout="inline" class="submit-form">
+          <a-form-item field="language" label="编程语言">
             <a-select
               v-model="form.language"
-              :style="{ width: '320px' }"
               placeholder="选择编程语言"
+              class="language-select"
             >
               <a-option>java</a-option>
+              <a-option>c</a-option>
               <a-option>cpp</a-option>
               <a-option>go</a-option>
               <a-option>python</a-option>
-              <a-option>c++</a-option>
               <a-option>ruby</a-option>
-              <a-option>c#</a-option>
+              <a-option>csharp</a-option>
               <a-option>javascript</a-option>
               <a-option>swift</a-option>
             </a-select>
           </a-form-item>
         </a-form>
         <CodeEditor
-          :value="form.code as string"
+          :value="form.code || ''"
           :language="form.language"
           :handle-change="changeCode"
         />
         <a-divider size="0" />
-        <a-button type="primary" style="min-width: 200px" @click="doSubmit">
-          提交代码
-        </a-button>
+        <div class="submit-actions">
+          <a-button type="primary" @click="doSubmit"> 提交代码 </a-button>
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -157,9 +153,49 @@ const changeCode = (value: string) => {
 #viewQuestionView {
   max-width: 1400px;
   margin: 0 auto;
+  padding: var(--spacing-md);
 }
 
 #viewQuestionView .arco-space-horizontal .arco-space-item {
   margin-bottom: 0 !important;
+}
+
+/* 表单和语言选择器 */
+.submit-form {
+  margin-bottom: var(--spacing-md);
+}
+
+.language-select {
+  width: 200px;
+}
+
+/* 提交按钮区域 */
+.submit-actions {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-md) 0;
+}
+
+.submit-actions .arco-btn {
+  min-width: 150px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  #viewQuestionView {
+    padding: var(--spacing-sm);
+  }
+
+  .language-select {
+    width: 100%;
+  }
+
+  .submit-form .arco-form-item {
+    width: 100%;
+  }
+
+  .submit-actions .arco-btn {
+    width: 100%;
+  }
 }
 </style>

@@ -64,6 +64,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
       // JWT 认证相关
       "/api/auth/**",
 
+      // OAuth 第三方登录
+      "/api/oauth/authorize",
+      "/api/oauth/callback/**",
+      "/api/oauth/platforms",
+
       // 公开访问接口
       "/api/question/list/page/vo",
       "/api/question/get/vo",

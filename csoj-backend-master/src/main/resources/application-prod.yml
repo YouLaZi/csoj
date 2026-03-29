@@ -21,8 +21,8 @@ spring:
   # todo 需替换配置
   elasticsearch:
     uris: http://localhost:9200
-    username: root
-    password: 123456
+    username: ${ELASTICSEARCH_USERNAME:}
+    password: ${ELASTICSEARCH_PASSWORD:}
 mybatis-plus:
   configuration:
     # 生产环境关闭日志

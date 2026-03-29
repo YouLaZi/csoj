@@ -32,12 +32,11 @@ export class PointsService {
       }
       return res;
     } catch (error) {
-      console.error("获取积分排行榜失败", error);
-      Message.error("获取积分排行榜失败");
+      // 静默处理错误，返回空数据
       return {
         code: -1,
         message: error instanceof Error ? error.message : "获取积分排行榜失败",
-        data: null,
+        data: [],
       };
     }
   }

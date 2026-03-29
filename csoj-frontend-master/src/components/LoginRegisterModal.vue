@@ -115,6 +115,8 @@
         >
       </div>
     </a-form>
+    <!-- 第三方登录按钮 -->
+    <OAuthButtons @login="handleOAuthLogin" />
   </a-modal>
 </template>
 
@@ -130,6 +132,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import VerificationCode from "@/components/VerificationCode.vue";
+import OAuthButtons from "@/components/OAuthButtons.vue";
 
 const { t } = useI18n();
 

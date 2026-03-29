@@ -8,16 +8,21 @@ axios.defaults.timeout = 100000; // 10秒超时
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
+// 存储CSRF Token
+let storedCsrfToken: string | null = null;
+
 axios.interceptors.request.use(
   function (config) {
     // 请求前处理
 
-    // 添加CSRF保护
-    const csrfToken = document
-      .querySelector('meta[name="csrf-token"]')
-      ?.getAttribute("content");
+    // 添加CSRF保护 - 优先使用存储的token，其次查找meta标签
+    const csrfToken =
+      storedCsrfToken ||
+      document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
     if (csrfToken) {
-      config.headers["X-CSRF-TOKEN"] = csrfToken;
+      config.headers["X-CSRF-Token"] = csrfToken;
     }
 
     return config;
@@ -32,6 +37,16 @@ axios.interceptors.request.use(
 // Add a response interceptor
 axios.interceptors.response.use(
   function (response) {
+    // 从响应头获取并存储CSRF Token
+    const csrfToken = response.headers["x-csrf-token"];
+    if (csrfToken) {
+      storedCsrfToken = csrfToken;
+      // 同时更新meta标签（如果存在）
+      const metaTag = document.querySelector('meta[name="csrf-token"]');
+      if (metaTag) {
+        metaTag.setAttribute("content", csrfToken);
+      }
+    }
     // 调试日志
     console.log("响应成功:", response);
     return response;

@@ -7,10 +7,10 @@ services:
     container_name: csoj-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请设置MYSQL_ROOT_PASSWORD环境变量}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-oj_db}
       MYSQL_USER: ${MYSQL_USER:-oj_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-oj_password}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?请设置MYSQL_PASSWORD环境变量}
       TZ: Asia/Shanghai
     ports:
       - "${MYSQL_PORT:-3306}:3306"
@@ -38,7 +38,7 @@ services:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?请设置REDIS_PASSWORD环境变量}
     networks:
       - csoj-network
     healthcheck:
@@ -57,7 +57,7 @@ services:
       - "${RABBITMQ_MGMT_PORT:-15672}:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?请设置RABBITMQ_PASSWORD环境变量}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
@@ -84,8 +84,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-oj_password}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
-      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-      CODE_SANDBOX_SECRET: ${CODE_SANDBOX_SECRET:-your-secret-key-here}
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD:?请设置REDIS_PASSWORD环境变量}
+      CODE_SANDBOX_SECRET: ${CODE_SANDBOX_SECRET:?请设置CODE_SANDBOX_SECRET环境变量}
       FILE_UPLOAD_PATH: /app/uploads
       FILE_URL_PREFIX: /api/files
       # 异步判题配置
@@ -121,6 +121,8 @@ services:
       dockerfile: Dockerfile
     container_name: csoj-sandbox
     restart: unless-stopped
+    # 注意：sandbox 服务需要访问 Docker socket 创建执行容器，无法使用非 root 用户
+    # 安全隔离应在执行容器层面（Docker 本身提供）而非 sandbox 主服务层面实现
     ports:
       - "${SANDBOX_PORT:-8090}:8090"
     environment:
@@ -128,7 +130,7 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-guest}
-      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-guest}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?请设置RABBITMQ_PASSWORD环境变量}
       # Docker 容器池配置
       DOCKER_POOL_MAX_SIZE: ${DOCKER_POOL_MAX_SIZE:-20}
       DOCKER_POOL_MIN_SIZE: ${DOCKER_POOL_MIN_SIZE:-5}
@@ -193,7 +195,7 @@ services:
       - "${GRAFANA_PORT:-3000}:3000"
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?请设置GRAFANA_ADMIN_PASSWORD环境变量}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_INSTALL_PLUGINS: ""
       GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}

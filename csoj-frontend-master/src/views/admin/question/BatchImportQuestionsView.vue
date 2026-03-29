@@ -130,7 +130,7 @@
 import { reactive, ref } from "vue";
 import { IconUpload } from "@arco-design/web-vue/es/icon";
 import { Message, Modal } from "@arco-design/web-vue";
-import type { UploadProps, UploadFile } from "ant-design-vue";
+import type { FileItem } from "@arco-design/web-vue/es/upload";
 import { QuestionControllerService } from "../../../../generated";
 import type {
   QuestionAddRequest,
@@ -138,7 +138,7 @@ import type {
 } from "../../../../generated";
 
 interface FormState {
-  fileList: UploadFile[];
+  fileList: FileItem[];
 }
 
 const formState = reactive<FormState>({
@@ -167,8 +167,14 @@ const resultColumns = [
   { title: "信息", dataIndex: "message", key: "message" },
 ];
 
-const beforeUpload: UploadProps["beforeUpload"] = (file) => {
-  formState.fileList = [file as UploadFile];
+const beforeUpload = (file: File) => {
+  formState.fileList = [
+    {
+      uid: Date.now().toString(),
+      name: file.name,
+      file: file,
+    },
+  ];
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
@@ -220,7 +226,7 @@ const handleImport = async () => {
   importSummary.successCount = 0;
   importSummary.failCount = 0;
 
-  const file = formState.fileList[0].originFileObj as File;
+  const file = formState.fileList[0].file as File;
   const reader = new FileReader();
 
   reader.onload = async (e) => {

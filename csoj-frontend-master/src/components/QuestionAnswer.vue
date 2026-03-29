@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import MdViewer from "@/components/MdViewer.vue";
-import { message } from "ant-design-vue";
+import { Message } from "@arco-design/web-vue";
 import { QuestionAnswerControllerService } from "../../generated";
 
 const props = defineProps<{
@@ -42,11 +42,11 @@ const checkPermission = async () => {
       hasPermission.value = response.data || false;
     } else {
       hasPermission.value = false;
-      message.error(response.message || "权限检查失败");
+      Message.error(response.message || "权限检查失败");
     }
   } catch (error) {
     console.error("权限检查失败:", error);
-    message.error("权限检查失败");
+    Message.error("权限检查失败");
   } finally {
     loading.value = false;
   }
@@ -68,11 +68,11 @@ const loadAnswer = async () => {
       answer.value = response.data;
     } else {
       answer.value = "暂无答案";
-      message.error(response.message || "获取答案失败");
+      Message.error(response.message || "获取答案失败");
     }
   } catch (error) {
     console.error("获取答案失败:", error);
-    message.error("获取答案失败");
+    Message.error("获取答案失败");
   } finally {
     loading.value = false;
   }

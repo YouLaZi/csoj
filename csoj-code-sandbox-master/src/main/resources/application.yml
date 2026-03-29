@@ -1,5 +1,10 @@
 server:
   port: 8090
+
+# 沙箱鉴权密钥（生产环境必须修改，也可通过环境变量 CODE_SANDBOX_SECRET 设置）
+codesandbox:
+  auth:
+    secret: ${CODE_SANDBOX_SECRET:}
 #spring:
 #  datasource:
 #    password: 123456

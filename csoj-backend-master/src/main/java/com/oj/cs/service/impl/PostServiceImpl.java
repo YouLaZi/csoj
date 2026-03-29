@@ -12,11 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.query.Criteria;
-import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,13 +19,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.oj.cs.common.ErrorCode;
 import com.oj.cs.constant.CommonConstant;
-import com.oj.cs.esdao.PostEsDao;
 import com.oj.cs.exception.BusinessException;
 import com.oj.cs.exception.ThrowUtils;
 import com.oj.cs.mapper.PostFavourMapper;
 import com.oj.cs.mapper.PostMapper;
 import com.oj.cs.mapper.PostThumbMapper;
-import com.oj.cs.model.dto.post.PostEsDTO;
 import com.oj.cs.model.dto.post.PostQueryRequest;
 import com.oj.cs.model.entity.Post;
 import com.oj.cs.model.entity.PostFavour;
@@ -55,9 +48,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
   @Resource private PostFavourMapper postFavourMapper;
 
-  @Resource private PostEsDao postEsDao;
+  // Elasticsearch 禁用时注释掉
+  // @Autowired(required = false)
+  // private PostEsDao postEsDao;
 
-  @Resource private ElasticsearchOperations elasticsearchOperations;
+  // @Autowired(required = false)
+  // private ElasticsearchOperations elasticsearchOperations;
 
   @Override
   public void validPost(Post post, boolean add) {
@@ -125,100 +121,10 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
   @Override
   public Page<Post> searchFromEs(PostQueryRequest postQueryRequest) {
-    // Spring Data Elasticsearch 5.x 实现 (使用 CriteriaQuery)
-    // 如果 Elasticsearch 未配置，则降级到数据库查询
-    if (elasticsearchOperations == null) {
-      log.warn("Elasticsearch not configured, falling back to database query");
-      return this.page(
-          new Page<>(postQueryRequest.getCurrent(), postQueryRequest.getPageSize()),
-          this.getQueryWrapper(postQueryRequest));
-    }
-
-    Long id = postQueryRequest.getId();
-    Long userId = postQueryRequest.getUserId();
-    Long notId = postQueryRequest.getNotId();
-    String searchText = postQueryRequest.getSearchText();
-    String title = postQueryRequest.getTitle();
-    String content = postQueryRequest.getContent();
-    List<String> tagList = postQueryRequest.getTags();
-    long current = postQueryRequest.getCurrent();
-    long pageSize = postQueryRequest.getPageSize();
-
-    // 构建查询条件 (使用 CriteriaQuery)
-    Criteria criteria = new Criteria();
-
-    if (StringUtils.isNotBlank(searchText)) {
-      // 全文搜索：标题或内容匹配
-      criteria = criteria.or("title").contains(searchText).or("content").contains(searchText);
-    }
-    if (StringUtils.isNotBlank(title)) {
-      criteria = criteria.and("title").is(title);
-    }
-    if (StringUtils.isNotBlank(content)) {
-      criteria = criteria.and("content").is(content);
-    }
-    if (CollectionUtils.isNotEmpty(tagList)) {
-      for (String tag : tagList) {
-        criteria = criteria.and("tags").is(tag);
-      }
-    }
-    if (ObjectUtils.isNotEmpty(id)) {
-      criteria = criteria.and("id").is(id);
-    }
-    if (ObjectUtils.isNotEmpty(userId)) {
-      criteria = criteria.and("userId").is(userId);
-    }
-    if (ObjectUtils.isNotEmpty(notId)) {
-      criteria = criteria.and("id").is(notId).not();
-    }
-    // 排除已删除
-    criteria = criteria.and("isDelete").is(1).not();
-
-    // 构建排序
-    Sort sort = Sort.unsorted();
-    String sortField = postQueryRequest.getSortField();
-    String sortOrder = postQueryRequest.getSortOrder();
-    if (StringUtils.isNotBlank(sortField) && SqlUtils.validSortField(sortField)) {
-      sort =
-          Sort.by(
-              sortOrder.equals(CommonConstant.SORT_ORDER_ASC)
-                  ? Sort.Direction.ASC
-                  : Sort.Direction.DESC,
-              sortField);
-    }
-
-    // 构建分页查询
-    CriteriaQuery query =
-        new CriteriaQuery(criteria)
-            .setPageable(PageRequest.of((int) current - 1, (int) pageSize, sort));
-
-    try {
-      // 执行搜索并转换结果
-      org.springframework.data.elasticsearch.core.SearchHits<PostEsDTO> searchHits =
-          elasticsearchOperations.search(query, PostEsDTO.class);
-
-      List<PostEsDTO> postEsDTOList =
-          searchHits.getSearchHits().stream()
-              .map(hit -> hit.getContent())
-              .collect(Collectors.toList());
-
-      // 转换为 Post 对象
-      List<Post> postList =
-          postEsDTOList.stream()
-              .map(PostEsDTO::dtoToObj)
-              .filter(obj -> obj != null)
-              .collect(Collectors.toList());
-
-      // 构建分页结果
-      Page<Post> page = new Page<>(current, pageSize, searchHits.getTotalHits());
-      page.setRecords(postList);
-      return page;
-    } catch (Exception e) {
-      log.error("Elasticsearch search failed, falling back to database query", e);
-      return this.page(
-          new Page<>(postQueryRequest.getCurrent(), postQueryRequest.getPageSize()),
-          this.getQueryWrapper(postQueryRequest));
-    }
+    // Elasticsearch 禁用时直接使用数据库查询
+    return this.page(
+        new Page<>(postQueryRequest.getCurrent(), postQueryRequest.getPageSize()),
+        this.getQueryWrapper(postQueryRequest));
   }
 
   @Override

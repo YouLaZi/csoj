@@ -35,7 +35,7 @@ spring:
 #    password: 123456
   # Elasticsearch 配置
   elasticsearch:
-    uris: http://localhost:9201
+    uris: http://localhost:9200
   # 文件上传
   servlet:
     multipart:
@@ -165,10 +165,14 @@ cors:
   allowed-origins:
     - http://localhost:3000
     - http://localhost:5173
+    - http://localhost:8080
     - http://localhost:8081
+    - http://localhost:8088
     - http://127.0.0.1:3000
     - http://127.0.0.1:5173
+    - http://127.0.0.1:8080
     - http://127.0.0.1:8081
+    - http://127.0.0.1:8088
   # 允许的 HTTP 方法
   allowed-methods:
     - GET
@@ -187,6 +191,7 @@ cors:
   exposed-headers:
     - Content-Disposition
     - Authorization
+    - X-CSRF-Token
 
 # 生产环境 CORS 配置示例（请在 application-prod.yml 中覆盖）
 # cors:
@@ -209,3 +214,37 @@ jwt:
   header: Authorization
   # Token 前缀
   prefix: "Bearer "
+
+# OAuth 第三方登录配置
+oauth:
+  # 前端回调URL前缀
+  frontend-callback-url: ${OAUTH_FRONTEND_URL:http://localhost:8080/oauth/callback}
+  # State 令牌过期时间（秒）
+  state-expiration: 300
+
+  # GitHub OAuth 配置
+  github:
+    enabled: ${GITHUB_ENABLED:false}
+    client-id: ${GITHUB_CLIENT_ID:}
+    client-secret: ${GITHUB_CLIENT_SECRET:}
+    scope: user:email
+
+  # Gitee (码云) OAuth 配置
+  gitee:
+    enabled: ${GITEE_ENABLED:false}
+    client-id: ${GITEE_CLIENT_ID:}
+    client-secret: ${GITEE_CLIENT_SECRET:}
+    scope: user_info
+
+  # QQ OAuth 配置
+  qq:
+    enabled: ${QQ_ENABLED:false}
+    client-id: ${QQ_CLIENT_ID:}
+    client-secret: ${QQ_CLIENT_SECRET:}
+    scope: get_user_info
+
+  # 微信开放平台 OAuth 配置
+  wechat:
+    enabled: ${WECHAT_ENABLED:false}
+    client-id: ${WECHAT_CLIENT_ID:}
+    client-secret: ${WECHAT_CLIENT_SECRET:}

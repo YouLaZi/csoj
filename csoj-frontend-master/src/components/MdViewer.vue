@@ -10,7 +10,6 @@ import highlight from "@bytemd/plugin-highlight";
 import { Viewer } from "@bytemd/vue-next";
 import {
   withDefaults,
-  defineProps,
   ref, // Added
   computed, // Added
   onMounted, // Added

@@ -87,7 +87,7 @@ class AnnouncementService {
         return response.data;
       }
     } catch (error: unknown) {
-      console.error("获取公告失败:", error);
+      // 静默处理错误，返回空数据
       return {
         code: -1,
         message: error instanceof Error ? error.message : "获取公告失败",

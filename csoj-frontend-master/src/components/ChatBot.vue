@@ -182,14 +182,24 @@
     </div>
   </div>
 
-  <!-- 悬浮按钮，当聊天机器人隐藏时显示 -->
-  <div v-if="!visible" class="chat-bot-float-button" @click="showBot">
-    <icon-robot class="float-button-icon" />
+  <!-- 可爱吉祥物悬浮按钮，当聊天机器人隐藏时显示 -->
+  <div v-if="!visible" class="chat-bot-mascot-container" @click="showBot">
+    <CuteMascot
+      ref="mascotRef"
+      :mood="mascotMood"
+      @click="showBot"
+      @moodChange="onMascotMoodChange"
+      @askExplain="onAskExplain"
+      @askQuestion="onAskQuestion"
+    />
+    <div class="mascot-hint">
+      <span>点击我聊天!</span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick, watch } from "vue";
+import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from "vue";
 import axios from "axios";
 import { Message as ArcoMessage } from "@arco-design/web-vue";
 import { useI18n } from "vue-i18n";
@@ -211,6 +221,12 @@ import QuestionService from "@/services/QuestionService";
 import ChatBotService from "@/services/ChatBotService";
 import type { ChatMessage, LearningProgress, Question } from "@/types/chat";
 import { useUserStore } from "@/store/useUserStore";
+import CuteMascot from "@/components/CuteMascot.vue";
+import {
+  selectionAssistant,
+  type SelectionInfo,
+} from "@/utils/selectionAssistant";
+import { mascotBehavior, type MascotAction } from "@/utils/mascotBehavior";
 
 const { t } = useI18n();
 
@@ -219,6 +235,83 @@ const minimized = ref(false);
 const inputMessage = ref("");
 const messagesContainer = ref<HTMLElement | null>(null);
 const userStore = useUserStore();
+
+// 吉祥物相关状态
+const mascotRef = ref<InstanceType<typeof CuteMascot> | null>(null);
+const mascotMood = ref<"happy" | "sad" | "thinking" | "sleeping" | "excited">(
+  "happy"
+);
+
+// 吉祥物心情变化处理
+const onMascotMoodChange = (mood: string) => {
+  console.log("Mascot mood changed to:", mood);
+};
+
+// 处理选中文本事件
+const onSelectionChange = (info: SelectionInfo) => {
+  if (mascotRef.value) {
+    mascotRef.value.showAskBubbleForSelection(info.text, info.type);
+  }
+  // 更新行为控制器的上下文
+  mascotBehavior.setSelectedText({
+    content: info.text,
+    type: info.type,
+  });
+};
+
+// 处理选择清除
+const onSelectionCleared = () => {
+  if (mascotRef.value) {
+    mascotRef.value.hideAskBubble();
+  }
+  mascotBehavior.clearSelectedText();
+};
+
+// 处理"解释这个"点击
+const onAskExplain = (text: string, type: string) => {
+  showBot();
+  // 根据类型构建不同的提示
+  let prompt = "";
+  if (type === "code") {
+    prompt = `请帮我解释这段代码：\n\`\`\`\n${text}\n\`\`\``;
+  } else if (type === "error") {
+    prompt = `请帮我分析这个错误并提供解决方案：\n${text}`;
+  } else if (type === "math") {
+    prompt = `请帮我解释这个数学内容：\n${text}`;
+  } else {
+    prompt = `请帮我解释这段内容：\n${text}`;
+  }
+  inputMessage.value = prompt;
+  // 自动发送
+  setTimeout(() => {
+    sendMessage();
+  }, 500);
+};
+
+// 处理"提问"点击
+const onAskQuestion = (text: string, type: string) => {
+  showBot();
+  // 预填充输入框，但不自动发送
+  inputMessage.value = `关于"${text.substring(0, 50)}${
+    text.length > 50 ? "..." : ""
+  }"，我想问：`;
+};
+
+// 处理行为控制器触发的动作
+const onMascotAction = (action: MascotAction, ruleId: string) => {
+  if (mascotRef.value) {
+    mascotRef.value.setMood(action.mood);
+    if (action.message) {
+      mascotRef.value.showBubbleMessage(
+        action.message,
+        action.duration || 3000
+      );
+    }
+    if (action.particles) {
+      mascotRef.value.triggerParticles(action.particles);
+    }
+  }
+};
 
 const position = reactive({
   x: window.innerWidth - 380,
@@ -626,6 +719,28 @@ onMounted(async () => {
 
   // 初始化学习进度数据
   await updateLearningProgress();
+
+  // 初始化选择助手
+  selectionAssistant.start();
+  selectionAssistant.onSelection = onSelectionChange;
+  selectionAssistant.onSelectionCleared = onSelectionCleared;
+
+  // 初始化行为控制器
+  mascotBehavior.onAction(onMascotAction);
+
+  // 更新用户状态
+  mascotBehavior.updateUserState({
+    isLoggedIn: userStore.isLoggedIn,
+    todayCheckin: false, // 可以从其他地方获取
+  });
+});
+
+onUnmounted(() => {
+  // 清理选择助手
+  selectionAssistant.stop();
+
+  // 清理行为控制器
+  mascotBehavior.destroy();
 });
 
 watch(
@@ -701,7 +816,7 @@ async function updateLearningProgress() {
 .chat-bot-container {
   position: fixed;
   width: 380px;
-  background-color: #ffffff;
+  background-color: var(--bg-color-secondary);
   border-radius: 20px;
   box-shadow: 0 16px 40px rgba(59, 130, 246, 0.15),
     0 8px 20px rgba(59, 130, 246, 0.08);
@@ -713,7 +828,7 @@ async function updateLearningProgress() {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   backdrop-filter: blur(20px);
-  border: 2px solid #e0f2fe;
+  border: 2px solid var(--border-color);
 }
 
 .chat-bot-container.minimized {
@@ -789,7 +904,7 @@ async function updateLearningProgress() {
   display: flex;
   flex-direction: column;
   height: 450px;
-  background-color: #ffffff;
+  background-color: var(--bg-color-secondary);
   position: relative;
   overflow: hidden;
 }
@@ -802,7 +917,7 @@ async function updateLearningProgress() {
   flex-direction: column;
   gap: 20px;
   scroll-behavior: smooth;
-  background-color: #fafbff;
+  background-color: var(--bg-color);
   background-image: radial-gradient(
       circle at 20% 20%,
       rgba(59, 130, 246, 0.04) 0%,
@@ -874,8 +989,8 @@ async function updateLearningProgress() {
 
 .message.bot {
   align-self: flex-start;
-  background-color: #ffffff;
-  color: #334155;
+  background-color: var(--bg-color-secondary);
+  color: var(--text-color-primary);
   border-bottom-left-radius: 8px;
   border: 1px solid #e0f2fe;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
@@ -897,8 +1012,8 @@ async function updateLearningProgress() {
 
 .chat-input {
   padding: 20px 24px;
-  border-top: 1px solid #e0f2fe;
-  background: linear-gradient(to bottom, #ffffff, #fafbff);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-color-secondary);
   position: relative;
   z-index: 2;
   box-shadow: 0 -4px 12px rgba(59, 130, 246, 0.06);
@@ -994,6 +1109,47 @@ async function updateLearningProgress() {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
   background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+/* 可爱吉祥物容器样式 */
+.chat-bot-mascot-container {
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  cursor: pointer;
+  z-index: 1000;
+  animation: float-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mascot-hint {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-color-secondary, #fff);
+  color: var(--text-color-primary, #2c3e50);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(44, 62, 80, 0.04));
+  border: 1px solid var(--border-color, #e8edf2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.chat-bot-mascot-container:hover .mascot-hint {
+  opacity: 1;
+}
+
+[data-theme="dark"] .mascot-hint {
+  background: var(--bg-color-secondary, #1c2229);
+  color: var(--text-color-primary, #e8edf2);
+  border-color: var(--border-color, #2a3440);
 }
 
 /* 代码块样式 */

@@ -1,6 +1,6 @@
 /* ========================================
-   智码 CSOJ - 简约大方设计系统
-   Minimalist & Elegant Design System
+   智码 CSOJ - 现代简约设计系统
+   Modern Minimalist Design System with Decorative Touches
    ======================================== */
 
 /* 导入优雅字体 */
@@ -9,7 +9,7 @@
 :root {
   /* ========================================
      核心色彩 - 浅色模式
-     采用柔和、内敛的配色方案
+     采用柔和、内敛的配色方案，带装饰性点缀
      ======================================== */
 
   /* 主色调 - 沉稳的靛蓝 */
@@ -17,6 +17,20 @@
   --primary-hover-color: #3D5A73;
   --primary-light-color: #E8EEF4;
   --primary-lighter-color: #F4F7FA;
+
+  /* 装饰性渐变 - 现代点缀 */
+  --gradient-primary: linear-gradient(135deg, #4F6F8F 0%, #6B8EAD 100%);
+  --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-success: linear-gradient(135deg, #5A9A6E 0%, #6BB37E 100%);
+  --gradient-warning: linear-gradient(135deg, #C4954A 0%, #D4AA5A 100%);
+  --gradient-danger: linear-gradient(135deg, #C45C5C 0%, #D46B6B 100%);
+  --gradient-card: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(79,111,143,0.02) 100%);
+  --gradient-header: linear-gradient(180deg, rgba(79,111,143,0.03) 0%, rgba(255,255,255,0) 100%);
+
+  /* 装饰性光晕 */
+  --glow-primary: 0 4px 20px rgba(79, 111, 143, 0.15);
+  --glow-accent: 0 4px 20px rgba(102, 126, 234, 0.15);
+  --glow-success: 0 4px 20px rgba(90, 154, 110, 0.15);
 
   /* 功能色 */
   --success-color: #5A9A6E;
@@ -49,13 +63,24 @@
   --border-color-dark: #D4DDE5;
 
   /* ========================================
-     阴影 - 柔和、细腻
+     阴影 - 柔和、细腻，带层次感
      ======================================== */
   --shadow-sm: 0 1px 3px rgba(44, 62, 80, 0.04);
   --shadow-md: 0 4px 12px rgba(44, 62, 80, 0.06);
   --shadow-lg: 0 8px 24px rgba(44, 62, 80, 0.08);
   --shadow-xl: 0 16px 48px rgba(44, 62, 80, 0.10);
   --box-shadow: var(--shadow-sm);
+
+  /* 装饰性阴影 - 带色彩 */
+  --shadow-primary: 0 4px 14px rgba(79, 111, 143, 0.12);
+  --shadow-card: 0 2px 8px rgba(44, 62, 80, 0.04), 0 4px 16px rgba(44, 62, 80, 0.04);
+  --shadow-elevated: 0 8px 30px rgba(44, 62, 80, 0.08);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  /* 玻璃拟态效果 */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: blur(12px);
 
   /* ========================================
      圆角 - 统一且柔和
@@ -104,7 +129,7 @@
   --font-weight-bold: 700;
 
   /* ========================================
-     动效系统 - 流畅、克制
+     动效系统 - 流畅、克制，带精致反馈
      ======================================== */
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s ease;
@@ -115,6 +140,14 @@
   --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
   --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
   --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* 装饰性动画 */
+  --animation-float: float 3s ease-in-out infinite;
+  --animation-pulse: pulse 2s ease-in-out infinite;
+  --animation-shimmer: shimmer 2s linear infinite;
+  --animation-fade-in: fadeIn 0.3s ease forwards;
+  --animation-slide-up: slideUp 0.3s ease forwards;
 
   /* ========================================
      组件特定变量
@@ -770,4 +803,206 @@ textarea::placeholder {
 :focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: 2px;
+}
+
+/* ========================================
+   装饰性元素 - 现代点缀
+   ======================================== */
+
+/* 玻璃卡片效果 */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 装饰性圆点 */
+.decorative-dot {
+  position: relative;
+}
+
+.decorative-dot::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  opacity: 0.3;
+}
+
+/* 装饰性边框渐变 */
+.decorative-border {
+  position: relative;
+}
+
+.decorative-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+}
+
+/* 悬浮提升效果 */
+.hover-lift {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* 微光效果 */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* 状态指示器 */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success-color);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* 装饰性分隔线 */
+.decorative-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-color) 20%,
+    var(--border-color) 80%,
+    transparent
+  );
+}
+
+/* 标签装饰 */
+.tag-accent {
+  position: relative;
+  padding-left: 12px;
+}
+
+.tag-accent::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+}
+
+/* ========================================
+   关键帧动画
+   ======================================== */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* ========================================
+   深色模式装饰元素适配
+   ======================================== */
+
+[data-theme='dark'] .glass-card {
+  --glass-bg: rgba(28, 34, 41, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
 }

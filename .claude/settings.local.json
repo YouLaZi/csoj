@@ -73,7 +73,16 @@
       "Bash(gh run list --limit 10)",
       "Bash(python -c \":*)",
       "Bash(docker-compose up -d mysql redis)",
-      "Bash(docker rm -f csoj-mysql csoj-redis)"
+      "Bash(docker rm -f csoj-mysql csoj-redis)",
+      "Bash(docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e \"discovery.type=single-node\" -e \"xpack.security.enabled=false\" -e \"ES_JAVA_OPTS=-Xms512m -Xmx512m\" docker.elastic.co/elasticsearch/elasticsearch:8.11.0)",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "Bash(docker rm -f elasticsearch)",
+      "Bash(docker run -d --name elasticsearch -p 9201:9200 -p 9301:9300 -e \"discovery.type=single-node\" -e \"xpack.security.enabled=false\" -e \"ES_JAVA_OPTS=-Xms512m -Xmx512m\" docker.elastic.co/elasticsearch/elasticsearch:8.11.0)",
+      "Bash(npx eslint --fix src/components/CuteMascot.vue src/components/ParticleBackground.vue src/components/CelebrationEffect.vue src/components/KonamiCode.vue src/components/TypewriterText.vue src/components/AchievementBadge.vue src/App.vue src/components/ChatBot.vue src/views/HomeView.vue)",
+      "Bash(npx eslint --fix \"src/**/*.vue\" \"src/**/*.ts\")",
+      "Bash(npx eslint --fix src/components/CuteMascot.vue)",
+      "mcp__plugin_figma_figma__whoami",
+      "mcp__plugin_figma_figma__generate_diagram"
     ]
   }
 }

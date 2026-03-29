@@ -1,0 +1,113 @@
+{
+  "summary": {
+    "total": 14,
+    "passed": 14,
+    "failed": 0,
+    "pass_rate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "INIT",
+      "status": "INFO",
+      "message": "测试地址: http://localhost:8121/api",
+      "time": "19:17:10"
+    },
+    {
+      "name": "INIT",
+      "status": "INFO",
+      "message": "测试时间: 2026-03-07 19:17:10",
+      "time": "19:17:10"
+    },
+    {
+      "name": "服务状态",
+      "status": "PASS",
+      "message": "HTTP 200",
+      "time": "19:17:10"
+    },
+    {
+      "name": "CSRF保护",
+      "status": "WARN",
+      "message": "响应: 200",
+      "time": "19:17:11"
+    },
+    {
+      "name": "用户登录",
+      "status": "PASS",
+      "message": "用户: admin",
+      "time": "19:17:11"
+    },
+    {
+      "name": "获取当前用户",
+      "status": "PASS",
+      "message": "用户名: admin",
+      "time": "19:17:11"
+    },
+    {
+      "name": "题目列表",
+      "status": "PASS",
+      "message": "总数: 30, 当前页: 10",
+      "time": "19:17:11"
+    },
+    {
+      "name": "题目详情",
+      "status": "PASS",
+      "message": "题目ID=1不存在（正常）",
+      "time": "19:17:11"
+    },
+    {
+      "name": "帖子列表",
+      "status": "PASS",
+      "message": "总数: 10, 当前页: 10",
+      "time": "19:17:11"
+    },
+    {
+      "name": "帖子详情",
+      "status": "PASS",
+      "message": "标题: 测试帖子",
+      "time": "19:17:11"
+    },
+    {
+      "name": "每日签到",
+      "status": "PASS",
+      "message": "今日已签到",
+      "time": "19:17:11"
+    },
+    {
+      "name": "签到状态",
+      "status": "PASS",
+      "message": "已签到: False",
+      "time": "19:17:11"
+    },
+    {
+      "name": "积分排行榜",
+      "status": "PASS",
+      "message": "返回 9 条记录",
+      "time": "19:17:11"
+    },
+    {
+      "name": "公告列表",
+      "status": "PASS",
+      "message": "总数: 4",
+      "time": "19:17:11"
+    },
+    {
+      "name": "最新公告",
+      "status": "PASS",
+      "message": "返回 4 条公告",
+      "time": "19:17:11"
+    },
+    {
+      "name": "标签列表",
+      "status": "PASS",
+      "message": "返回 20 个标签",
+      "time": "19:17:11"
+    },
+    {
+      "name": "用户登出",
+      "status": "PASS",
+      "message": "登出成功",
+      "time": "19:17:11"
+    }
+  ],
+  "timestamp": "2026-03-07T19:17:11.580884"
+}

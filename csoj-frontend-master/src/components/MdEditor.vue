@@ -16,7 +16,6 @@ import { Editor } from "@bytemd/vue-next"; // Viewer removed
 import {
   ref,
   withDefaults,
-  defineProps,
   onMounted, // Added
   onUnmounted, // Added
   computed, // Added

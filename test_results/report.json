@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "total": 11,
+    "passed": 9,
+    "failed": 0,
+    "warnings": 2,
+    "pass_rate": "81.8%"
+  },
+  "results": [
+    {
+      "category": "页面加载",
+      "name": "首页加载",
+      "status": "PASS",
+      "message": "按钮数量: 22",
+      "screenshot": "",
+      "time": "14:54:37"
+    },
+    {
+      "category": "用户认证",
+      "name": "用户登录",
+      "status": "PASS",
+      "message": "用户: admin",
+      "screenshot": "",
+      "time": "14:54:42"
+    },
+    {
+      "category": "题目功能",
+      "name": "题目列表",
+      "status": "PASS",
+      "message": "找到 10 个题目",
+      "screenshot": "",
+      "time": "14:54:48"
+    },
+    {
+      "category": "题目功能",
+      "name": "代码编辑器",
+      "status": "PASS",
+      "message": "Monaco编辑器已加载",
+      "screenshot": "",
+      "time": "14:54:50"
+    },
+    {
+      "category": "帖子功能",
+      "name": "帖子列表",
+      "status": "PASS",
+      "message": "找到 10 个帖子",
+      "screenshot": "",
+      "time": "14:54:54"
+    },
+    {
+      "category": "签到系统",
+      "name": "每日签到",
+      "status": "PASS",
+      "message": "签到成功",
+      "screenshot": "",
+      "time": "14:54:59"
+    },
+    {
+      "category": "排行榜",
+      "name": "排行榜显示",
+      "status": "WARN",
+      "message": "排行榜数据为空",
+      "screenshot": "",
+      "time": "14:55:03"
+    },
+    {
+      "category": "用户中心",
+      "name": "个人资料页",
+      "status": "PASS",
+      "message": "个人资料页正常显示",
+      "screenshot": "",
+      "time": "14:55:08"
+    },
+    {
+      "category": "国际化",
+      "name": "语言切换",
+      "status": "PASS",
+      "message": "成功切换到英文",
+      "screenshot": "",
+      "time": "14:55:10"
+    },
+    {
+      "category": "响应式设计",
+      "name": "移动端适配",
+      "status": "PASS",
+      "message": "移动端视口测试完成",
+      "screenshot": "",
+      "time": "14:55:14"
+    },
+    {
+      "category": "错误检查",
+      "name": "控制台错误",
+      "status": "WARN",
+      "message": "发现 1 个错误",
+      "screenshot": "",
+      "time": "14:55:14"
+    }
+  ]
+}

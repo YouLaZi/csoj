@@ -118,13 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  onMounted,
-  ref,
-  withDefaults,
-  defineProps,
-  onBeforeUnmount,
-} from "vue";
+import { onMounted, ref, withDefaults, onBeforeUnmount } from "vue";
 import { setupResizeObserverWorkaround } from "../../utils/resizeObserverHelper";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";

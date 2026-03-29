@@ -56,9 +56,21 @@
         <!-- 欢迎信息 -->
         <div class="welcome-section">
           <div class="welcome-content">
-            <h1 class="welcome-title">{{ $t("home.welcome") }}</h1>
+            <h1 class="welcome-title">
+              <TypewriterText
+                :text="$t('home.welcome')"
+                :speed="100"
+                :delay="500"
+                :blinkCursor="false"
+              />
+            </h1>
             <p class="welcome-description">
-              {{ $t("home.welcomeDesc") }}
+              <TypewriterText
+                :text="$t('home.welcomeDesc')"
+                :speed="50"
+                :delay="1500"
+                :blinkCursor="false"
+              />
             </p>
             <div class="welcome-actions">
               <a-button
@@ -198,6 +210,7 @@ import { IconCode, IconMessage, IconUser } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
 import CheckinCalendar from "@/components/CheckinCalendar.vue";
 import SystemAnnouncement from "@/components/SystemAnnouncement.vue";
+import TypewriterText from "@/components/TypewriterText.vue";
 import UserService from "@/services/UserService";
 import QuestionService from "@/services/QuestionService";
 import PointsService from "@/services/PointsService";
@@ -350,25 +363,22 @@ onUnmounted(() => {
 
 <style scoped>
 /* ========================================
-   首页布局 - 简约大方
+   首页布局 - 现代简约带装饰
    ======================================== */
 
 #homeView {
   padding: var(--spacing-xl);
   max-width: var(--content-max-width);
   margin: 0 auto;
+  animation: fadeIn 0.5s ease;
 }
 
 /* ========================================
-   欢迎区域
+   欢迎区域 - 带装饰元素
    ======================================== */
 
 .welcome-section {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--primary-hover-color) 100%
-  );
+  background: var(--gradient-primary);
   border-radius: var(--radius-xl);
   padding: var(--spacing-3xl) var(--spacing-2xl);
   margin-bottom: var(--spacing-xl);
@@ -376,19 +386,34 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+/* 装饰性背景圆 */
 .welcome-section::before {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -50px;
+  right: -50px;
   width: 300px;
   height: 300px;
   background: radial-gradient(
     circle,
-    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.15) 0%,
     transparent 70%
   );
   pointer-events: none;
+}
+
+/* 装饰性浮动圆点 */
+.welcome-section::after {
+  content: "";
+  position: absolute;
+  bottom: 20px;
+  right: 100px;
+  width: 80px;
+  height: 80px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 6s ease-in-out infinite;
 }
 
 .welcome-content {
@@ -416,16 +441,23 @@ onUnmounted(() => {
 
 .welcome-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-md);
+  min-height: 44px;
 }
 
 .welcome-actions .arco-btn {
   height: 44px;
+  min-width: 120px;
+  max-width: 180px;
   padding: 0 var(--spacing-xl);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .welcome-actions .arco-btn-primary {
@@ -472,6 +504,22 @@ onUnmounted(() => {
   font-weight: var(--font-weight-semibold);
   color: var(--text-color-primary);
   margin: 0;
+  position: relative;
+  display: inline-block;
+  min-height: 1.5em;
+  white-space: nowrap;
+}
+
+/* 标题装饰下划线 */
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
 }
 
 .section-extra {
@@ -509,6 +557,10 @@ onUnmounted(() => {
   font-weight: var(--font-weight-semibold);
   color: var(--text-color-primary);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 .card-extra {
@@ -592,12 +644,15 @@ onUnmounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 60px;
+  max-width: 100px;
 }
 
 .user-points {
   font-size: var(--font-size-xs);
   color: var(--text-color-secondary);
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 /* ========================================
@@ -616,13 +671,33 @@ onUnmounted(() => {
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all var(--transition-base) var(--easing-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 卡片顶部装饰线 */
+.question-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base) var(--easing-smooth);
 }
 
 .question-card:hover {
   border-color: var(--primary-light-color);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+  transform: translateY(-4px);
+}
+
+.question-card:hover::before {
+  transform: scaleX(1);
 }
 
 .question-header {
@@ -630,6 +705,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: var(--spacing-sm);
+  min-height: 2.5em;
 }
 
 .question-title {
@@ -641,6 +717,11 @@ onUnmounted(() => {
   flex: 1;
   margin-right: var(--spacing-sm);
   line-height: var(--line-height-tight);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 3em;
 }
 
 .accept-rate {
@@ -707,11 +788,16 @@ onUnmounted(() => {
   font-weight: var(--font-weight-semibold);
   color: var(--text-color-primary);
   margin-bottom: var(--spacing-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 
 .user-details .user-role {
   font-size: var(--font-size-sm);
   color: var(--text-color-secondary);
+  white-space: nowrap;
 }
 
 .user-stats {
@@ -777,22 +863,36 @@ onUnmounted(() => {
   font-weight: var(--font-weight-semibold);
   color: var(--text-color-primary);
   margin: 0 0 var(--spacing-xs) 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .login-description {
   font-size: var(--font-size-sm);
   color: var(--text-color-secondary);
   margin: 0 0 var(--spacing-lg) 0;
+  min-height: 2.5em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .login-actions {
   display: flex;
   gap: var(--spacing-sm);
   justify-content: center;
+  min-height: 32px;
 }
 
 .login-actions .arco-btn {
   flex: 1;
+  min-width: 80px;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ========================================

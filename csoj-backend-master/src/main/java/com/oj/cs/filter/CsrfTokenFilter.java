@@ -3,19 +3,18 @@ package com.oj.cs.filter;
 import java.io.IOException;
 
 import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Component;
 
 import cn.hutool.crypto.SecureUtil;
 import lombok.extern.slf4j.Slf4j;
 
-/** CSRF Token 过滤器 为每个会话生成 CSRF Token */
+/**
+ * CSRF Token 过滤器 为每个会话生成 CSRF Token
+ *
+ * <p>注意：此过滤器通过 FilterConfig.java 注册，不需要 @Component 注解
+ */
 @Slf4j
-@Component
-@WebFilter(urlPatterns = "/*", filterName = "csrfTokenFilter")
 public class CsrfTokenFilter implements Filter {
 
   private static final String CSRF_TOKEN_ATTR = "csrf_token";
@@ -34,6 +33,18 @@ public class CsrfTokenFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
 
+    // 获取会话中的 CSRF Token
+    String sessionToken = (String) httpRequest.getSession().getAttribute(CSRF_TOKEN_ATTR);
+
+    // 如果会话中没有 Token，生成新的
+    if (sessionToken == null) {
+      sessionToken = generateCsrfToken();
+      httpRequest.getSession().setAttribute(CSRF_TOKEN_ATTR, sessionToken);
+    }
+
+    // 始终将 Token 添加到响应头，以便客户端可以获取
+    httpResponse.setHeader(CSRF_HEADER_NAME, sessionToken);
+
     // 跳过 GET、HEAD、OPTIONS 请求（只修改状态的需要 CSRF 保护）
     String method = httpRequest.getMethod();
     if ("GET".equalsIgnoreCase(method)
@@ -48,22 +59,13 @@ public class CsrfTokenFilter implements Filter {
     if (requestUri != null
         && (requestUri.contains("/list/page")
             || requestUri.contains("/search")
-            || requestUri.contains("/get/"))) {
+            || requestUri.contains("/get/")
+            || requestUri.contains("/login")
+            || requestUri.contains("/register")
+            || requestUri.contains("/logout"))) {
       chain.doFilter(request, response);
       return;
     }
-
-    // 获取会话中的 CSRF Token
-    String sessionToken = (String) httpRequest.getSession().getAttribute(CSRF_TOKEN_ATTR);
-
-    // 如果会话中没有 Token，生成新的
-    if (sessionToken == null) {
-      sessionToken = generateCsrfToken();
-      httpRequest.getSession().setAttribute(CSRF_TOKEN_ATTR, sessionToken);
-    }
-
-    // 将 Token 添加到响应头
-    httpResponse.setHeader(CSRF_HEADER_NAME, sessionToken);
 
     // 验证请求头中的 Token
     String requestToken = httpRequest.getHeader(CSRF_TOKEN_NAME);

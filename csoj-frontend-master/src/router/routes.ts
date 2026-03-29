@@ -20,6 +20,10 @@ import TagsView from "@/views/tag/TagsView.vue";
 import CheckinView from "@/views/points/CheckinView.vue";
 import LeaderboardView from "@/views/points/LeaderboardView.vue";
 import NotFoundView from "@/views/error/NotFoundView.vue";
+import TeamListView from "@/views/team/TeamListView.vue";
+import TeamDetailView from "@/views/team/TeamDetailView.vue";
+import CompetitionListView from "@/views/competition/CompetitionListView.vue";
+import CompetitionDetailView from "@/views/competition/CompetitionDetailView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -48,6 +52,15 @@ export const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/user/ResetPasswordView.vue"),
       },
     ],
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  // OAuth 第三方登录回调
+  {
+    path: "/oauth/callback/:platform",
+    name: "oauthCallback",
+    component: () => import("@/views/user/OAuthCallbackView.vue"),
     meta: {
       hideInMenu: true,
     },
@@ -210,6 +223,34 @@ export const routes: Array<RouteRecordRaw> = [
     component: LeaderboardView,
   },
   {
+    path: "/team",
+    name: "nav.team",
+    component: TeamListView,
+  },
+  {
+    path: "/team/:id",
+    name: "nav.teamDetail",
+    component: TeamDetailView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/competition",
+    name: "nav.competition",
+    component: CompetitionListView,
+  },
+  {
+    path: "/competition/:id",
+    name: "nav.competitionDetail",
+    component: CompetitionDetailView,
+    props: true,
+    meta: {
+      hideInMenu: true,
+    },
+  },
+  {
     path: "/permission-example",
     name: "nav.permissionExample",
     component: PermissionExample,
@@ -227,6 +268,9 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/leaderboard",
     redirect: "/points/leaderboard",
+    meta: {
+      hideInMenu: true,
+    },
   },
   {
     path: "/noAuth",

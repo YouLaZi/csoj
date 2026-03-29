@@ -28,7 +28,7 @@
           >
             <template v-if="hasVisibleChildren(item)">
               <span class="nav-link">
-                {{ $t(item.name) }}
+                {{ $t(item.name || "") }}
                 <icon-down class="dropdown-arrow" />
               </span>
               <div class="dropdown-menu">
@@ -38,35 +38,52 @@
                   class="dropdown-item"
                   @click="navigateTo(item.path + '/' + child.path)"
                 >
-                  {{ $t(child.name) }}
+                  {{ $t(child.name || "") }}
                 </a>
               </div>
             </template>
             <template v-else>
               <span class="nav-link" @click="navigateTo(item.path)">{{
-                $t(item.name)
+                $t(item.name || "")
               }}</span>
             </template>
+          </div>
+
+          <!-- 排行榜入口 - 简洁样式 -->
+          <div class="nav-item leaderboard-item">
+            <span class="nav-link" @click="router.push('/points/leaderboard')">
+              {{ $t("points.leaderboard") }}
+            </span>
           </div>
         </nav>
       </div>
 
       <!-- 右侧：操作区 -->
       <div class="header-right">
-        <!-- 排行榜入口 -->
-        <button
-          class="icon-btn leaderboard-btn"
-          @click="router.push('/points/leaderboard')"
-        >
-          <icon-trophy />
-          <span class="btn-text">{{ $t("points.leaderboard") }}</span>
-        </button>
+        <!-- 设置下拉（整合主题和语言） -->
+        <a-dropdown trigger="click" class="settings-dropdown" position="br">
+          <button class="icon-btn" aria-label="Settings">
+            <icon-settings />
+          </button>
+          <template #content>
+            <div class="settings-panel">
+              <div class="settings-item">
+                <span class="settings-label">{{ $t("settings.theme") }}</span>
+                <ThemeToggle />
+              </div>
+              <div class="settings-divider"></div>
+              <div class="settings-item">
+                <span class="settings-label">{{
+                  $t("settings.language")
+                }}</span>
+                <LocaleToggle />
+              </div>
+            </div>
+          </template>
+        </a-dropdown>
 
-        <!-- 主题切换 -->
-        <ThemeToggle />
-
-        <!-- 语言切换 -->
-        <LocaleToggle />
+        <!-- 分隔线 -->
+        <div class="header-divider"></div>
 
         <!-- 用户区域 -->
         <div v-if="!isLogin" class="auth-buttons">
@@ -82,7 +99,7 @@
           </a-button>
         </div>
 
-        <a-dropdown v-else trigger="hover" class="user-dropdown">
+        <a-dropdown v-else trigger="hover" class="user-dropdown" position="br">
           <div class="user-trigger">
             <a-avatar :size="32" v-if="userAvatar" :image-url="userAvatar" />
             <a-avatar :size="32" v-else class="avatar-placeholder">
@@ -126,31 +143,53 @@
         <div class="drawer-logo">CodeSmart</div>
       </template>
       <nav class="mobile-nav">
-        <template v-for="item in visibleRoutes" :key="item.path">
+        <template v-for="item in visibleRoutes">
           <div
             v-if="hasVisibleChildren(item)"
-            :key="item.path"
+            :key="item.path + '-group'"
             class="mobile-nav-group"
           >
-            <div class="mobile-nav-title">{{ $t(item.name) }}</div>
+            <div class="mobile-nav-title">{{ $t(item.name || "") }}</div>
             <a
               v-for="child in getChildRoutes(item)"
               :key="item.path + '/' + child.path"
               class="mobile-nav-item"
               @click="navigateToAndClose(item.path + '/' + child.path)"
             >
-              {{ $t(child.name) }}
+              {{ $t(child.name || "") }}
             </a>
           </div>
           <a
             v-else
-            :key="item.path"
+            :key="item.path + '-link'"
             :class="['mobile-nav-item', { active: isActiveRoute(item.path) }]"
             @click="navigateToAndClose(item.path)"
           >
-            {{ $t(item.name) }}
+            {{ $t(item.name || "") }}
           </a>
         </template>
+
+        <!-- 移动端排行榜入口 -->
+        <a
+          class="mobile-nav-item"
+          @click="navigateToAndClose('/points/leaderboard')"
+        >
+          <icon-trophy style="margin-right: 8px" />
+          {{ $t("points.leaderboard") }}
+        </a>
+
+        <!-- 移动端设置区域 -->
+        <div class="mobile-settings">
+          <div class="mobile-settings-title">{{ $t("settings.title") }}</div>
+          <div class="mobile-settings-item">
+            <span>{{ $t("settings.theme") }}</span>
+            <ThemeToggle />
+          </div>
+          <div class="mobile-settings-item">
+            <span>{{ $t("settings.language") }}</span>
+            <LocaleToggle />
+          </div>
+        </div>
       </nav>
     </a-drawer>
 
@@ -285,7 +324,7 @@ onMounted(() => {
 
 <style scoped>
 /* ========================================
-   头部导航 - 简约大方
+   头部导航 - 现代简约带装饰
    ======================================== */
 
 #globalHeader {
@@ -297,13 +336,31 @@ onMounted(() => {
   background-color: var(--bg-color-secondary);
   border-bottom: 1px solid var(--border-color-light);
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 头部底部装饰渐变线 */
+#globalHeader::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--primary-light-color),
+    transparent
+  );
+  opacity: 0.5;
 }
 
 .header-inner {
   max-width: var(--content-max-width);
   height: 100%;
   margin: 0 auto;
-  padding: 0 var(--spacing-xl);
+  padding: 0 var(--spacing-2xl);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -343,7 +400,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  margin-right: var(--spacing-2xl);
+  margin-right: var(--spacing-3xl);
+  flex-shrink: 0;
 }
 
 .logo-text {
@@ -369,7 +427,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   height: 100%;
-  gap: var(--spacing-xs);
+  gap: 0;
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -377,6 +436,9 @@ onMounted(() => {
   height: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  max-width: 120px;
   padding: 0 var(--spacing-md);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -385,10 +447,15 @@ onMounted(() => {
 .nav-link {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   color: var(--text-color-regular);
   transition: color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-item:hover .nav-link,
@@ -396,10 +463,40 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
+/* 导航项装饰下划线 */
+.nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base) var(--easing-smooth);
+}
+
+.nav-item:hover::after,
+.nav-item.active::after {
+  width: 60%;
+}
+
+/* 排行榜特殊样式 */
+.leaderboard-item .nav-link {
+  color: var(--primary-color);
+  opacity: 0.85;
+}
+
+.leaderboard-item:hover .nav-link {
+  opacity: 1;
+}
+
 .dropdown-arrow {
   margin-left: var(--spacing-xs);
   font-size: 12px;
   transition: transform var(--transition-fast);
+  flex-shrink: 0;
 }
 
 /* 下拉菜单 */
@@ -434,6 +531,9 @@ onMounted(() => {
   font-size: var(--font-size-sm);
   color: var(--text-color-regular);
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dropdown-item:hover {
@@ -451,16 +551,19 @@ onMounted(() => {
   gap: var(--spacing-md);
 }
 
+/* 图标按钮 */
 .icon-btn {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   background: transparent;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   color: var(--text-color-regular);
-  font-size: var(--font-size-sm);
+  font-size: 20px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -468,10 +571,46 @@ onMounted(() => {
 .icon-btn:hover {
   border-color: var(--primary-color);
   color: var(--primary-color);
+  background-color: var(--primary-lighter-color);
 }
 
-.icon-btn .btn-text {
-  display: inline;
+/* 分隔线 */
+.header-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--border-color);
+  margin: 0 var(--spacing-xs);
+}
+
+/* 设置下拉面板 */
+.settings-dropdown :deep(.arco-dropdown-menu) {
+  padding: 0;
+  min-width: 220px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.settings-panel {
+  padding: var(--spacing-lg);
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xl);
+}
+
+.settings-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-primary);
+}
+
+.settings-divider {
+  height: 1px;
+  background-color: var(--border-color-light);
+  margin: var(--spacing-md) 0;
 }
 
 /* 认证按钮 */
@@ -483,6 +622,7 @@ onMounted(() => {
 
 .login-btn {
   color: var(--text-color-regular);
+  font-weight: var(--font-weight-medium);
 }
 
 .login-btn:hover {
@@ -491,37 +631,42 @@ onMounted(() => {
 
 .register-btn {
   border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
 }
 
 /* 用户下拉 */
 .user-dropdown {
-  margin-left: var(--spacing-sm);
+  margin-left: var(--spacing-xs);
 }
 
 .user-trigger {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  padding-right: var(--spacing-sm);
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
 }
 
 .user-trigger:hover {
   background-color: var(--bg-color-tertiary);
+  border-color: var(--border-color);
 }
 
 .avatar-placeholder {
   background-color: var(--primary-light-color);
   color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
 }
 
 .user-name {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-color-primary);
-  max-width: 100px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -530,6 +675,11 @@ onMounted(() => {
 .dropdown-icon {
   font-size: 12px;
   color: var(--text-color-secondary);
+  transition: transform var(--transition-fast);
+}
+
+.user-trigger:hover .dropdown-icon {
+  transform: rotate(180deg);
 }
 
 .logout-option {
@@ -569,7 +719,8 @@ onMounted(() => {
 }
 
 .mobile-nav-item {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: var(--spacing-md);
   font-size: var(--font-size-base);
   color: var(--text-color-primary);
@@ -583,17 +734,60 @@ onMounted(() => {
   color: var(--primary-color);
 }
 
+/* 移动端设置区域 */
+.mobile-settings {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-color-light);
+}
+
+.mobile-settings-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-md);
+}
+
+.mobile-settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-color-regular);
+}
+
+.mobile-settings-item + .mobile-settings-item {
+  margin-top: var(--spacing-sm);
+}
+
 /* ========================================
    响应式设计
    ======================================== */
+
+@media (max-width: 1200px) {
+  .header-inner {
+    padding: 0 var(--spacing-xl);
+  }
+
+  .nav-item {
+    padding: 0 var(--spacing-md);
+  }
+
+  .logo {
+    margin-right: var(--spacing-2xl);
+  }
+}
 
 @media (max-width: 992px) {
   .header-inner {
     padding: 0 var(--spacing-lg);
   }
 
-  .icon-btn .btn-text {
-    display: none;
+  .nav-item {
+    padding: 0 var(--spacing-sm);
   }
 }
 
@@ -621,6 +815,10 @@ onMounted(() => {
   .auth-buttons .register-btn {
     padding: 0 var(--spacing-md);
   }
+
+  .header-divider {
+    display: none;
+  }
 }
 
 /* ========================================
@@ -640,5 +838,13 @@ onMounted(() => {
 [data-theme="dark"] .mobile-nav-item:hover,
 [data-theme="dark"] .mobile-nav-item.active {
   background-color: var(--primary-light-color);
+}
+
+[data-theme="dark"] .icon-btn:hover {
+  background-color: rgba(var(--primary-color-rgb), 0.1);
+}
+
+[data-theme="dark"] .settings-panel {
+  background-color: var(--bg-color-elevated);
 }
 </style>

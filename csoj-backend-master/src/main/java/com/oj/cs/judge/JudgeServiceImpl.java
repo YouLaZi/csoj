@@ -22,11 +22,14 @@ import com.oj.cs.model.entity.Question;
 import com.oj.cs.model.entity.QuestionSubmit;
 import com.oj.cs.model.enums.JudgeInfoMessageEnum;
 import com.oj.cs.model.enums.QuestionSubmitStatusEnum;
+import com.oj.cs.service.CompileCacheService;
 import com.oj.cs.service.QuestionService;
 import com.oj.cs.service.QuestionSubmitService;
 
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class JudgeServiceImpl implements JudgeService {
 
@@ -36,8 +39,13 @@ public class JudgeServiceImpl implements JudgeService {
 
   @Resource private JudgeManager judgeManager;
 
+  @Resource private CompileCacheService compileCacheService;
+
   @Value("${codesandbox.type:example}")
   private String type;
+
+  @Value("${compile.cache.enabled:true}")
+  private boolean cacheEnabled;
 
   @Override
   public QuestionSubmit doJudge(long questionSubmitId) {
@@ -68,6 +76,17 @@ public class JudgeServiceImpl implements JudgeService {
     codeSandbox = new CodeSandboxProxy(codeSandbox);
     String language = questionSubmit.getLanguage();
     String code = questionSubmit.getCode();
+
+    // 检查编译缓存（仅用于日志记录，实际缓存需要在沙箱层面实现）
+    if (cacheEnabled) {
+      String codeHash = compileCacheService.computeHash(code, language);
+      log.debug("代码哈希: {}, 语言: {}", codeHash, language);
+      // 注意: 完整的缓存集成需要沙箱支持返回编译产物
+      // 当前仅记录缓存统计信息
+      CompileCacheService.CacheStats stats = compileCacheService.getStats();
+      log.debug("编译缓存统计: 条目数={}, 总大小={} bytes", stats.getTotalEntries(), stats.getTotalSize());
+    }
+
     // 获取输入用例
     String judgeCaseStr = question.getJudgeCase();
     List<JudgeCase> judgeCaseList = JSONUtil.toList(judgeCaseStr, JudgeCase.class);

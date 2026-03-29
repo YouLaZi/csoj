@@ -9,10 +9,10 @@
     "generate-api": "openapi --input http://localhost:8121/api/v3/api-docs --output ./generated --client axios"
   },
   "dependencies": {
+    "@arco-design/web-vue": "^2.49.1",
     "@bytemd/plugin-gfm": "^1.21.0",
     "@bytemd/plugin-highlight": "^1.21.0",
     "@bytemd/vue-next": "^1.21.0",
-    "ant-design-vue": "^3.2.20",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
     "echarts": "^5.6.0",
@@ -27,7 +27,6 @@
     "yarn": "^1.22.22"
   },
   "devDependencies": {
-    "@arco-design/web-vue": "^2.49.1",
     "@babel/plugin-transform-class-static-block": "^7.27.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",

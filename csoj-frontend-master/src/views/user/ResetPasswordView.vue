@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import { message } from "ant-design-vue";
+import { Message } from "@arco-design/web-vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   UserControllerService,
@@ -75,7 +75,7 @@ const logFormState = () => {
 onMounted(() => {
   token.value = route.query.token as string;
   if (!token.value) {
-    message.error("无效的密码重置链接");
+    Message.error("无效的密码重置链接");
     router.push("/user/login");
   }
 });
@@ -85,7 +85,7 @@ const handleSubmit = async (event: Event) => {
 
   if (!passwordForm.value) {
     console.error("表单元素未找到");
-    message.error("系统错误，请刷新页面重试");
+    Message.error("系统错误，请刷新页面重试");
     return;
   }
 
@@ -101,27 +101,27 @@ const handleSubmit = async (event: Event) => {
 
     // 基本验证
     if (!newPassword) {
-      message.error("请输入新密码");
+      Message.error("请输入新密码");
       return;
     }
 
     if (newPassword.length < 8) {
-      message.error("密码长度不能少于8位");
+      Message.error("密码长度不能少于8位");
       return;
     }
 
     if (!confirmPassword) {
-      message.error("请确认新密码");
+      Message.error("请确认新密码");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      message.error("两次输入的密码不一致");
+      Message.error("两次输入的密码不一致");
       return;
     }
 
     if (!token.value) {
-      message.error("无效的密码重置链接");
+      Message.error("无效的密码重置链接");
       return;
     }
 
@@ -144,14 +144,14 @@ const handleSubmit = async (event: Event) => {
     console.log("API 响应:", response);
 
     if (response.code === 0) {
-      message.success("密码重置成功，请使用新密码登录");
+      Message.success("密码重置成功，请使用新密码登录");
       router.push("/user/login");
     } else {
-      message.error(response.message || "密码重置失败");
+      Message.error(response.message || "密码重置失败");
     }
   } catch (error: any) {
     console.error("处理提交时出错:", error);
-    message.error(error.body?.message || "密码重置失败，请稍后再试");
+    Message.error(error.body?.message || "密码重置失败，请稍后再试");
   } finally {
     loading.value = false;
   }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.rabbitmq.client.Channel;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +38,20 @@ public class MainController {
     // 定义鉴权请求头和密钥
     private static final String AUTH_REQUEST_HEADER = "auth";
 
-    private static final String AUTH_REQUEST_SECRET = "secretKey";
+    @org.springframework.beans.factory.annotation.Value("${codesandbox.auth.secret:}")
+    private String authSecret;
+
+    @PostConstruct
+    public void validateSecret() {
+        if (authSecret == null || authSecret.isBlank()) {
+            String envSecret = System.getenv("CODE_SANDBOX_SECRET");
+            if (envSecret == null || envSecret.isBlank()) {
+                throw new IllegalStateException("CODE_SANDBOX_SECRET 未设置，沙箱服务拒绝启动。请通过环境变量或配置文件设置密钥。");
+            }
+            authSecret = envSecret;
+        }
+        logger.info("沙箱鉴权密钥已加载（长度: {}）", authSecret.length());
+    }
 
     @Resource
     private CodeSandboxFactory codeSandboxFactory;
@@ -61,7 +75,7 @@ public class MainController {
                                          HttpServletResponse response) {
         // 基本的认证
         String authHeader = request.getHeader(AUTH_REQUEST_HEADER);
-        if (!AUTH_REQUEST_SECRET.equals(authHeader)) {
+        if (!authSecret.equals(authHeader)) {
             response.setStatus(403);
             return null;
         }
@@ -123,7 +137,7 @@ public class MainController {
                                          HttpServletResponse response) {
         // 基本的认证
         String authHeader = request.getHeader(AUTH_REQUEST_HEADER);
-        if (!AUTH_REQUEST_SECRET.equals(authHeader)) {
+        if (!authSecret.equals(authHeader)) {
             response.setStatus(403);
             return null;
         }

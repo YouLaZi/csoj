@@ -11,12 +11,12 @@
           placeholder="选择编程语言"
         >
           <a-option>java</a-option>
+          <a-option>c</a-option>
           <a-option>cpp</a-option>
           <a-option>go</a-option>
           <a-option>python</a-option>
-          <a-option>c++</a-option>
           <a-option>ruby</a-option>
-          <a-option>c#</a-option>
+          <a-option>csharp</a-option>
           <a-option>javascript</a-option>
           <a-option>swift</a-option>
         </a-select>
