@@ -222,6 +222,10 @@ jobs:
       - name: Install Apache Bench
         run: sudo apt-get install -y apache2-utils
 
+      - name: Create Payload File
+        run: |
+          echo '{"language":"java","code":"public class Main { public static void main(String[] args) { System.out.println(\"Hello\"); } }","input":"","timeout":5000}' > sandbox-payload.json
+
       - name: Load Test
         run: |
           # 并发执行测试
