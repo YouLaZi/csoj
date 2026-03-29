@@ -49,7 +49,10 @@ jobs:
 
       - name: Check Docker Compose Configuration
         run: |
-          docker-compose -f docker-compose.yml config > /dev/null
+          # Provide dummy values for required env vars so config validation can proceed
+          export MYSQL_ROOT_PASSWORD=dummy MYSQL_PASSWORD=dummy REDIS_PASSWORD=dummy
+          export RABBITMQ_PASSWORD=dummy CODE_SANDBOX_SECRET=dummy GRAFANA_ADMIN_PASSWORD=dummy
+          docker compose -f docker-compose.yml config > /dev/null
 
   # ========================================
   # Job 2: 沙箱功能测试
