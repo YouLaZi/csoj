@@ -50,5 +50,32 @@ coverage/
 dist/
 build/
 
+# JVM crash dumps
+hs_err_pid*.log
+replay_pid*.log
+
+# Temporary scripts and debug files
+debug_*.py
+test_*.py
+fix_*.py
+fix_*.js
+
+# E2E test artifacts
+test_results/
+test_screenshots/
+
+# Playwright MCP logs
+.playwright-mcp/
+
+# Temporary screenshots
+calendar-*.png
+frontend-*.png
+
+# Misc
+dev
+bash.exe.stackdump
+*.doc
+*.docx
+
 # Privacy - docs folder contains personal files
 docs/

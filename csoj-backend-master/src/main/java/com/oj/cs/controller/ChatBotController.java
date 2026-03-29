@@ -6,7 +6,9 @@ import java.util.Map;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.oj.cs.common.BaseResponse;
 import com.oj.cs.common.ErrorCode;
@@ -21,75 +23,136 @@ import com.oj.cs.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
-/** 聊天机器人接口 */
+/**
+ * ChatBot Controller
+ * Provides REST API and SSE streaming endpoints
+ */
 @RestController
 @RequestMapping("/")
 @Slf4j
 public class ChatBotController {
 
-  @Resource private ChatBotService chatBotService;
+    @Resource
+    private ChatBotService chatBotService;
 
-  @Resource private UserService userService;
+    @Resource
+    private UserService userService;
 
-  /**
-   * 发送聊天消息
-   *
-   * @param chatMessageRequest 聊天消息请求
-   * @param request HTTP请求
-   * @return 聊天消息响应
-   */
-  @PostMapping("/chat/message")
-  public BaseResponse<ChatMessageResponse> sendChatMessage(
-      @RequestBody ChatMessageRequest chatMessageRequest, HttpServletRequest request) {
-    if (chatMessageRequest == null || chatMessageRequest.getMessage() == null) {
-      throw new BusinessException(ErrorCode.PARAMS_ERROR, "消息不能为空");
+    /**
+     * Stream chat message via SSE
+     * Supports real-time streaming response from AI
+     *
+     * @param request Chat message request
+     * @param httpRequest HTTP request
+     * @return SSE emitter
+     */
+    @GetMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamChatMessageGet(
+            @RequestParam String message,
+            @RequestParam(required = false) Long questionId,
+            HttpServletRequest httpRequest) {
+        ChatMessageRequest request = new ChatMessageRequest();
+        request.setMessage(message);
+        request.setQuestionId(questionId);
+        return streamChatMessage(request, httpRequest);
     }
-    User loginUser = userService.getLoginUser(request);
-    ChatMessageResponse response =
-        chatBotService.sendChatMessage(chatMessageRequest, loginUser.getId());
-    return ResultUtils.success(response);
-  }
 
-  /**
-   * 获取学习进度
-   *
-   * @param request HTTP请求
-   * @return 学习进度信息
-   */
-  @GetMapping("/user/learning-progress")
-  public BaseResponse<Map<String, Object>> getLearningProgress(HttpServletRequest request) {
-    User loginUser = userService.getLoginUser(request);
-    Map<String, Object> learningProgress = chatBotService.getLearningProgress(loginUser.getId());
-    return ResultUtils.success(learningProgress);
-  }
+    /**
+     * Stream chat message via SSE (POST)
+     */
+    @PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamChatMessage(
+            @RequestBody ChatMessageRequest chatMessageRequest,
+            HttpServletRequest httpRequest) {
+        if (chatMessageRequest == null || chatMessageRequest.getMessage() == null
+                || chatMessageRequest.getMessage().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Message cannot be empty");
+        }
 
-  /**
-   * 获取推荐题目
-   *
-   * @param request HTTP请求
-   * @return 推荐题目列表
-   */
-  @GetMapping("/problems/recommended")
-  public BaseResponse<List<Map<String, Object>>> getRecommendedProblems(
-      HttpServletRequest request) {
-    User loginUser = userService.getLoginUser(request);
-    List<Map<String, Object>> recommendedProblems =
-        chatBotService.getRecommendedProblems(loginUser.getId());
-    return ResultUtils.success(recommendedProblems);
-  }
+        User loginUser = userService.getLoginUser(httpRequest);
+        log.info("Streaming chat message from user: {}", loginUser.getId());
 
-  /**
-   * 获取聊天历史
-   *
-   * @param questionId 问题ID（可选）
-   * @param request HTTP请求
-   * @return 聊天历史列表
-   */
-  @GetMapping("/chat/history")
-  public BaseResponse<List<ChatMessage>> getChatHistory(
-      @RequestParam(required = false) Long questionId, HttpServletRequest request) {
-    User loginUser = userService.getLoginUser(request);
-    List<ChatMessage> chatHistory = chatBotService.getChatHistory(loginUser.getId(), questionId);
-    return ResultUtils.success(chatHistory);
-  }
+        return chatBotService.streamChatMessage(chatMessageRequest, loginUser.getId());
+    }
+
+    /**
+     * Send chat message (non-streaming, fallback)
+     *
+     * @param chatMessageRequest Chat message request
+     * @param httpRequest HTTP request
+     * @return Chat message response
+     */
+    @PostMapping("/chat/message")
+    public BaseResponse<ChatMessageResponse> sendChatMessage(
+            @RequestBody ChatMessageRequest chatMessageRequest,
+            HttpServletRequest httpRequest) {
+        if (chatMessageRequest == null || chatMessageRequest.getMessage() == null
+                || chatMessageRequest.getMessage().trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "Message cannot be empty");
+        }
+
+        User loginUser = userService.getLoginUser(httpRequest);
+        ChatMessageResponse response = chatBotService.sendChatMessage(chatMessageRequest, loginUser.getId());
+        return ResultUtils.success(response);
+    }
+
+    /**
+     * Get learning progress
+     *
+     * @param httpRequest HTTP request
+     * @return Learning progress info
+     */
+    @GetMapping("/user/learning-progress")
+    public BaseResponse<Map<String, Object>> getLearningProgress(HttpServletRequest httpRequest) {
+        User loginUser = userService.getLoginUser(httpRequest);
+        Map<String, Object> learningProgress = chatBotService.getLearningProgress(loginUser.getId());
+        return ResultUtils.success(learningProgress);
+    }
+
+    /**
+     * Get recommended problems
+     *
+     * @param httpRequest HTTP request
+     * @return Recommended problems list
+     */
+    @GetMapping("/problems/recommended")
+    public BaseResponse<List<Map<String, Object>>> getRecommendedProblems(
+            HttpServletRequest httpRequest) {
+        User loginUser = userService.getLoginUser(httpRequest);
+        List<Map<String, Object>> recommendedProblems =
+                chatBotService.getRecommendedProblems(loginUser.getId());
+        return ResultUtils.success(recommendedProblems);
+    }
+
+    /**
+     * Get chat history
+     *
+     * @param questionId Question ID (optional)
+     * @param httpRequest HTTP request
+     * @return Chat history list
+     */
+    @GetMapping("/chat/history")
+    public BaseResponse<List<ChatMessage>> getChatHistory(
+            @RequestParam(required = false) Long questionId,
+            HttpServletRequest httpRequest) {
+        User loginUser = userService.getLoginUser(httpRequest);
+        List<ChatMessage> chatHistory = chatBotService.getChatHistory(loginUser.getId(), questionId);
+        return ResultUtils.success(chatHistory);
+    }
+
+    /**
+     * Clear chat history
+     *
+     * @param questionId Question ID (optional, null to clear all)
+     * @param httpRequest HTTP request
+     * @return Success response
+     */
+    @DeleteMapping("/chat/clear")
+    public BaseResponse<Void> clearChatHistory(
+            @RequestParam(required = false) Long questionId,
+            HttpServletRequest httpRequest) {
+        User loginUser = userService.getLoginUser(httpRequest);
+        chatBotService.clearChatHistory(loginUser.getId(), questionId);
+        return ResultUtils.success(null);
+    }
 }

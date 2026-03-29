@@ -1,21 +1,37 @@
 /**
- * 聊天消息类型定义
+ * ChatBot Type Definitions
  */
+
+export type MessageRole = "user" | "assistant";
+
+export type ContentType = "text" | "code";
+
 export interface ChatMessage {
+  id: string;
+  role: MessageRole;
   content: string;
-  type: "user" | "bot";
-  // 内容类型，支持代码和公式
-  contentType?: "text" | "code" | "math";
-  language?: string; // 代码语言
-  codeAnalysis?: {
-    errors?: string[];
-    suggestions?: string[];
-  };
+  contentType?: ContentType;
+  language?: string;
+  timestamp: number;
+  isStreaming?: boolean;
 }
 
-/**
- * 学习进度类型定义
- */
+export interface ChatSession {
+  id: string;
+  questionId?: number;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface SendMessageOptions {
+  message: string;
+  questionId?: number;
+  onChunk?: (chunk: string) => void;
+  onComplete?: (fullResponse: string) => void;
+  onError?: (error: Error) => void;
+}
+
 export interface LearningProgress {
   solvedProblems: number;
   totalProblems: number;
@@ -23,13 +39,16 @@ export interface LearningProgress {
   recommendedTopics: string[];
 }
 
-/**
- * 题目信息类型定义
- */
 export interface Question {
-  id?: number;
-  title?: string;
+  id: number;
+  title: string;
   content?: string;
   difficulty?: string;
   tags?: string[];
+}
+
+export interface AIConfig {
+  model: string;
+  maxTokens: number;
+  temperature: number;
 }

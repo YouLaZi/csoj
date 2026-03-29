@@ -11,7 +11,7 @@ public class ChatMessageRequest implements Serializable {
   /** 用户消息内容 */
   private String message;
 
-  /** 问题ID（可选） */
+  /** Question ID (optional) */
   private Long questionId;
 
   private static final long serialVersionUID = 1L;

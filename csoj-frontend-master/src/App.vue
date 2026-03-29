@@ -51,7 +51,7 @@
 import BasicLayout from "@/layouts/BasicLayout";
 import { onMounted, computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import ChatBot from "@/components/ChatBot.vue";
+import ChatBot from "@/components/chat/ChatBot.vue";
 import { ThemeManager } from "@/utils/themeManager";
 import ParticleBackground from "@/components/ParticleBackground.vue";
 import KonamiCode from "@/components/KonamiCode.vue";
