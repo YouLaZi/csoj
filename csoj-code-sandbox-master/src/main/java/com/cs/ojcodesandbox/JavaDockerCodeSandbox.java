@@ -10,9 +10,11 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.cs.ojcodesandbox.model.ExecuteCodeRequest;
 import com.cs.ojcodesandbox.model.ExecuteCodeResponse;
 import com.cs.ojcodesandbox.model.ExecuteMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
+import javax.annotation.Resource;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -22,12 +24,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Java Docker 代码沙箱
+ * 使用 Docker 容器隔离执行用户提交的 Java 代码
+ */
+@Slf4j
 @Component
 public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
 
     private static final long TIME_OUT = 5000L;
 
     private static final Boolean FIRST_INIT = true;
+
+    /**
+     * 注入 Spring 管理的 DockerClient 单例
+     * 避免每次执行都创建新的客户端连接
+     */
+    @Resource
+    private DockerClient dockerClient;
 
     public static void main(String[] args) {
         JavaDockerCodeSandbox javaNativeCodeSandbox = new JavaDockerCodeSandbox();
@@ -52,20 +66,13 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
     public ExecuteMessage compileFile(File userCodeFile, String language) {
         // 在Docker容器中编译Java代码
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
-        
-        // 获取默认的 Docker Client
-        com.github.dockerjava.core.DefaultDockerClientConfig config = 
-            com.github.dockerjava.core.DefaultDockerClientConfig.createDefaultConfigBuilder()
-            .withDockerHost(getPlatformDockerHost())
-            .build();
-        com.github.dockerjava.transport.DockerHttpClient httpClient = new com.github.dockerjava.httpclient5.ApacheDockerHttpClient.Builder()
-            .dockerHost(config.getDockerHost())
-            .sslConfig(config.getSSLConfig())
-            .connectionTimeout(java.time.Duration.ofSeconds(30))
-            .responseTimeout(java.time.Duration.ofSeconds(120))
-            .build();
-        DockerClient dockerClient = com.github.dockerjava.core.DockerClientImpl.getInstance(config, httpClient);
-        
+
+        // 使用注入的 DockerClient 单例，避免重复创建连接
+        if (dockerClient == null) {
+            // 仅在非Spring环境下（如main方法直接运行）创建临时客户端
+            dockerClient = createDockerClient();
+        }
+
         // 使用临时容器进行编译
         String image = "openjdk:8-alpine";
         CreateContainerCmd containerCmd = dockerClient.createContainerCmd(image);
@@ -139,18 +146,12 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
     @Override
     public List<ExecuteMessage> runFile(File userCodeFile, List<String> inputList, String language) {
         String userCodeParentPath = userCodeFile.getParentFile().getAbsolutePath();
-        // 获取默认的 Docker Client
-        com.github.dockerjava.core.DefaultDockerClientConfig config = 
-            com.github.dockerjava.core.DefaultDockerClientConfig.createDefaultConfigBuilder()
-            .withDockerHost(getPlatformDockerHost())
-            .build();
-        com.github.dockerjava.transport.DockerHttpClient httpClient = new com.github.dockerjava.httpclient5.ApacheDockerHttpClient.Builder()
-            .dockerHost(config.getDockerHost())
-            .sslConfig(config.getSSLConfig())
-            .connectionTimeout(java.time.Duration.ofSeconds(30))
-            .responseTimeout(java.time.Duration.ofSeconds(120))
-            .build();
-        DockerClient dockerClient = com.github.dockerjava.core.DockerClientImpl.getInstance(config, httpClient);
+
+        // 使用注入的 DockerClient 单例，避免重复创建连接
+        if (dockerClient == null) {
+            // 仅在非Spring环境下（如main方法直接运行）创建临时客户端
+            dockerClient = createDockerClient();
+        }
 
         // 拉取镜像
         String image = "openjdk:8-alpine";
@@ -331,6 +332,30 @@ public class JavaDockerCodeSandbox extends JavaCodeSandboxTemplate {
             dockerHost = "unix:///var/run/docker.sock";
         }
         return dockerHost;
+    }
+
+    /**
+     * 创建 DockerClient 实例（仅在非Spring环境下使用）
+     * @return DockerClient 实例
+     */
+    private static DockerClient createDockerClient() {
+        String dockerHost = getPlatformDockerHost();
+        log.info("创建临时DockerClient，Docker Host: {}", dockerHost);
+
+        com.github.dockerjava.core.DefaultDockerClientConfig config =
+            com.github.dockerjava.core.DefaultDockerClientConfig.createDefaultConfigBuilder()
+            .withDockerHost(dockerHost)
+            .build();
+
+        com.github.dockerjava.transport.DockerHttpClient httpClient =
+            new com.github.dockerjava.httpclient5.ApacheDockerHttpClient.Builder()
+            .dockerHost(config.getDockerHost())
+            .sslConfig(config.getSSLConfig())
+            .connectionTimeout(java.time.Duration.ofSeconds(30))
+            .responseTimeout(java.time.Duration.ofSeconds(120))
+            .build();
+
+        return com.github.dockerjava.core.DockerClientImpl.getInstance(config, httpClient);
     }
 }
 

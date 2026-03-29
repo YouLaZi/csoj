@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
-            <version>2.7.0</version> <!-- 请匹配您的Spring Boot版本 -->
+            <!-- 版本由父POM统一管理 -->
         </dependency>
         <!-- 其他依赖 -->
         <dependency>

@@ -3,12 +3,16 @@ package com.cs.ojcodesandbox.pool;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.command.ListContainersCmd;
 import com.github.dockerjava.api.model.HostConfig;
+import com.github.dockerjava.api.model.Container;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -357,6 +361,58 @@ public class DockerContainerPool {
                 maxPoolSize,
                 minPoolSize
         );
+    }
+
+    /**
+     * 定时清理孤儿容器（每5分钟执行一次）
+     * 清理不属于容器池的、已停止的或超过最大空闲时间的容器
+     */
+    @Scheduled(fixedRate = 300000)
+    public void cleanupOrphanedContainers() {
+        try {
+            log.debug("开始清理孤儿容器...");
+
+            // 获取所有容器
+            List<Container> containers = dockerClient.listContainersCmd()
+                    .withShowAll(true)
+                    .exec();
+
+            int cleanedCount = 0;
+            for (Container container : containers) {
+                String containerId = container.getId();
+                String containerName = container.getNames() != null && container.getNames().length > 0
+                        ? container.getNames()[0] : "unknown";
+
+                // 检查是否是沙箱创建的容器（以特定前缀开头或使用沙箱镜像）
+                boolean isSandboxContainer = false;
+                String containerImage = container.getImage();
+                if (containerImage != null && containerImage.contains("openjdk")) {
+                    isSandboxContainer = true;
+                }
+
+                // 如果是沙箱容器且已停止，则清理
+                if (isSandboxContainer && !"running".equals(container.getState())) {
+                    try {
+                        dockerClient.removeContainerCmd(containerId)
+                                .withForce(true)
+                                .exec();
+                        log.info("清理孤儿容器: {} ({})", containerId, containerName);
+                        cleanedCount++;
+                    } catch (Exception e) {
+                        log.warn("清理容器失败: {} - {}", containerId, e.getMessage());
+                    }
+                }
+            }
+
+            if (cleanedCount > 0) {
+                log.info("孤儿容器清理完成，共清理 {} 个容器", cleanedCount);
+            } else {
+                log.debug("没有需要清理的孤儿容器");
+            }
+
+        } catch (Exception e) {
+            log.error("清理孤儿容器时发生异常", e);
+        }
     }
 
     /**

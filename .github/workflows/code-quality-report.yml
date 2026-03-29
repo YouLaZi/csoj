@@ -145,9 +145,15 @@ jobs:
         id: coverage
         run: |
           # 提取覆盖率数据
-          instruction_coverage=$(grep -oP 'Total.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
-          branch_coverage=$(grep -oP 'Branch.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
-          line_coverage=$(grep -oP 'Line.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+')
+          if [ -f csoj-backend-master/target/site/jacoco/index.html ]; then
+            instruction_coverage=$(grep -oP 'Total.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+' | head -1 || echo "N/A")
+            branch_coverage=$(grep -oP 'Branch.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+' | head -1 || echo "N/A")
+            line_coverage=$(grep -oP 'Line.*?([0-9.]+)%' csoj-backend-master/target/site/jacoco/index.html | grep -oP '[0-9.]+' | head -1 || echo "N/A")
+          else
+            instruction_coverage="N/A"
+            branch_coverage="N/A"
+            line_coverage="N/A"
+          fi
 
           echo "instruction_coverage=$instruction_coverage" >> $GITHUB_OUTPUT
           echo "branch_coverage=$branch_coverage" >> $GITHUB_OUTPUT
@@ -193,7 +199,7 @@ jobs:
           ## 🔍 代码质量指标
 
           - **复杂度**: PMD 分析完成
-          **Bug 检测**: SpotBugs 分析完成
+          - **Bug 检测**: SpotBugs 分析完成
           - **代码重复**: CPD 分析完成
           - **技术债务**: SonarCloud 分析完成
 

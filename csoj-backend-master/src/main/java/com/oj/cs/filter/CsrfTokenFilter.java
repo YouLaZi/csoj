@@ -54,6 +54,13 @@ public class CsrfTokenFilter implements Filter {
       return;
     }
 
+    // 跳过使用 Bearer Token 认证的请求（Token 认证本身已提供安全保护）
+    String authHeader = httpRequest.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      chain.doFilter(request, response);
+      return;
+    }
+
     // 跳过公开查询接口的 CSRF 验证（这些接口只读数据，不修改状态）
     String requestUri = httpRequest.getRequestURI();
     if (requestUri != null

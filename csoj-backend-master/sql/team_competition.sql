@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `team_member` (
     `role` varchar(20) DEFAULT 'member' COMMENT '角色：leader/vice_leader/member',
     `join_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
     `contribution_score` int DEFAULT 0 COMMENT '贡献积分',
-    ` solved_count` int DEFAULT 0 COMMENT '解题数',
+    `solved_count` int DEFAULT 0 COMMENT '解题数',
     `contest_count` int DEFAULT 0 COMMENT '参赛次数',
     `is_delete` tinyint DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),

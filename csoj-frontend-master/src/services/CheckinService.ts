@@ -16,17 +16,10 @@ class CheckinService {
       const userStore = useUserStore();
       const token = userStore.token;
 
-      if (!token) {
-        return {
-          success: false,
-          code: -1,
-          message: "用户未登录",
-          data: null,
-        };
+      // token 可能为空（如微信扫码登录只用了 Session），仍尝试请求让后端判断
+      if (token) {
+        OpenAPI.TOKEN = token;
       }
-
-      // Set token for authentication
-      OpenAPI.TOKEN = token;
       const response = await CheckinControllerService.doCheckinUsingPost();
 
       console.log("签到结果:", response);
@@ -76,19 +69,10 @@ class CheckinService {
       const userStore = useUserStore();
       const token = userStore.token;
 
-      if (!token) {
-        return {
-          code: -1,
-          message: "用户未登录",
-          data: {
-            records: [],
-            total: 0,
-          },
-        };
+      // token 可能为空（如微信扫码登录只用了 Session），仍尝试请求让后端判断
+      if (token) {
+        OpenAPI.TOKEN = token;
       }
-
-      // Set token for authentication
-      OpenAPI.TOKEN = token;
       // 使用正确的API方法名
       const response = await CheckinControllerService.getCheckinRecordsUsingGet(
         1,

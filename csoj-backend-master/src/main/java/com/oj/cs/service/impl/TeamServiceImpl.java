@@ -79,6 +79,8 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
     team.setInviteCode(generateUniqueInviteCode());
     team.setMaxMembers(request.getMaxMembers() != null ? request.getMaxMembers() : 5);
     team.setIsPublic(request.getIsPublic() != null ? request.getIsPublic() : 1);
+    team.setCreateTime(new Date());
+    team.setUpdateTime(new Date());
     team.setTotalScore(0L);
     team.setWinCount(0);
     team.setLoseCount(0);
@@ -200,10 +202,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         this.page(new Page<>(request.getCurrent(), request.getPageSize()), queryWrapper);
 
     User loginUser = userService.getLoginUserPermitNull(httpRequest);
-    List<TeamVO> teamVOList =
-        page.getRecords().stream()
-            .map(team -> convertToTeamVO(team, loginUser))
-            .collect(Collectors.toList());
+    List<TeamVO> teamVOList = convertToTeamVOBatch(page.getRecords(), loginUser);
 
     Page<TeamVO> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
     resultPage.setRecords(teamVOList);
@@ -393,9 +392,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
     }
 
     List<Team> teams = this.listByIds(teamIds);
-    return teams.stream()
-        .map(team -> convertToTeamVO(team, loginUser))
-        .collect(Collectors.toList());
+    return convertToTeamVOBatch(teams, loginUser);
   }
 
   @Override
@@ -467,6 +464,83 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
     QueryWrapper<Team> queryWrapper = new QueryWrapper<>();
     queryWrapper.eq("invite_code", inviteCode);
     return this.count(queryWrapper) > 0;
+  }
+
+  /** 批量转换为 TeamVO（避免 N+1 查询） */
+  private List<TeamVO> convertToTeamVOBatch(List<Team> teams, User loginUser) {
+    if (teams == null || teams.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    List<Long> teamIds = teams.stream().map(Team::getId).collect(Collectors.toList());
+    List<Long> leaderIds =
+        teams.stream().map(Team::getLeaderId).distinct().collect(Collectors.toList());
+
+    // 批量查询成员数量
+    Map<Long, Integer> memberCountMap = new HashMap<>();
+    for (Long teamId : teamIds) {
+      memberCountMap.put(teamId, teamMemberMapper.countByTeamId(teamId));
+    }
+
+    // 批量查询队长信息
+    Map<Long, User> leaderMap = new HashMap<>();
+    if (!leaderIds.isEmpty()) {
+      List<User> leaders = userMapper.selectBatchIds(leaderIds);
+      for (User leader : leaders) {
+        leaderMap.put(leader.getId(), leader);
+      }
+    }
+
+    // 批量计算排名：按 rating 降序排列后，排名即为位置
+    List<Team> sortedByRating =
+        teams.stream()
+            .sorted((a, b) -> Integer.compare(b.getRating(), a.getRating()))
+            .collect(Collectors.toList());
+    Map<Long, Integer> rankMap = new HashMap<>();
+    for (int i = 0; i < sortedByRating.size(); i++) {
+      // 使用全局排名（考虑数据库中所有团队）
+      Team t = sortedByRating.get(i);
+      int globalRank = baseMapper.countByRatingGreaterThan(t.getRating()) + 1;
+      rankMap.put(t.getId(), globalRank);
+    }
+
+    // 批量查询当前用户的团队成员状态
+    Map<Long, TeamMember> userMemberMap = new HashMap<>();
+    if (loginUser != null) {
+      for (Long teamId : teamIds) {
+        TeamMember member = getTeamMember(teamId, loginUser.getId());
+        if (member != null) {
+          userMemberMap.put(teamId, member);
+        }
+      }
+    }
+
+    return teams.stream()
+        .map(
+            team -> {
+              TeamVO teamVO = new TeamVO();
+              BeanUtils.copyProperties(team, teamVO);
+
+              teamVO.setCurrentMembers(memberCountMap.getOrDefault(team.getId(), 0));
+
+              User leader = leaderMap.get(team.getLeaderId());
+              if (leader != null) {
+                UserVO leaderVO = new UserVO();
+                BeanUtils.copyProperties(leader, leaderVO);
+                teamVO.setLeader(leaderVO);
+              }
+
+              teamVO.setRank(rankMap.getOrDefault(team.getId(), 0));
+
+              TeamMember member = userMemberMap.get(team.getId());
+              teamVO.setHasJoined(member != null);
+              if (member != null) {
+                teamVO.setUserRole(member.getRole());
+              }
+
+              return teamVO;
+            })
+        .collect(Collectors.toList());
   }
 
   /** 转换为 TeamVO */
