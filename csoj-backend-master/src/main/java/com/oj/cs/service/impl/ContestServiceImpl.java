@@ -346,7 +346,7 @@ public class ContestServiceImpl extends ServiceImpl<com.oj.cs.mapper.ContestMapp
         queryWrapper.orderByAsc(sortField);
       }
     } else {
-      queryWrapper.orderByDesc("start_time");
+      queryWrapper.orderByDesc("startTime");
     }
 
     // 分页查询
@@ -467,10 +467,10 @@ public class ContestServiceImpl extends ServiceImpl<com.oj.cs.mapper.ContestMapp
     Date startTimeBegin = queryRequest.getStartTimeBegin();
     Date startTimeEnd = queryRequest.getStartTimeEnd();
     if (startTimeBegin != null) {
-      queryWrapper.ge("start_time", startTimeBegin);
+      queryWrapper.ge("startTime", startTimeBegin);
     }
     if (startTimeEnd != null) {
-      queryWrapper.le("start_time", startTimeEnd);
+      queryWrapper.le("startTime", startTimeEnd);
     }
 
     return queryWrapper;
@@ -485,8 +485,8 @@ public class ContestServiceImpl extends ServiceImpl<com.oj.cs.mapper.ContestMapp
     // 将应该开始的比赛状态更新为 ONGOING
     QueryWrapper<Contest> startWrapper = new QueryWrapper<>();
     startWrapper.eq("status", "DRAFT");
-    startWrapper.le("start_time", now);
-    startWrapper.ge("end_time", now);
+    startWrapper.le("startTime", now);
+    startWrapper.ge("endTime", now);
     List<Contest> startContests = this.list(startWrapper);
 
     for (Contest contest : startContests) {
@@ -497,7 +497,7 @@ public class ContestServiceImpl extends ServiceImpl<com.oj.cs.mapper.ContestMapp
     // 将应该结束的比赛状态更新为 ENDED
     QueryWrapper<Contest> endWrapper = new QueryWrapper<>();
     endWrapper.eq("status", "ONGOING");
-    endWrapper.lt("end_time", now);
+    endWrapper.lt("endTime", now);
     List<Contest> endContests = this.list(endWrapper);
 
     for (Contest contest : endContests) {

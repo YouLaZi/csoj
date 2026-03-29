@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -36,6 +38,8 @@ import com.oj.cs.utils.SqlUtils;
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     implements CommentService {
 
+  private static final Logger LOG = LoggerFactory.getLogger(CommentServiceImpl.class);
+
   @Override
   public boolean likeComment(Long commentId, Long userId) {
     // TODO: Implement the logic for liking a comment.
@@ -47,7 +51,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
       throw new BusinessException(ErrorCode.PARAMS_ERROR, "评论ID或用户ID不能为空");
     }
     // Placeholder: Simulate a successful like operation
-    log.info("User {} liked comment {}", userId, commentId);
+    LOG.info("User {} liked comment {}", userId, commentId);
     return true; // Or false if the operation fails or is not allowed
   }
 

@@ -1,7 +1,7 @@
 /**
  * OAuth 第三方登录服务
  */
-import request from '@/plugins/axios';
+import request from "@/plugins/axios";
 
 export interface OAuthPlatform {
   code: string;
@@ -42,7 +42,7 @@ export const OAuthService = {
    * 获取支持的OAuth平台列表
    */
   async getPlatforms(): Promise<OAuthPlatform[]> {
-    const res = await request.get('/oauth/platforms');
+    const res = await request.get("/oauth/platforms");
     return res.data;
   },
 
@@ -50,8 +50,8 @@ export const OAuthService = {
    * 获取授权URL
    */
   async getAuthorizeUrl(platform: string): Promise<OAuthAuthorizeResult> {
-    const res = await request.get('/oauth/authorize', {
-      params: { platform }
+    const res = await request.get("/oauth/authorize", {
+      params: { platform },
     });
     return res.data;
   },
@@ -70,8 +70,8 @@ export const OAuthService = {
    * 获取已绑定的第三方账号
    */
   async getBindings(userId: number): Promise<OAuthBinding[]> {
-    const res = await request.get('/oauth/bindings', {
-      params: { userId }
+    const res = await request.get("/oauth/bindings", {
+      params: { userId },
     });
     return res.data;
   },
@@ -80,11 +80,11 @@ export const OAuthService = {
    * 解绑第三方账号
    */
   async unbind(platform: string, userId: number): Promise<boolean> {
-    const res = await request.delete('/oauth/unbind', {
-      params: { platform, userId }
+    const res = await request.delete("/oauth/unbind", {
+      params: { platform, userId },
     });
     return res.data;
-  }
+  },
 };
 
 export default OAuthService;
