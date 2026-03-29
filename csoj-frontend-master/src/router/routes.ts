@@ -1,29 +1,6 @@
 import { RouteRecordRaw } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
 import UserLayout from "@/layouts/UserLayout.vue";
-import UserLoginView from "@/views/user/UserLoginView.vue";
-import UserRegisterView from "@/views/user/UserRegisterView.vue";
-import ForgotPasswordView from "@/views/user/ForgotPasswordView.vue";
-import UserProfileView from "@/views/user/UserProfileView.vue";
-import AdminView from "@/views/AdminView.vue";
-import NoAuthView from "@/views/NoAuthView.vue";
 import ACCESS_ENUM from "@/access/accessEnum";
-import PermissionExample from "@/components/PermissionExample.vue";
-import AddQuestionView from "@/views/question/AddQuestionView.vue";
-import ManageQuestionView from "@/views/question/ManageQuestionView.vue";
-import QuestionsView from "@/views/question/QuestionsView.vue";
-import QuestionSubmitView from "@/views/question/QuestionSubmitView.vue";
-import ViewQuestionView from "@/views/question/ViewQuestionView.vue";
-import PostsView from "@/views/post/PostsView.vue";
-import ViewPostView from "@/views/post/ViewPostView.vue";
-import TagsView from "@/views/tag/TagsView.vue";
-import CheckinView from "@/views/points/CheckinView.vue";
-import LeaderboardView from "@/views/points/LeaderboardView.vue";
-import NotFoundView from "@/views/error/NotFoundView.vue";
-import TeamListView from "@/views/team/TeamListView.vue";
-import TeamDetailView from "@/views/team/TeamDetailView.vue";
-import CompetitionListView from "@/views/competition/CompetitionListView.vue";
-import CompetitionDetailView from "@/views/competition/CompetitionDetailView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -34,17 +11,17 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "login",
         name: "nav.login",
-        component: UserLoginView,
+        component: () => import("@/views/user/UserLoginView.vue"),
       },
       {
         path: "register",
         name: "nav.register",
-        component: UserRegisterView,
+        component: () => import("@/views/user/UserRegisterView.vue"),
       },
       {
         path: "forgot-password",
         name: "nav.forgotPassword",
-        component: ForgotPasswordView,
+        component: () => import("@/views/user/ForgotPasswordView.vue"),
       },
       {
         path: "reset-password",
@@ -68,7 +45,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user/profile",
     name: "nav.profile",
-    component: UserProfileView,
+    component: () => import("@/views/user/UserProfileView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
     },
@@ -84,12 +61,12 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/questions",
     name: "nav.questions",
-    component: QuestionsView,
+    component: () => import("@/views/question/QuestionsView.vue"),
   },
   {
     path: "/question_submit",
     name: "nav.questionSubmit",
-    component: QuestionSubmitView,
+    component: () => import("@/views/question/QuestionSubmitView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
     },
@@ -97,7 +74,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/view/question/:id",
     name: "nav.doQuestion",
-    component: ViewQuestionView,
+    component: () => import("@/views/question/ViewQuestionView.vue"),
     props: true,
     meta: {
       access: ACCESS_ENUM.USER,
@@ -107,7 +84,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/add/question",
     name: "nav.createQuestion",
-    component: AddQuestionView,
+    component: () => import("@/views/question/AddQuestionView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
     },
@@ -115,7 +92,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/update/question",
     name: "nav.updateQuestion",
-    component: AddQuestionView,
+    component: () => import("@/views/question/AddQuestionView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
       hideInMenu: true,
@@ -132,7 +109,7 @@ export const routes: Array<RouteRecordRaw> = [
       {
         path: "list",
         name: "nav.questionList",
-        component: ManageQuestionView,
+        component: () => import("@/views/question/ManageQuestionView.vue"),
         meta: {
           access: ACCESS_ENUM.ADMIN,
         },
@@ -151,12 +128,12 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/posts",
     name: "nav.posts",
-    component: PostsView,
+    component: () => import("@/views/post/PostsView.vue"),
   },
   {
     path: "/view/post/:id",
     name: "nav.viewPost",
-    component: ViewPostView,
+    component: () => import("@/views/post/ViewPostView.vue"),
     props: true,
     meta: {
       hideInMenu: true,
@@ -165,7 +142,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/tags",
     name: "nav.tags",
-    component: TagsView,
+    component: () => import("@/views/tag/TagsView.vue"),
     props: true,
     meta: {
       access: ACCESS_ENUM.ADMIN,
@@ -199,12 +176,12 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "nav.home",
-    component: HomeView,
+    component: () => import("@/views/HomeView.vue"),
   },
   {
     path: "/hide",
     name: "nav.hidden",
-    component: HomeView,
+    component: () => import("@/views/HomeView.vue"),
     meta: {
       hideInMenu: true,
     },
@@ -212,7 +189,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/checkin",
     name: "nav.checkin",
-    component: CheckinView,
+    component: () => import("@/views/points/CheckinView.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
     },
@@ -220,17 +197,17 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/points/leaderboard",
     name: "nav.leaderboard",
-    component: LeaderboardView,
+    component: () => import("@/views/points/LeaderboardView.vue"),
   },
   {
     path: "/team",
     name: "nav.team",
-    component: TeamListView,
+    component: () => import("@/views/team/TeamListView.vue"),
   },
   {
     path: "/team/:id",
     name: "nav.teamDetail",
-    component: TeamDetailView,
+    component: () => import("@/views/team/TeamDetailView.vue"),
     props: true,
     meta: {
       hideInMenu: true,
@@ -239,12 +216,12 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/competition",
     name: "nav.competition",
-    component: CompetitionListView,
+    component: () => import("@/views/competition/CompetitionListView.vue"),
   },
   {
     path: "/competition/:id",
     name: "nav.competitionDetail",
-    component: CompetitionDetailView,
+    component: () => import("@/views/competition/CompetitionDetailView.vue"),
     props: true,
     meta: {
       hideInMenu: true,
@@ -253,7 +230,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/permission-example",
     name: "nav.permissionExample",
-    component: PermissionExample,
+    component: () => import("@/components/PermissionExample.vue"),
     meta: {
       access: ACCESS_ENUM.USER,
       title: "nav.permissionExample",
@@ -275,7 +252,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/noAuth",
     name: "nav.noAuth",
-    component: NoAuthView,
+    component: () => import("@/views/NoAuthView.vue"),
     meta: {
       hideInMenu: true,
     },
@@ -283,7 +260,7 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/:pathMatch(.*)*",
     name: "nav.notFound",
-    component: NotFoundView,
+    component: () => import("@/views/error/NotFoundView.vue"),
     meta: {
       hideInMenu: true,
     },

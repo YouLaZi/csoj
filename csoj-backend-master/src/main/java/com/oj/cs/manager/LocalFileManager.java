@@ -34,7 +34,12 @@ public class LocalFileManager {
    */
   public String putObject(String filepath, File file) {
     try {
-      Path targetPath = Paths.get(baseUploadPath, filepath);
+      Path targetPath = Paths.get(baseUploadPath, filepath).normalize().toAbsolutePath();
+      Path basePath = Paths.get(baseUploadPath).normalize().toAbsolutePath();
+      // 防止路径穿越：确保目标路径在基础目录内
+      if (!targetPath.startsWith(basePath)) {
+        throw new IOException("非法文件路径: " + filepath);
+      }
       // 创建父目录
       Files.createDirectories(targetPath.getParent());
       // 复制文件
@@ -56,7 +61,12 @@ public class LocalFileManager {
    */
   public String putObject(String filepath, MultipartFile multipartFile) {
     try {
-      Path targetPath = Paths.get(baseUploadPath, filepath);
+      Path targetPath = Paths.get(baseUploadPath, filepath).normalize().toAbsolutePath();
+      Path basePath = Paths.get(baseUploadPath).normalize().toAbsolutePath();
+      // 防止路径穿越：确保目标路径在基础目录内
+      if (!targetPath.startsWith(basePath)) {
+        throw new IOException("非法文件路径: " + filepath);
+      }
       // 创建父目录
       Files.createDirectories(targetPath.getParent());
       // 保存文件

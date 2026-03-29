@@ -47,7 +47,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
       throw new BusinessException(ErrorCode.PARAMS_ERROR, "评论ID或用户ID不能为空");
     }
     // Placeholder: Simulate a successful like operation
-    System.out.println("User " + userId + " liked comment " + commentId);
+    log.info("User {} liked comment {}", userId, commentId);
     return true; // Or false if the operation fails or is not allowed
   }
 

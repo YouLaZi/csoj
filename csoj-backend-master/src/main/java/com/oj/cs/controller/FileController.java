@@ -57,7 +57,13 @@ public class FileController {
     User loginUser = userService.getLoginUser(request);
     // 文件目录：根据业务、用户来划分
     String uuid = RandomStringUtils.randomAlphanumeric(8);
-    String filename = uuid + "-" + multipartFile.getOriginalFilename();
+    // 防止路径穿越攻击：移除文件名中的路径分隔符和特殊字符
+    String originalFilename = multipartFile.getOriginalFilename();
+    if (originalFilename == null || originalFilename.isBlank()) {
+      throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件名不能为空");
+    }
+    String safeFilename = originalFilename.replaceAll("[\\\\/]", "_");
+    String filename = uuid + "-" + safeFilename;
     String filepath =
         String.format("/%s/%s/%s", fileUploadBizEnum.getValue(), loginUser.getId(), filename);
     try {
