@@ -1,8 +1,12 @@
 <template>
   <div class="oauth-buttons">
-    <a-divider>{{ $t('oauth.orThirdParty') }}</a-divider>
+    <a-divider>{{ $t("oauth.orThirdParty") }}</a-divider>
     <div class="oauth-icons">
-      <a-tooltip v-for="platform in enabledPlatforms" :key="platform.code" :content="platform.name">
+      <a-tooltip
+        v-for="platform in enabledPlatforms"
+        :key="platform.code"
+        :content="platform.name"
+      >
         <a-button
           class="oauth-btn"
           :class="platform.code.toLowerCase()"
@@ -19,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { Message } from '@arco-design/web-vue';
-import { useI18n } from 'vue-i18n';
-import OAuthService from '@/services/OAuthService';
-import { IconGithub, IconTikTokColor } from '@arco-design/web-vue/es/icon';
+import { ref, computed, onMounted } from "vue";
+import { Message } from "@arco-design/web-vue";
+import { useI18n } from "vue-i18n";
+import OAuthService from "@/services/OAuthService";
+import { IconGithub, IconTiktokColor } from "@arco-design/web-vue/es/icon";
 
 const { t } = useI18n();
 
@@ -31,23 +35,23 @@ const platforms = ref<any[]>([]);
 const loading = ref<string | null>(null);
 
 const enabledPlatforms = computed(() => {
-  return platforms.value.filter(p => p.enabled);
+  return platforms.value.filter((p) => p.enabled);
 });
 
 const emit = defineEmits<{
-  (e: 'login', platform: string): void;
+  (e: "login", platform: string): void;
 }>();
 
 const getIconComponent = (code: string) => {
   switch (code.toUpperCase()) {
-    case 'GITHUB':
+    case "GITHUB":
       return IconGithub;
-    case 'GITEE':
-      return 'icon-gitee';
-    case 'QQ':
-      return IconTikTokColor;
-    case 'WECHAT':
-      return 'icon-wechat';
+    case "GITEE":
+      return "icon-gitee";
+    case "QQ":
+      return IconTiktokColor;
+    case "WECHAT":
+      return "icon-wechat";
     default:
       return IconGithub;
   }
@@ -56,10 +60,12 @@ const getIconComponent = (code: string) => {
 const handleOAuthLogin = async (platform: string) => {
   loading.value = platform;
   try {
-    emit('login', platform);
+    emit("login", platform);
     await OAuthService.login(platform);
   } catch (error: any) {
-    Message.error(t('oauth.loginFailed') + ': ' + (error.message || 'Unknown error'));
+    Message.error(
+      t("oauth.loginFailed") + ": " + (error.message || "Unknown error")
+    );
   } finally {
     loading.value = null;
   }
@@ -69,7 +75,7 @@ const loadPlatforms = async () => {
   try {
     platforms.value = await OAuthService.getPlatforms();
   } catch (error) {
-    console.error('Failed to load OAuth platforms:', error);
+    console.error("Failed to load OAuth platforms:", error);
   }
 };
 

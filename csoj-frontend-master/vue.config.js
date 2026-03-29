@@ -26,8 +26,10 @@ module.exports = defineConfig({
       "/api": {
         target: "http://localhost:8121",
         changeOrigin: true,
-        // 不重写路径，因为后端已经配置了context-path为/api
-        // pathRewrite: {'^/api': ''}
+      },
+      "/oauth": {
+        target: "http://localhost:8121",
+        changeOrigin: true,
       },
     },
     client: {

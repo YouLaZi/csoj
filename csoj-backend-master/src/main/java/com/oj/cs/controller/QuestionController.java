@@ -182,8 +182,8 @@ public class QuestionController {
    * @return
    */
   @GetMapping("/get/vo")
-  public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
-    if (id <= 0) {
+  public BaseResponse<QuestionVO> getQuestionVOById(Long id, HttpServletRequest request) {
+    if (id == null || id <= 0) {
       throw new BusinessException(ErrorCode.PARAMS_ERROR);
     }
     // 添加调试日志

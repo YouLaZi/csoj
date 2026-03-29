@@ -116,6 +116,7 @@ export { PointsControllerService } from './services/PointsControllerService';
 export { PostControllerService } from './services/PostControllerService';
 export { PostFavourControllerService } from './services/PostFavourControllerService';
 export { PostThumbControllerService } from './services/PostThumbControllerService';
+export { TeamControllerService } from './services/TeamControllerService';
 export { QuestionAnswerControllerService } from './services/QuestionAnswerControllerService';
 export { QuestionCommentControllerService } from './services/QuestionCommentControllerService';
 export { QuestionControllerService } from './services/QuestionControllerService';

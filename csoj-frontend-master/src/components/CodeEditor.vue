@@ -117,7 +117,6 @@ import {
   IconCode,
   IconRefresh,
   IconSettings,
-  IconInsertSnippet,
 } from "@arco-design/web-vue/es/icon";
 import { Message } from "@arco-design/web-vue";
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -32,40 +33,52 @@ public class Contest implements Serializable {
   private String password;
 
   /** 关联的题目ID列表（JSON数组格式） */
+  @TableField("questionIds")
   private String questionIds;
 
   /** 开始时间 */
+  @TableField("startTime")
   private Date startTime;
 
   /** 结束时间 */
+  @TableField("endTime")
   private Date endTime;
 
   /** 创建用户ID（组织者） */
+  @TableField("userId")
   private Long userId;
 
   /** 状态（DRAFT-草稿，ONGOING-进行中，ENDED-已结束） */
   private String status;
 
   /** 参与人数 */
+  @TableField("participantCount")
   private Integer participantCount;
 
   /** 是否启用排行榜 */
+  @TableField("enableRanking")
   private Boolean enableRanking;
 
   /** 是否显示实时排名 */
+  @TableField("showRealTimeRanking")
   private Boolean showRealTimeRanking;
 
   /** 封榜时间（分钟，结束前多少分钟隐藏排名） */
+  @TableField("rankingFreezeMinutes")
   private Integer rankingFreezeMinutes;
 
   /** 创建时间 */
+  @TableField("createTime")
   private Date createTime;
 
   /** 更新时间 */
+  @TableField("updateTime")
   private Date updateTime;
 
   /** 是否删除 */
-  @TableLogic private Integer isDelete;
+  @TableLogic
+  @TableField("isDelete")
+  private Integer isDelete;
 
   private static final long serialVersionUID = 1L;
 }
